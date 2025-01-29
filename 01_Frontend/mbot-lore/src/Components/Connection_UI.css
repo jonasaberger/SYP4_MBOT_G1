@@ -1,0 +1,81 @@
+/* Hintergrund und allgemeines Layout */
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #222; /* Dunkler Hintergrund */
+  }
+  
+  /* Box für die Verbindungseingabe */
+  .connection-box {
+    width: 350px;
+    background-color: #333;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    text-align: center;
+  }
+  
+  /* Titel */
+  .title {
+    background-color: #f4e1a1;
+    color: black;
+    font-size: 24px;
+    font-weight: bold;
+    padding: 15px;
+  }
+  
+  /* Formular-Styling */
+  .form {
+    padding: 20px;
+  }
+  
+  .form label {
+    display: block;
+    text-align: left;
+    color: white;
+    margin-bottom: 5px;
+  }
+  
+  .form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #ddd;
+    font-size: 16px;
+  }
+  
+  /* Buttons */
+  .connect-btn,
+  .restore-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+  
+  .connect-btn {
+    background-color: #ddd;
+    color: black;
+  }
+  
+  .connect-btn:hover {
+    background-color: #bbb;
+  }
+  
+  .restore-btn {
+    background-color: #aaa;
+    color: black;
+  }
+  
+  .restore-btn:hover {
+    background-color: #888;
+  }
+  
