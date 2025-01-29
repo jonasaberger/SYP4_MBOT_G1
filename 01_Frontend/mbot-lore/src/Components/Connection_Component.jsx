@@ -1,14 +1,33 @@
 import { useState } from "react";
+import { fetchDataFromAPI } from "../API_Service/service"; // Importiere den Service
 import "./Connection_UI.css"; // CSS-Datei importieren
 
 export default function ConnectionForm() {
   const [ip, setIp] = useState("");
   const [mbotName, setMbotName] = useState("");
+  const [error, setError] = useState(null); // Fehlerstatus
+  const [loading, setLoading] = useState(false); // Ladezustand
+  const [success, setSuccess] = useState(null); // Erfolgsmeldung
 
-  const handleConnect = () => {
-    console.log("Connecting to:", ip, mbotName);
+  // Funktion für den Verbindungsaufbau
+  const handleConnect = async () => {
+    setLoading(true); // Ladezustand aktivieren
+    setError(null); // Fehler zurücksetzen
+    setSuccess(null); // Erfolg zurücksetzen
+    
+    try {
+      // API-Aufruf, um die Verbindung zu starten
+      const response = await fetchDataFromAPI('/connect', 'POST', { ip, mbotName });
+      setSuccess('Connection successful!'); // Erfolgsmeldung setzen
+      console.log(response); // Ausgabe der Antwort der API
+    } catch (err) {
+      setError('Connection failed: ' + err.message); // Fehler setzen
+    } finally {
+      setLoading(false); // Ladezustand deaktivieren
+    }
   };
 
+  // Funktion zum Wiederherstellen der Sitzung
   const handleRestoreSession = () => {
     console.log("Restoring session...");
   };
@@ -22,19 +41,22 @@ export default function ConnectionForm() {
           <input
             type="text"
             value={ip}
-            onChange={(e) => setIp(e.target.value)}
+            onChange={(e) => setIp(e.target.value)}  // IP wird gesetzt
           />
 
           <label>Mbot Name:</label>
           <input
             type="text"
             value={mbotName}
-            onChange={(e) => setMbotName(e.target.value)}
+            onChange={(e) => setMbotName(e.target.value)}  // Mbot Name wird gesetzt
           />
 
-          <button className="connect-btn" onClick={handleConnect}>
-            Connect
+          <button className="connect-btn" onClick={handleConnect} disabled={loading}>
+            {loading ? 'Connecting...' : 'Connect'}
           </button>
+
+          {success && <div className="success-message">{success}</div>}
+          {error && <div className="error-message">{error}</div>}
 
           <button className="restore-btn" onClick={handleRestoreSession}>
             Restore Session
