@@ -16,6 +16,11 @@ out/
 *.iml               # IntelliJ IDEA module files
 .idea/              # IntelliJ IDEA settings folder
 
+# Ignore Python bytecode and cache directories
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
 
 # VS Code
 .vscode/
