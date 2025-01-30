@@ -1,0 +1,29 @@
+# Build directories
+build/              # Build directory
+dist/               # Distribution directory
+tmp/                # Temporary files
+out/
+
+# IDEs and Editors
+.vscode/            # VSCode settings folder
+.idea/              # JetBrains IDE settings folder
+*.sublime-project   # Sublime Text project files
+*.sublime-workspace # Sublime Text workspace files
+*.vscode/           # VSCode workspace settings
+*.code-workspace    # VSCode workspace settings
+
+# JetBrains IDEs
+*.iml               # IntelliJ IDEA module files
+.idea/              # IntelliJ IDEA settings folder
+
+# Ignore Python bytecode and cache directories
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# VS Code
+.vscode/
+
+# Ignore .env file (contains sensitive environment variables)
+.env
