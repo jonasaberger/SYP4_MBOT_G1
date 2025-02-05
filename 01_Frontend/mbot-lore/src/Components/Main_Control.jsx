@@ -5,11 +5,16 @@ import "./css/Main_control.css";
 
 const MainControl = () => {
   const [mode, setMode] = useState("automatic");
+  
 
   const handleModeChange = (newMode) => {
+    getMode(newMode)
     setMode(newMode);
   };
 
+  const getMode=() => {
+    return mode;
+  }
   const renderComponent = () => {
     switch (mode) {
       case "manual":
