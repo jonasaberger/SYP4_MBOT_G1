@@ -1,0 +1,70 @@
+.main-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #016E8F;
+  padding: 20px;
+  border-radius: 10px;
+  height: 100em;
+}
+
+
+.title {
+  font-size: 2rem;
+  color: black;
+  background-color: #f3e5ab;
+  padding: 10px 20px;
+  border-radius: 5px;
+  padding-left: 35%;
+  padding-right: 35%;
+}
+
+.mode-buttons {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.mode-buttons button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.manual {
+  background-color: red;
+  color: white;
+}
+
+.automatic {
+  background-color: green;
+  color: white;
+}
+
+.map {
+  background-color: red;
+  color: white;
+}
+
+.active {
+  box-shadow: 0 0 10px white;
+}
+
+.control-section {
+  background-color: #016E8F;
+  padding: 20px;
+  border-radius: 10px;
+  border-color: rgb(0, 0, 0);
+  border-width: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  min-height: 300px;
+}
+body{
+    height: 100%;
+}

@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { fetchDataFromAPI } from "../API_Service/service"; // Importiere den Service
-import "./Connection_UI.css"; // CSS-Datei importieren
+import { fetchDataFromAPI } from "../API_Service/service"; 
+import "./css/Connection_UI.css"; 
+
 
 export default function ConnectionForm() {
   const [ip, setIp] = useState("");
