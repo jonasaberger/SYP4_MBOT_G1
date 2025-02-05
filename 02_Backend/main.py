@@ -12,7 +12,8 @@ def main():
     mbot_bridge.send_message('speed:100')
 
 
-    #mbot_bridge.send_message('controller')
+    #mbot_bridge.send_message('color:255,0,0')
+    mbot_bridge.send_message('exit')
     #mbot_bridge.send_message('left')
 
     #mbot_bridge.send_message('stop ')

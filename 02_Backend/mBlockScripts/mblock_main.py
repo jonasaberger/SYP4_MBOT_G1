@@ -57,12 +57,16 @@ def physical_module(physical_mode, speed=50):
         txt = str(command, "utf-8").strip()
 
         if txt == "exit":
+            cyberpi.mbot2.EM_stop("all")
             cyberpi.console.println("Exiting Mode...")
             physical_mode = False  # Exit physical mode
             break 
 
-        if txt.startswith("speed:"):
+        elif txt.startswith("color:"):
+            change_color(txt)
+        elif txt.startswith("speed:"):
             new_speed = int(txt.split(":")[1])  # Extract number and convert to int
+
             if 0 <= new_speed <= 100:  # Ensure speed is within range
                 speed = new_speed  # Update speed value
                 if last_printed_speed != new_speed:  # Only print if speed has changed
@@ -97,6 +101,14 @@ def discover_module(discover_mode):
         cyberpi.console.println("--- Discovery Mode ---")
         pass
 
+def change_color(txt):
+        color_data = txt.split(":")[1]
+        if(color_data != "null"):
+            color_data = color_data.split(",")
+            cyberpi.led.on(int(color_data[0]),int(color_data[1]),int(color_data[2]))
+        else:
+            cyberpi.led.off()
+    
 
 cyberpi.led.on(0, 0,255)
 cyberpi.console.println("MBOT Grp. 1")
@@ -114,6 +126,7 @@ cyberpi.led.on(0,0, 0)
 # Modes
 physical_mode = False  # Initially not in physical mode
 discover_mode = False
+led_on = False
 
 
 # Main Loop
@@ -123,7 +136,9 @@ while True:
     command, adr = socket.recvfrom(1024)
     txt = str(command, "utf-8")  # Convert the byte command to string
     
-    if txt.startswith("speed:"):
+    if txt.startswith("color:"):
+        change_color(txt)
+    elif txt.startswith("speed:"):
             new_speed = int(txt.split(":")[1])  # Extract number and convert to int
 
             if 0 <= new_speed <= 100:  # Ensure speed is within range
@@ -133,7 +148,9 @@ while True:
                 cyberpi.console.println("Invalid speed!")
                 continue  # Ignore and wait for the next command
     
-    if txt == "controller" and not physical_mode:
+    
+    # Control-Commands
+    elif txt == "controller" and not physical_mode:
         physical_mode = True  # Switch to physical mode
     elif txt == "discovery" and not discover_mode:
         discover_mode = True # Switch to discovery mode
