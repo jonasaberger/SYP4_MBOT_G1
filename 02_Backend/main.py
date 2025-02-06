@@ -1,11 +1,9 @@
-import mbot_bridge as mbb
+import frontend_bridge as feb
 
 def main(): 
     print('MBOT-G1 Backend')
-    mbot_bridge = mbb.MBotBridge()
-    #mbot_bridge.configure_connection('10.10.3.188')
-    #mbot_bridge.send_message('discovery')
-    mbot_bridge.start_server()
-
+    frontend_bridge = feb.FrontendBridge()
+    frontend_bridge.start_server()
+    frontend_bridge.receive_commands()
 
 main()

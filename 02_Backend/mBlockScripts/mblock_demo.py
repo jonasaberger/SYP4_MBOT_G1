@@ -9,6 +9,7 @@ movement_speed = 50
 def network_module():
     # Connect the MBOT to the school Wi-Fi
     cyberpi.network.config_sta("htljoh-public", "joh12345")
+    # The lights blink red until the MBOT is connected
     
     while True:
         cyberpi.console.clear()
@@ -58,13 +59,12 @@ def physical_module(socket, speed=50):
         elif txt.startswith("speed:"):
             new_speed = int(txt.split(":")[1])  # Extract number and convert to int
 
-            # Get the speed and see if in range
-            if 0 <= new_speed <= 100:
-                speed = new_speed
-                if last_printed_speed != new_speed:
+            if 0 <= new_speed <= 100:  # Ensure speed is within range
+                speed = new_speed  # Update speed value
+                if last_printed_speed != new_speed:  # Only print if speed has changed
                     cyberpi.console.println("Speed: " + str(new_speed) + "%")
-                    last_printed_speed = new_speed 
-                txt = prev_txt 
+                    last_printed_speed = new_speed  # Update the last printed speed
+                txt = prev_txt  # Reapply previous movement command with new speed
             else:
                 cyberpi.console.println("Invalid speed!")
                 continue  # Ignore and wait for the next command
@@ -74,8 +74,10 @@ def physical_module(socket, speed=50):
         
         # Execute actions based on received commands
         if txt == "forward":
+            cyberpi.led.on(0, 255, 0)  # Set LED to green
             cyberpi.mbot2.forward(speed)
         elif txt == "backward":
+            cyberpi.led.on(255, 0, 0)  # Set LED to red
             cyberpi.mbot2.backward(speed)
         elif txt == "left":
             cyberpi.mbot2.turn_left(speed)
@@ -83,11 +85,12 @@ def physical_module(socket, speed=50):
             cyberpi.mbot2.turn_right(speed)
         elif txt == "stop":
             cyberpi.mbot2.EM_stop("all")
-        time.sleep(0.1)
         
+        time.sleep(0.1)  # Small delay to prevent high CPU usage
+
 def discover_module():
     # Logic for discovery mode if needed
-    cyberpi.console.println("Discovery Mode")
+    cyberpi.console.println("--- Discovery Mode ---")
     pass
 
 def change_color(txt):
@@ -112,7 +115,6 @@ cyberpi.led.on(0, 0, 0)
 # Modes
 physical_mode = False  # Initially not in physical mode
 discover_mode = False
-connection_count = 0
 
 # Main Loop
 while True:
@@ -120,24 +122,17 @@ while True:
     command, adr = socket.recvfrom(1024)
     txt = str(command, "utf-8")  # Convert the byte command to string
     
-    # General Methods
-    if txt.startswith("connect"):
-        connection_count += 1
-        host_ip = txt.split(":")[1]
-        cyberpi.console.println("Connection : " + str(connection_count))
-        cyberpi.console.println(host_ip)
-        
-    elif txt.startswith("color:"):
+    if txt.startswith("color:"):
         change_color(txt)
-        
     elif txt.startswith("speed:"):
-        new_speed = int(txt.split(":")[1])
-        if 0 <= new_speed <= 100:
-            movement_speed = new_speed
+        new_speed = int(txt.split(":")[1])  # Extract number and convert to int
+
+        if 0 <= new_speed <= 100:  # Ensure speed is within range
+            movement_speed = new_speed  # Update speed value
             cyberpi.console.println("Speed: " + str(new_speed) + "%")
         else:
             cyberpi.console.println("Invalid speed!")
-            continue
+            continue  # Ignore and wait for the next command
     
     # Control-Commands
     elif txt == "controller" and not physical_mode:
@@ -146,3 +141,11 @@ while True:
     elif txt == "discovery" and not discover_mode:
         discover_mode = True  # Switch to discovery mode
         discover_module()
+    elif txt == "exit" and physical_mode:
+        cyberpi.console.println("Exiting Physical-Mode...")
+        cyberpi.mbot2.EM_stop("all")
+        physical_mode = False  # Exit physical mode
+    elif txt == "exit" and discover_mode:
+        cyberpi.console.println("Exiting Discovery-Mode...")
+        cyberpi.mbot2.EM_stop("all")
+        discover_mode = False  # Exit discovery mode
