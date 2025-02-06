@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // useNavigate importieren
 import { sendIPCommand } from '../API_Service/service';
 import Papa from 'papaparse';
 import './Connection_UI.css';
@@ -17,12 +18,12 @@ const ConnectionComponent = () => {
   const [sessions, setSessions] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [ipError, setIpError] = useState('');
+  const navigate = useNavigate(); // useNavigate initialisieren
 
   useEffect(() => {
     loadSessions();
   }, []);
 
-  // Sessions aus der CSV-Datei laden
   const loadSessions = async () => {
     try {
       const response = await fetch('/api/sessions'); // API-Anfrage zum Laden der CSV-Daten
@@ -72,6 +73,9 @@ const ConnectionComponent = () => {
 
       const newSession = { ip, name };
       saveSession(newSession);
+
+      // Weiterleitung nach erfolgreicher Verbindung
+      navigate('/control'); // Weiterleitung zur gewünschten Seite (z.B. '/nextpage')
     } catch (err) {
       setError('Verbindung fehlgeschlagen: ' + err.message);
     } finally {
