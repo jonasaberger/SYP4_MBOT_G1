@@ -42,6 +42,10 @@
     transition: background-color 0.3s ease;
 }
 
+.control-button.drive{
+    margin-bottom: 50px;
+}
+
 .control-button:hover {
     background-color: #45a049;
 }

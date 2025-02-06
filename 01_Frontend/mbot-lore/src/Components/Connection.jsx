@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { fetchDataFromAPI } from "../API_Service/service"; 
-import "./css/Connection_UI.css"; 
+import "./css/Connection.css"; 
 
 
 export default function ConnectionForm() {

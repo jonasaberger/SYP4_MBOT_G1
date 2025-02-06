@@ -2,12 +2,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #016E8F;
+  background-color: #005974;
   padding: 20px;
-  border-radius: 10px;
-  height: 100em;
 }
-
 
 .title {
   font-size: 2rem;
@@ -32,21 +29,16 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background 0.3s;
-}
-
-.manual {
   background-color: red;
   color: white;
 }
 
-.automatic {
+.mode-buttons button.active{
   background-color: green;
-  color: white;
 }
 
-.map {
+.mode-buttons button.inactive{
   background-color: red;
-  color: white;
 }
 
 .active {
@@ -54,17 +46,21 @@
 }
 
 .control-section {
-  background-color: #016E8F;
+  background-color: #005974;
   padding: 20px;
   border-radius: 10px;
   border-color: rgb(0, 0, 0);
   border-width: 10px;
   display: flex;
   justify-content: center;
-  align-items: center;
-  width: 80%;
-  min-height: 300px;
+  width: 90%;
+  min-height: 100%;
 }
+
 body{
     height: 100%;
+}
+
+body, html {
+  overflow: hidden;
 }

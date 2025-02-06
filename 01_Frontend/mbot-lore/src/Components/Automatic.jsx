@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import "./css/Automatic_Drive.css";
-import InfoPanel from "./InfoPenal";
+import "./css/Automatic.css";
+import InfoPanel from "./InfoPanel";
 
 
 const ControlPanel = () => {
@@ -46,7 +46,7 @@ const ControlPanel = () => {
             <option value="route2">Route 2</option>
             <option value="route3">Route 3</option>
           </select>
-          <button className="control-button" onClick={handleDriveStop}>
+          <button className="control-button drive" onClick={handleDriveStop}>
             {isDriving ? "Stop" : "Drive"}
           </button>
         </div>
@@ -87,14 +87,12 @@ const ControlPanel = () => {
           "Robot Placeholder"
         )}
       </div>
-
       {/* Einblenden-Button, wenn die Infobox eingeklappt ist */}
       {isCollapsed && (
         <button className="reveal-info-button" onClick={toggleCollapse}>
          ◁
         </button>
       )}
-
       {/* InfoPanel */}
       <InfoPanel
         distance={distance}
