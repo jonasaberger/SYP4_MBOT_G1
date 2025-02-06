@@ -26,11 +26,15 @@ def network_module():
             cyberpi.console.clear()
             cyberpi.led.on(0, 255, 0)
             cyberpi.console.println("Network Configured")
+            cyberpi.console.println("--------------")
+            cyberpi.console.println("")
             break
         
     # Assign socket address
     sockaddr = cyberpi.network.get_ip()
-    cyberpi.console.println("IP Address: " + sockaddr)
+    cyberpi.console.println("My IP Address: " + sockaddr)
+    cyberpi.console.println("--------------")
+    cyberpi.console.println("Waiting for Host")
  
     socket = usocket.socket(usocket.AF_INET, usocket.SOCK_DGRAM)
     socket.bind((sockaddr, 6666))
@@ -116,15 +120,20 @@ connection_count = 0
 
 # Main Loop
 while True:
+    
     # Receive the command and address
     command, adr = socket.recvfrom(1024)
     txt = str(command, "utf-8")  # Convert the byte command to string
     
+    
+    
     # General Methods
     if txt.startswith("connect"):
+        if connection_count == 0:
+            cyberpi.console.clear()
         connection_count += 1
         host_ip = txt.split(":")[1]
-        cyberpi.console.println("Connection : " + str(connection_count))
+        cyberpi.console.println("Connection " + str(connection_count))
         cyberpi.console.println(host_ip)
         
     elif txt.startswith("color:"):
