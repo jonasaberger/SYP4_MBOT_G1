@@ -1,116 +1,92 @@
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Main_control from '../Components/Main_Control';
 
-const apiBaseURL = 'http://localhost:8080';
+const apiBaseURL = 'http://10.10.0.103:8080';
 
-const MBOTControl = () => {
-  const [message, setMessage] = useState('');
-  const [sensorData, setSensorData] = useState(null);
-  const [commandParams, setCommandParams] = useState({
-    mode: Main_control.getMode(),
-    drive: '',
-    ip: '',
-    color: '',
-    speed: ''
-  });
-
-  useEffect(() => {
-    axios.get(`${apiBaseURL}/status`)
-      .then(response => setMessage(response.data.message))
-      .catch(error => setMessage('Fehler beim Laden der API'));
-  }, []);
-
-  const sendCommand = (commandParams) => {
-    axios.post(`${apiBaseURL}/send_command`, commandParams)
-      .then(response => {
-        console.log('Antwort vom MBOT:', response.data);
-        setMessage(response.data.status || 'Befehl gesendet!');
-      })
-      .catch(error => {
-        console.error('Fehler beim Senden des Befehls:', error);
-        setMessage('Fehler beim Senden des Befehls');
-      });
-  };
-
-  const sendFetchCommand = (commandParams) => {
-    fetch(`${apiBaseURL}/send_command`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(commandParams),
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Antwort vom MBOT (Fetch):', data);
-      setMessage(data.status || 'Befehl gesendet!');
-    })
-    .catch(error => {
-      console.error('Fehler:', error);
-      setMessage('Fehler beim Senden des Befehls');
+/**
+ * Sendet nur die IP-Adresse mit "mode: discovery"
+ */
+export const sendIPCommand = async (ipTarget) => {
+  try {
+    const response = await axios.post(`${apiBaseURL}/receive_commands`, {
+      'ip-target': ipTarget
     });
-  };
-
-  const fetchSensorData = () => {
-    axios.get(`${apiBaseURL}/get_status`)
-      .then(response => {
-        console.log('Sensor Daten:', response.status);
-        setSensorData(response.status);
-      })
-      .catch(error => {
-        console.error('Fehler beim Abrufen der Sensordaten:', error);
-        setMessage('Fehler beim Abrufen der Sensordaten');
-      });
-  };
-
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setCommandParams(prevState => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const sendAllCommands = () => {
-    sendCommand(commandParams);
-  };
-
-  const sendSingleCommand = (field) => {
-    const singleCommand = { [field]: commandParams[field] };
-    sendCommand(singleCommand);
-  };
-
-  return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold text-gray-800">MBOT Steuerung</h1>
-      <p className="mt-4 p-4 bg-white shadow-md rounded-lg">{message}</p>
-      
-      <div className="mt-4">
-        <label>Mode:</label>
-        <input type="text" name="mode" value={commandParams.mode} onChange={handleInputChange} />
-        <label>Drive:</label>
-        <input type="text" name="drive" value={commandParams.drive} onChange={handleInputChange} />
-        <label>IP:</label>
-        <input type="text" name="ip" value={commandParams.ip} onChange={handleInputChange} />
-        <label>Color:</label>
-        <input type="text" name="color" value={commandParams.color} onChange={handleInputChange} />
-        <label>Speed:</label>
-        <input type="text" name="speed" value={commandParams.speed} onChange={handleInputChange} />
-      </div>
-
-      <button onClick={sendAllCommands}>Send All Commands</button>
-      <button onClick={() => sendSingleCommand('drive')}>Send Drive Command</button>
-      <button onClick={fetchSensorData}>Fetch Sensor Data</button>
-
-      {sensorData && (
-        <div className="mt-4 p-4 bg-white shadow-md rounded-lg">
-          <h2 className="text-2xl font-bold text-gray-800">Sensor Data</h2>
-          <pre>{JSON.stringify(sensorData, null, 2)}</pre>
-        </div>
-      )}
-    </div>
-  );
+    console.log('Antwort vom MBOT:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Fehler beim Senden der IP:', error);
+    throw new Error('Fehler beim Senden der IP-Adresse');
+  }
 };
 
-export default MBOTControl;
+/**
+ * Sendet alle aktuellen Steuerbefehle zusammen
+ */
+export const sendAllCommands = async ({ drive, ipSource, ipTarget, color, speed }) => {
+  validateInputs(drive, color, speed);
+  
+  try {
+    const response = await axios.post(`${apiBaseURL}/receive_commands`, {
+      mode: 'control',
+      drive,
+      'ip-source': ipSource,
+      'ip-target': ipTarget,
+      color,
+      speed: speed.toString() // API erwartet String
+    });
+    console.log('Gesamter Befehl gesendet:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Fehler beim Senden des Befehls:', error);
+    throw new Error('Fehler beim Senden des Befehls');
+  }
+};
+
+/**
+ * Sendet nur einen einzelnen Befehl (z. B. nur "drive" oder nur "speed")
+ */
+export const sendSingleCommand = async (field, value, ipSource, ipTarget) => {
+  if (!ipTarget) throw new Error('IP-Adresse erforderlich!');
+
+  const command = { mode: 'control', 'ip-source': ipSource, 'ip-target': ipTarget, [field]: value };
+
+  try {
+    const response = await axios.post(`${apiBaseURL}/send_commands`, command);
+    console.log(`Einzelner Befehl gesendet: ${field} = ${value}`, response.data);
+    return response.data;
+  } catch (error) {
+    console.error(`Fehler beim Senden von ${field}:`, error);
+    throw new Error(`Fehler beim Senden von ${field}`);
+  }
+};
+
+/**
+ * Validiert Fahrmodus, Farbe und Geschwindigkeit
+ */
+const validateInputs = (drive, color, speed) => {
+  const validDrives = ['Forward', 'Backward', 'Right', 'Left', 'Stop', 'Exit'];
+  if (!validDrives.includes(drive)) {
+    throw new Error(`Ungültiger Fahrbefehl! Erlaubt: ${validDrives.join(', ')}`);
+  }
+
+  if (!/^(?:\d{1,3},\d{1,3},\d{1,3}|null)$/.test(color)) {
+    throw new Error('Ungültiges Farbformat! Erwartet: "255,255,255" oder "null"');
+  }
+
+  if (isNaN(speed) || speed < 0 || speed > 100) {
+    throw new Error('Ungültige Geschwindigkeit! Erwartet: Wert zwischen 0 und 100');
+  }
+};
+
+/**
+ * Holt die aktuellen Sensordaten
+ */
+export const fetchSensorData = async () => {
+  try {
+    const response = await axios.get(`${apiBaseURL}/get_status`);
+    console.log('Sensor Daten:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Fehler beim Abrufen der Sensordaten:', error);
+    throw new Error('Fehler beim Abrufen der Sensordaten');
+  }
+};

@@ -1,69 +1,129 @@
-import { useState } from "react";
-import { fetchDataFromAPI } from "../API_Service/service"; 
-import "./css/Connection_UI.css"; 
+import React, { useState, useEffect } from 'react';
+import { sendIPCommand } from '../API_Service/service';
+import Papa from 'papaparse';
+import './Connection_UI.css';
 
+const isValidIPv4 = (ip) => {
+  const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)$/;
+  return ipv4Regex.test(ip);
+};
 
-export default function ConnectionForm() {
-  const [ip, setIp] = useState("");
-  const [mbotName, setMbotName] = useState("");
-  const [error, setError] = useState(null); // Fehlerstatus
-  const [loading, setLoading] = useState(false); // Ladezustand
-  const [success, setSuccess] = useState(null); // Erfolgsmeldung
+const ConnectionComponent = () => {
+  const [ip, setIp] = useState('');
+  const [name, setName] = useState('');
+  const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [sessions, setSessions] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [ipError, setIpError] = useState('');
 
-  // Funktion für den Verbindungsaufbau
-  const handleConnect = async () => {
-    setLoading(true); // Ladezustand aktivieren
-    setError(null); // Fehler zurücksetzen
-    setSuccess(null); // Erfolg zurücksetzen
-    
+  useEffect(() => {
+    loadSessions();
+  }, []);
+
+  // Sessions aus der CSV-Datei laden
+  const loadSessions = async () => {
     try {
-      // API-Aufruf, um die Verbindung zu starten
-      const response = await fetchDataFromAPI('/connect', 'POST', { ip, mbotName });
-      setSuccess('Connection successful!'); // Erfolgsmeldung setzen
-      console.log(response); // Ausgabe der Antwort der API
+      const response = await fetch('/api/sessions'); // API-Anfrage zum Laden der CSV-Daten
+      const csvData = await response.text();
+      const parsedData = Papa.parse(csvData, { header: true }).data;
+      setSessions(parsedData.slice(0, 3)); // Nur die letzten 3 Sessions anzeigen
     } catch (err) {
-      setError('Connection failed: ' + err.message); // Fehler setzen
-    } finally {
-      setLoading(false); // Ladezustand deaktivieren
+      console.error('Fehler beim Laden der Sessions:', err);
     }
   };
 
-  // Funktion zum Wiederherstellen der Sitzung
-  const handleRestoreSession = () => {
-    console.log("Restoring session...");
+  // Neue Session in der CSV-Datei speichern
+  const saveSession = async (newSession) => {
+    try {
+      const updatedSessions = [newSession, ...sessions].slice(0, 3);
+      setSessions(updatedSessions);
+
+      // Senden der aktualisierten Sessions an das Backend
+      const csv = Papa.unparse(updatedSessions);
+      await fetch('/api/save-sessions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ csv }),
+      });
+    } catch (err) {
+      console.error('Fehler beim Speichern der Session:', err);
+    }
+  };
+
+  // Verbindungsversuch
+  const handleConnect = async () => {
+    if (!isValidIPv4(ip)) {
+      setIpError('Ungültige IP-Adresse!');
+      return;
+    }
+
+    setLoading(true);
+    setSuccess('');
+    setError('');
+    setIpError('');
+
+    try {
+      await sendIPCommand(ip);
+      setSuccess('Verbindung erfolgreich!');
+
+      const newSession = { ip, name };
+      saveSession(newSession);
+    } catch (err) {
+      setError('Verbindung fehlgeschlagen: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Wiederherstellen einer Session
+  const handleRestoreSession = (session) => {
+    setIp(session.ip);
+    setName(session.name);
+    handleConnect();
+  };
+
+  const handleIpChange = (e) => {
+    const newIp = e.target.value;
+    setIp(newIp);
+    setIpError(isValidIPv4(newIp) ? '' : 'Ungültige IP-Adresse!');
   };
 
   return (
     <div className="container">
       <div className="connection-box">
-        <h1 className="title">Connection</h1>
+        <h1 className="title">MBOT Verbindung</h1>
         <div className="form">
           <label>IP:</label>
-          <input
-            type="text"
-            value={ip}
-            onChange={(e) => setIp(e.target.value)}  // IP wird gesetzt
-          />
-
-          <label>Mbot Name:</label>
-          <input
-            type="text"
-            value={mbotName}
-            onChange={(e) => setMbotName(e.target.value)}  // Mbot Name wird gesetzt
-          />
-
-          <button className="connect-btn" onClick={handleConnect} disabled={loading}>
+          <input type="text" value={ip} onChange={handleIpChange} />
+          {ipError && <p className="error">{ipError}</p>}
+          <label>Name:</label>
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+          <button className='connect-btn' onClick={handleConnect} disabled={loading || ipError}>
             {loading ? 'Connecting...' : 'Connect'}
           </button>
-
-          {success && <div className="success-message">{success}</div>}
-          {error && <div className="error-message">{error}</div>}
-
-          <button className="restore-btn" onClick={handleRestoreSession}>
-            Restore Session
-          </button>
+          
+          {/* Restore Session */}
+          <button className='restore-btn' onClick={() => setShowDropdown(!showDropdown)}>Restore Session</button>
+          {showDropdown && (
+            <div className="dropdown">
+              {sessions.map((session, index) => (
+                <div key={index} onClick={() => handleRestoreSession(session)}>
+                  <span className="session-name">{session.name}</span>
+                  <span className="session-ip">({session.ip})</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
+        {success && <p className="success">{success}</p>}
+        {error && <p className="error">{error}</p>}
       </div>
     </div>
   );
-}
+};
+
+export default ConnectionComponent;
