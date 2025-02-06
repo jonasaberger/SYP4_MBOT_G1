@@ -1,0 +1,66 @@
+.main-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #005974;
+  padding: 20px;
+}
+
+.title {
+  font-size: 2rem;
+  color: black;
+  background-color: #f3e5ab;
+  padding: 10px 20px;
+  border-radius: 5px;
+  padding-left: 35%;
+  padding-right: 35%;
+}
+
+.mode-buttons {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.mode-buttons button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+  background-color: red;
+  color: white;
+}
+
+.mode-buttons button.active{
+  background-color: green;
+}
+
+.mode-buttons button.inactive{
+  background-color: red;
+}
+
+.active {
+  box-shadow: 0 0 10px white;
+}
+
+.control-section {
+  background-color: #005974;
+  padding: 20px;
+  border-radius: 10px;
+  border-color: rgb(0, 0, 0);
+  border-width: 10px;
+  display: flex;
+  justify-content: center;
+  width: 90%;
+  min-height: 100%;
+}
+
+body{
+    height: 100%;
+}
+
+body, html {
+  overflow: hidden;
+}
