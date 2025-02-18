@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./css/Manual.css";
 import InfoPanel from "./InfoPanel";
 import { useEffect } from "react";
+import { Joystick } from "react-joystick-component";
 
 
 const ControlPanel = () => {
@@ -11,6 +12,7 @@ const ControlPanel = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDriving, setIsDriving] = useState(false); // Zustand für Drive/Stop Button
   const [route, setRoute] = useState("");
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   const handleMove = (dir) => {
     setDirection(dir);
@@ -30,6 +32,9 @@ const ControlPanel = () => {
 
   useEffect(() => {
     updateSliderBackground(value);
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [value]);
 
   const updateSliderBackground = (val) => {
@@ -46,6 +51,12 @@ const ControlPanel = () => {
 
   const toggleSwitch = () => {
     setIsOn(!isOn);
+  };
+
+  const handleJoystickMove = (event) => {
+    if (event.direction) {
+      handleMove(event.direction);
+    }
   };
 
   return (
@@ -76,34 +87,31 @@ const ControlPanel = () => {
                 <button type="button" className="led-color-button"></button>
             </div>
         </div>
-        <div className="direction-button-up">
-            <button
-                className={`control-button up ${direction === "up" ? "active" : ""}`}
-                onClick={() => handleMove("up")}
-                >
-                ↑
-            </button>
+        {isMobile ? (
+        <div className="joystick-container">
+          <Joystick size={100} baseColor="#ddd" stickColor="#016E8F" move={handleJoystickMove} />
         </div>
-        <div className="direction-buttons">
-            <button
-                className={`control-button left ${direction === "left" ? "active" : ""}`}
-                onClick={() => handleMove("left")}
-                >
-                ←
+      ) : (
+        <div className="direction-buttons-container">
+          <div className="direction-button-up">
+            <button className={`control-button up ${direction === "up" ? "active" : ""}`} onClick={() => handleMove("up")}>
+              ↑
             </button>
-            <button
-                className={`control-button down ${direction === "down" ? "active" : ""}`}
-                onClick={() => handleMove("down")}
-                >
-                ↓
+          </div>
+          <div className="direction-buttons">
+            <button className={`control-button left ${direction === "left" ? "active" : ""}`} onClick={() => handleMove("left")}>
+              ←
             </button>
-            <button
-                className={`control-button right ${direction === "right" ? "active" : ""}`}
-                onClick={() => handleMove("right")}
-                >
-                →
+            <button className={`control-button down ${direction === "down" ? "active" : ""}`} onClick={() => handleMove("down")}>
+              ↓
             </button>
+            <button className={`control-button right ${direction === "right" ? "active" : ""}`} onClick={() => handleMove("right")}>
+              →
+            </button>
+          </div>
         </div>
+      )}
+        
       </div>
 
       <div className="robot-placeholder">

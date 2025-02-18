@@ -121,48 +121,7 @@
 .info-panel p {
   margin: 5px 0;
 }
-/* Einklappbare Infobox auf der rechten Seite */
-.info-panel {
-  position: absolute;
-  right: 10px;
-  top: 10%;
-  background-color: rgba(51, 51, 51, 0.8);
-  color: white;
-  padding: 15px;
-  border-radius: 8px;
-  width: 200px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  z-index: 10;
-}
 
-/* Style, wenn die Infobox eingeklappt ist */
-.info-panel.collapsed {
-  transform: translateX(100%);
-  opacity: 0;
-}
-
-/* Button zum Einklappen */
-.toggle-button {
-  padding: 5px;
-  background-color: #d9534f;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  margin-bottom: 10px;
-  font-size: 20px;
-}
-
-/* Pfeil-Toggle-Button im ausgeklappten Zustand */
-.toggle-button:hover {
-  background-color: #e74c3c;
-}
-
-.info-panel p {
-  margin: 5px 0;
-}
-/* Button zum Einblenden der Infobox */
 .reveal-info-button {
   padding: 10px 20px;
   background-color: #d9534f;
@@ -256,4 +215,62 @@
   width: 25px;
   height: 25px;
   border-width: 0;
+}
+
+/* Mobile Anpassungen */
+@media (max-width: 768px) {
+  .control-panel {
+    width: 100%;
+    height: auto;
+    padding: 20px;
+  }
+
+  .manual-controls {
+    position: relative;
+    top: auto;
+    left: auto;
+    flex-direction: column;
+  }
+
+  .control-buttons {
+    flex-direction: column;
+  }
+
+  .direction-button-up,
+  .direction-buttons {
+    flex-direction: column;
+  }
+
+  .robot-placeholder {
+    width: 80%;
+    height: auto;
+    margin-top: 10px;
+  }
+
+  .info-panel {
+    position: relative;
+    width: 100%;
+    height: auto;
+    box-shadow: none;
+    padding: 10px;
+    top: 0;
+    right: 0;
+  }
+
+  .reveal-info-button {
+    position: relative;
+    top: auto;
+    right: auto;
+    transform: translateX(0);
+  }
+
+  .led-container {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+
+  .toggle-switch {
+    margin-right: 0;
+  }
 }

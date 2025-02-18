@@ -1,61 +1,64 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // useNavigate importieren
+import { useNavigate } from 'react-router-dom';
 import { sendIPCommand } from '../API_Service/service';
-import Papa from 'papaparse';
-import './Connection_UI.css';
-
-const isValidIPv4 = (ip) => {
-  const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)$/;
-  return ipv4Regex.test(ip);
-};
+import './css/Connection.css';
 
 const ConnectionComponent = () => {
   const [ip, setIp] = useState('');
   const [name, setName] = useState('');
+  const [sourceIp, setSourceIp] = useState('');
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [ipError, setIpError] = useState('');
   const [sessions, setSessions] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [ipError, setIpError] = useState('');
-  const navigate = useNavigate(); // useNavigate initialisieren
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const fetchSourceIp = async () => {
+      try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        setSourceIp(data.ip);
+      } catch (error) {
+        console.error('Fehler beim Ermitteln der eigenen IP-Adresse:', error);
+      }
+    };
+    fetchSourceIp();
+  }, []);
+
+  useEffect(() => {
+    const loadSessions = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/sessions');
+
+        if (!response.ok) throw new Error("Fehler beim Laden der Sessions");
+
+        const result = await response.json();
+        console.log('Geladene Sessions:', result.sessions);
+
+        if (Array.isArray(result.sessions)) {
+          setSessions(result.sessions);
+        } else if (result.sessions && Array.isArray(result.sessions.sessions)) {
+          setSessions(result.sessions.sessions);
+        } else {
+          console.error('Fehler: Unerwartetes JSON-Format', result);
+          setSessions([]);
+        }
+      } catch (err) {
+        console.error('Fehler beim Laden der Sessions:', err);
+        setSessions([]);
+      }
+    };
     loadSessions();
   }, []);
 
-  const loadSessions = async () => {
-    try {
-      const response = await fetch('/api/sessions'); // API-Anfrage zum Laden der CSV-Daten
-      const csvData = await response.text();
-      const parsedData = Papa.parse(csvData, { header: true }).data;
-      setSessions(parsedData.slice(0, 3)); // Nur die letzten 3 Sessions anzeigen
-    } catch (err) {
-      console.error('Fehler beim Laden der Sessions:', err);
-    }
+  const isValidIPv4 = (ip) => {
+    const regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    return regex.test(ip);
   };
 
-  // Neue Session in der CSV-Datei speichern
-  const saveSession = async (newSession) => {
-    try {
-      const updatedSessions = [newSession, ...sessions].slice(0, 3);
-      setSessions(updatedSessions);
-
-      // Senden der aktualisierten Sessions an das Backend
-      const csv = Papa.unparse(updatedSessions);
-      await fetch('/api/save-sessions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ csv }),
-      });
-    } catch (err) {
-      console.error('Fehler beim Speichern der Session:', err);
-    }
-  };
-
-  // Verbindungsversuch
   const handleConnect = async () => {
     if (!isValidIPv4(ip)) {
       setIpError('Ungültige IP-Adresse!');
@@ -68,14 +71,18 @@ const ConnectionComponent = () => {
     setIpError('');
 
     try {
-      await sendIPCommand(ip);
+      await sendIPCommand(sourceIp, ip);
       setSuccess('Verbindung erfolgreich!');
 
       const newSession = { ip, name };
-      saveSession(newSession);
+      const updatedSessions = [newSession, ...sessions].slice(0, 5);
+      setSessions(updatedSessions);
 
-      // Weiterleitung nach erfolgreicher Verbindung
-      navigate('/control'); // Weiterleitung zur gewünschten Seite (z.B. '/nextpage')
+      await fetch('http://localhost:3001/api/save-sessions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessions: updatedSessions }),
+      });
     } catch (err) {
       setError('Verbindung fehlgeschlagen: ' + err.message);
     } finally {
@@ -83,48 +90,55 @@ const ConnectionComponent = () => {
     }
   };
 
-  // Wiederherstellen einer Session
   const handleRestoreSession = (session) => {
+    console.log("Ausgewählte Session:", session);
     setIp(session.ip);
     setName(session.name);
     handleConnect();
   };
 
-  const handleIpChange = (e) => {
-    const newIp = e.target.value;
-    setIp(newIp);
-    setIpError(isValidIPv4(newIp) ? '' : 'Ungültige IP-Adresse!');
-  };
-
   return (
     <div className="container">
       <div className="connection-box">
-        <h1 className="title">MBOT Verbindung</h1>
+        <h1 className="title">Connection</h1>
         <div className="form">
           <label>IP:</label>
-          <input type="text" value={ip} onChange={handleIpChange} />
-          {ipError && <p className="error">{ipError}</p>}
+          <input
+            type="text"
+            value={ip}
+            onChange={(e) => setIp(e.target.value)}
+          />
           <label>Name:</label>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
-          <button className='connect-btn' onClick={handleConnect} disabled={loading || ipError}>
-            {loading ? 'Connecting...' : 'Connect'}
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <button className='connect-btn' onClick={handleConnect} disabled={loading}>
+            Connect
           </button>
-          
-          {/* Restore Session */}
-          <button className='restore-btn' onClick={() => setShowDropdown(!showDropdown)}>Restore Session</button>
+          <button className='restore-btn' onClick={() => setShowDropdown(!showDropdown)}>
+            Restore Session
+          </button>
           {showDropdown && (
             <div className="dropdown">
-              {sessions.map((session, index) => (
-                <div key={index} onClick={() => handleRestoreSession(session)}>
-                  <span className="session-name">{session.name}</span>
-                  <span className="session-ip">({session.ip})</span>
+              {sessions.length > 0 ? (
+                <div className="session-buttons">
+                  {sessions.map((session, index) => (
+                    <button key={index} className="session-btn" onClick={() => handleRestoreSession(session)}>
+                      {session.name || "Unbekannt"} ({session.ip})
+                    </button>
+                  ))}
                 </div>
-              ))}
+              ) : (
+                <p className="no-sessions">Keine gespeicherten Sessions vorhanden.</p>
+              )}
             </div>
           )}
         </div>
         {success && <p className="success">{success}</p>}
         {error && <p className="error">{error}</p>}
+        {ipError && <p className="error">{ipError}</p>}
       </div>
     </div>
   );
