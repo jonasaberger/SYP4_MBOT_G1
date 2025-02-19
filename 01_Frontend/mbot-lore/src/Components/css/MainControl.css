@@ -14,6 +14,7 @@
   border-radius: 5px;
   padding-left: 35%;
   padding-right: 35%;
+  font-weight: bold;
 }
 
 .mode-buttons {
@@ -29,16 +30,18 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background 0.3s;
-  background-color: red;
-  color: white;
+  background-color: gray;
+  color: black;
+  font-weight: bold;
+  width: 10em;
 }
 
 .mode-buttons button.active{
-  background-color: green;
+  background-color: white;
 }
 
 .mode-buttons button.inactive{
-  background-color: red;
+  background-color: gray;
 }
 
 .active {
