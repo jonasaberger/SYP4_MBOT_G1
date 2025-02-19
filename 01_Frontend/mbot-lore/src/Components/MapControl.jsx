@@ -27,16 +27,6 @@ const ControlPanel = () => {
     setIsDriving((prev) => !prev); // Toggle zwischen Drive und Stop
   };
 
-  useEffect(() => {
-    updateSliderBackground(value);
-  }, [value]);
-
-  const updateSliderBackground = (val) => {
-    const slider = document.getElementById("slider");
-    const percentage = ((val - slider.min) / (slider.max - slider.min)) * 100;
-    slider.style.background = `linear-gradient(to right, #016E8F ${percentage}%, #ddd ${percentage}%)`;
-  };
-
   const handleChange = (e) => {
     setValue(e.target.value);
   };
@@ -51,17 +41,6 @@ const ControlPanel = () => {
         <button className="start-stop-button" onClick={handleStartStop}>
           {isDriving ? "Stop" : "Drive"}
         </button>
-        <div className="speed-slider-container">
-          <input
-            className="speed-slider"
-            id="slider"
-            type="range"
-            min="1"
-            max="100"
-            value={value}
-            onChange={handleChange}
-          />
-        </div>
         <div className="led-container">
           <span className="led-label">LED</span>
           <div className={`toggle-switch ${isOn ? "on" : "off"}`} onClick={toggleSwitch}>

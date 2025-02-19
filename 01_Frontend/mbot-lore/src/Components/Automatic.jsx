@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./css/Automatic.css";
+import "./css/sharedStyles.css";
 import InfoPanel from "./InfoPanel";
-
 
 const ControlPanel = () => {
   const [direction, setDirection] = useState(null);
@@ -35,9 +35,9 @@ const ControlPanel = () => {
 
   return (
     <div className="control-panel">
-      <div className="manual-controls">
+      <div className="left-container">
         <div className="control-buttons">
-          <button className="control-button" onClick={handleDefineRoute}>
+          <button className="define-route-button" onClick={handleDefineRoute}>
             Define Route
           </button>
           <select className="route-select" value={route} onChange={handleRouteChange}>
@@ -46,37 +46,39 @@ const ControlPanel = () => {
             <option value="route2">Route 2</option>
             <option value="route3">Route 3</option>
           </select>
-          <button className="control-button drive" onClick={handleDriveStop}>
+          <button className="start-stop-button" onClick={handleDriveStop}>
             {isDriving ? "Stop" : "Drive"}
           </button>
         </div>
-        <div className="direction-buttons-up">
-          <button
-            className={`control-button up ${direction === "up" ? "active" : ""}`}
-            onClick={() => handleMove("up")}
-          >
-            ↑
-          </button>
-        </div>
-        <div className="direction-buttons">
-          <button
-            className={`control-button left ${direction === "left" ? "active" : ""}`}
-            onClick={() => handleMove("left")}
-          >
-            ←
-          </button>
-          <button
-            className={`control-button down ${direction === "down" ? "active" : ""}`}
-            onClick={() => handleMove("down")}
-          >
-            ↓
-          </button>
-          <button
-            className={`control-button right ${direction === "right" ? "active" : ""}`}
-            onClick={() => handleMove("right")}
-          >
-            →
-          </button>
+        <div className="direction-buttons-container">
+          <div className="direction-button-up">
+            <button
+              className={`start-stop-button up ${direction === "up" ? "active" : ""}`}
+              onClick={() => handleMove("up")}
+            >
+              ↑
+            </button>
+          </div>
+          <div className="direction-buttons">
+            <button
+              className={`start-stop-button left ${direction === "left" ? "active" : ""}`}
+              onClick={() => handleMove("left")}
+            >
+              ←
+            </button>
+            <button
+              className={`start-stop-button down ${direction === "down" ? "active" : ""}`}
+              onClick={() => handleMove("down")}
+            >
+              ↓
+            </button>
+            <button
+              className={`start-stop-button right ${direction === "right" ? "active" : ""}`}
+              onClick={() => handleMove("right")}
+            >
+              →
+            </button>
+          </div>
         </div>
       </div>
 
@@ -90,7 +92,7 @@ const ControlPanel = () => {
       {/* Einblenden-Button, wenn die Infobox eingeklappt ist */}
       {isCollapsed && (
         <button className="reveal-info-button" onClick={toggleCollapse}>
-         ◁
+          ◁
         </button>
       )}
       {/* InfoPanel */}

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-//import ManualControl from "./ControlPanel";
 import AutomaticControl from "./Automatic";
 import ManualControl from "./Manual";
+import MapControl from "./MapControl";
 import "./css/MainControl.css";
 
 const MainControl = () => {
@@ -17,7 +17,7 @@ const MainControl = () => {
         return <ManualControl/>;
        break;
       case "map":
-        //return <MapView />;
+        return <MapControl />;
         break;
       case "automatic":
       default:

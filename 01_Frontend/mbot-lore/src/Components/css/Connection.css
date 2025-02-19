@@ -4,14 +4,14 @@
 
 /* Titel-Styling */
 .title {
-  font-family: 'Kaushan Script', cursive;
   background-color: #F7E6B1; 
   color: #2c2f3f;
   font-size: 3rem;
-  font-weight: bold;
   padding: 20px;
   text-transform: none; /* Keine Großbuchstaben, damit es besser aussieht */
   letter-spacing: 1px;
+  font-weight: bold;
+  align-items: center;
 }
 
 /* Mobile Optimierung */
