@@ -89,7 +89,7 @@ const ControlPanel = () => {
         </div>
         {isMobile ? (
         <div className="joystick-container">
-          <Joystick size={100} baseColor="#ddd" stickColor="#016E8F" move={handleJoystickMove} />
+          <Joystick size={50} baseColor="#ddd" stickColor="#016E8F" move={handleJoystickMove} />
         </div>
       ) : (
         <div className="direction-buttons-container">

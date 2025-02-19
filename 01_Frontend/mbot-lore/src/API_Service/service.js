@@ -2,8 +2,8 @@ import axios from 'axios';
 
 const apiBaseURL = 'http://10.10.0.103:8080';
 
-/**
- * Sendet nur die IP-Adresse mit "mode: discovery"
+
+ /* Sendet nur die IP-Adresse mit "mode: discovery"
  */
 export const sendIPCommand = async (ipTarget) => {
   try {
@@ -18,8 +18,8 @@ export const sendIPCommand = async (ipTarget) => {
   }
 };
 
-/**
- * Sendet alle aktuellen Steuerbefehle zusammen
+
+ /* Sendet alle aktuellen Steuerbefehle zusammen
  */
 export const sendAllCommands = async ({ drive, ipSource, ipTarget, color, speed }) => {
   validateInputs(drive, color, speed);
@@ -41,8 +41,8 @@ export const sendAllCommands = async ({ drive, ipSource, ipTarget, color, speed 
   }
 };
 
-/**
- * Sendet nur einen einzelnen Befehl (z. B. nur "drive" oder nur "speed")
+
+ /* Sendet nur einen einzelnen Befehl (z. B. nur "drive" oder nur "speed")
  */
 export const sendSingleCommand = async (field, value, ipSource, ipTarget) => {
   if (!ipTarget) throw new Error('IP-Adresse erforderlich!');
@@ -59,8 +59,8 @@ export const sendSingleCommand = async (field, value, ipSource, ipTarget) => {
   }
 };
 
-/**
- * Validiert Fahrmodus, Farbe und Geschwindigkeit
+/*
+  Validiert Fahrmodus, Farbe und Geschwindigkeit
  */
 const validateInputs = (drive, color, speed) => {
   const validDrives = ['Forward', 'Backward', 'Right', 'Left', 'Stop', 'Exit'];
@@ -77,8 +77,8 @@ const validateInputs = (drive, color, speed) => {
   }
 };
 
-/**
- * Holt die aktuellen Sensordaten
+/*
+  Holt die aktuellen Sensordaten
  */
 export const fetchSensorData = async () => {
   try {
