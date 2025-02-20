@@ -104,7 +104,7 @@
 .color-submit-button {
   margin-top: 10px;
   padding: 10px 20px;
-  background-color: #4caf50;
+  background-color: #000000;
   color: white;
   border: none;
   border-radius: 5px;
@@ -125,7 +125,7 @@
   height: 30px;
   border-radius: 50%;
   cursor: pointer;
-  border: 2px solid #fff;
+  border: 2px solid #3a3737;
 }
 
 .led-color-picker {
@@ -139,17 +139,3 @@
   z-index: 1000;
 }
 
-.color-submit-button {
-  margin-top: 10px;
-  padding: 10px 20px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.color-submit-button:hover {
-  background-color: #45a049;
-}
