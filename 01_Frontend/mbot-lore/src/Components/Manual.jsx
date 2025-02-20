@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from "react";
+import { SketchPicker } from "react-color";
 import "./css/Manual.css";
 import "./css/sharedStyles.css";
 import InfoPanel from "./InfoPanel";
+import "./LED_Color";
 
 const ControlPanel = () => {
   const [direction, setDirection] = useState(null);
   const [distance, setDistance] = useState(0);
   const [runtime, setRuntime] = useState(0);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isDriving, setIsDriving] = useState(false); // Zustand für Drive/Stop Button
-  const [route, setRoute] = useState("");
+  const [isDriving, setIsDriving] = useState(false);
   const [value, setValue] = useState(50);
   const [isOn, setIsOn] = useState(false);
+  const [ledColor, setLedColor] = useState("#ffffff");
+  const [ledColorString, setLedColorString] = useState("255,255,255");
+  const [showColorPicker, setShowColorPicker] = useState(false);
 
   const handleMove = (dir) => {
     setDirection(dir);
@@ -24,7 +28,7 @@ const ControlPanel = () => {
   };
 
   const handleStartStop = () => {
-    setIsDriving((prev) => !prev); // Toggle zwischen Drive und Stop
+    setIsDriving((prev) => !prev);
   };
 
   useEffect(() => {
@@ -33,8 +37,10 @@ const ControlPanel = () => {
 
   const updateSliderBackground = (val) => {
     const slider = document.getElementById("slider");
-    const percentage = ((val - slider.min) / (slider.max - slider.min)) * 100;
-    slider.style.background = `linear-gradient(to right, #016E8F ${percentage}%, #ddd ${percentage}%)`;
+    if (slider) {
+      const percentage = ((val - slider.min) / (slider.max - slider.min)) * 100;
+      slider.style.background = `linear-gradient(to right, #016E8F ${percentage}%, #ddd ${percentage}%)`;
+    }
   };
 
   const handleChange = (e) => {
@@ -43,6 +49,21 @@ const ControlPanel = () => {
 
   const toggleSwitch = () => {
     setIsOn(!isOn);
+  };
+
+  const handleColorChange = (color) => {
+    setLedColor(color.hex);
+    const rgb = color.rgb;
+    setLedColorString(`${rgb.r},${rgb.g},${rgb.b}`);
+  };
+
+  const handleColorSubmit = () => {
+    console.log("LED Color:", ledColorString);
+    setShowColorPicker(false);
+  };
+
+  const toggleColorPicker = () => {
+    setShowColorPicker((prev) => !prev);
   };
 
   return (
@@ -67,7 +88,19 @@ const ControlPanel = () => {
           <div className={`toggle-switch ${isOn ? "on" : "off"}`} onClick={toggleSwitch}>
             <div className="toggle-handle"></div>
           </div>
-          <div className={`led-indicator ${isOn ? "led-on" : "led-off"}`}></div>
+          <div className="led-color-picker-container">
+            <div className="led-color-picker-toggle" onClick={toggleColorPicker}>
+              <div className="led-indicator" style={{ backgroundColor: ledColor }}></div>
+            </div>
+            {showColorPicker && (
+              <div className="led-color-picker">
+                <SketchPicker color={ledColor} onChange={handleColorChange} />
+                <button className="color-submit-button" onClick={handleColorSubmit}>
+                  Set Color
+                </button>
+              </div>
+            )}
+          </div>
         </div>
         <div className="direction-button-up">
           <button
@@ -106,13 +139,11 @@ const ControlPanel = () => {
           "Robot Placeholder"
         )}
       </div>
-      {/* Einblenden-Button, wenn die Infobox eingeklappt ist */}
       {isCollapsed && (
         <button className="reveal-info-button" onClick={toggleCollapse}>
           ◁
         </button>
       )}
-      {/* InfoPanel */}
       <InfoPanel
         distance={distance}
         runtime={runtime}
