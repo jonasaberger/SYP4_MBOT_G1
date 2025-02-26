@@ -1,5 +1,3 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
 import socket
 import os
 from dotenv import load_dotenv
@@ -11,22 +9,22 @@ class MBotBridge:
         self.source_ip = None
         self.target_port = int(os.getenv('TARGET_PORT'))
 
-
     def send_message(self, message):
         if self.target_ip is None:
             print('Target IP is not configured.')
             return
 
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.sendto(message.encode(), (self.target_ip, self.target_port))
-        print(f'Sent message: {message}')
-
+        try:
+            s.sendto(message.encode(), (self.target_ip, self.target_port))
+            print(f'Sent message: {message}')
+        finally:
+            s.close()
 
     def configure_connection(self, target_ip, source_ip):
         print('Configuring connection with target IP: ', target_ip)
         self.target_ip = target_ip
         self.send_message('connect:'+source_ip)
-
 
     def receive_message(self):
         UDP_IP = "0.0.0.0"
