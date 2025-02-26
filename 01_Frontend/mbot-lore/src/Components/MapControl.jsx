@@ -13,12 +13,6 @@ const ControlPanel = () => {
   const [value, setValue] = useState(50);
   const [isOn, setIsOn] = useState(false);
 
-  const handleMove = (dir) => {
-    setDirection(dir);
-    setDistance((prev) => prev + 1);
-    setRuntime((prev) => prev + 1);
-  };
-
   const toggleCollapse = () => {
     setIsCollapsed((prev) => !prev);
   };
@@ -51,7 +45,6 @@ const ControlPanel = () => {
         <div className="direction-button-up">
           <button
             className={`start-stop-button up ${direction === "up" ? "active" : ""}`}
-            onClick={() => handleMove("up")}
           >
             ↑
           </button>
@@ -59,30 +52,27 @@ const ControlPanel = () => {
         <div className="direction-buttons">
           <button
             className={`start-stop-button left ${direction === "left" ? "active" : ""}`}
-            onClick={() => handleMove("left")}
           >
             ←
           </button>
           <button
             className={`start-stop-button down ${direction === "down" ? "active" : ""}`}
-            onClick={() => handleMove("down")}
           >
             ↓
           </button>
           <button
             className={`start-stop-button right ${direction === "right" ? "active" : ""}`}
-            onClick={() => handleMove("right")}
           >
             →
           </button>
         </div>
       </div>
 
-      <div className="robot-placeholder">
+      <div className="mbot-image-container">
         {direction ? (
-          <img src={`/images/${direction}.png`} alt={`Robot facing ${direction}`} />
+          <img src={require(`../Images/${direction}.png`)} alt={`Robot facing ${direction}`} />
         ) : (
-          "Robot Placeholder"
+          <img src={require(`../Images/up.png`)} alt={`Robot facing ${direction}`} />
         )}
       </div>
       {/* Einblenden-Button, wenn die Infobox eingeklappt ist */}

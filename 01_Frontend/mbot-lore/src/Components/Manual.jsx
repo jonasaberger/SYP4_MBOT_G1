@@ -12,11 +12,10 @@ const ControlPanel = () => {
   const [route, setRoute] = useState("");
   const [value, setValue] = useState(50);
   const [isOn, setIsOn] = useState(false);
+  const [pressedKeys, setPressedKeys] = useState(new Set());
 
   const handleMove = (dir) => {
     setDirection(dir);
-    setDistance((prev) => prev + 1);
-    setRuntime((prev) => prev + 1);
   };
 
   const toggleCollapse = () => {
@@ -45,6 +44,55 @@ const ControlPanel = () => {
     setIsOn(!isOn);
   };
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      setPressedKeys((prevKeys) => new Set(prevKeys).add(event.key));
+      switch (event.key) {
+        case "ArrowUp":
+        case "w":
+        case "W": 
+          handleMove("up");
+          break;
+        case "ArrowLeft":
+        case "a":
+        case "A":
+          handleMove("left");
+          break;
+        case "ArrowDown":
+        case "s":
+        case "S":
+          handleMove("down");
+          break;
+        case "ArrowRight":
+        case "d":
+        case "D":
+          handleMove("right");
+          break;
+        default:
+          break;
+      }
+    };
+
+    const handleKeyUp = (event) => {
+      setPressedKeys((prevKeys) => {
+        const newKeys = new Set(prevKeys);
+        newKeys.delete(event.key);
+        if (newKeys.size === 0) {
+          setDirection(null);
+        }
+        return newKeys;
+      });
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
+
   return (
     <div className="control-panel">
       <div className="left-container">
@@ -72,7 +120,6 @@ const ControlPanel = () => {
         <div className="direction-button-up">
           <button
             className={`start-stop-button up ${direction === "up" ? "active" : ""}`}
-            onClick={() => handleMove("up")}
           >
             ↑
           </button>
@@ -80,30 +127,27 @@ const ControlPanel = () => {
         <div className="direction-buttons">
           <button
             className={`start-stop-button left ${direction === "left" ? "active" : ""}`}
-            onClick={() => handleMove("left")}
           >
             ←
           </button>
           <button
             className={`start-stop-button down ${direction === "down" ? "active" : ""}`}
-            onClick={() => handleMove("down")}
           >
             ↓
           </button>
           <button
             className={`start-stop-button right ${direction === "right" ? "active" : ""}`}
-            onClick={() => handleMove("right")}
           >
             →
           </button>
         </div>
       </div>
 
-      <div className="robot-placeholder">
+      <div className="mbot-image-container">
         {direction ? (
-          <img src={`/images/${direction}.png`} alt={`Robot facing ${direction}`} />
+          <img src={require(`../Images/${direction}.png`)} alt={`Robot facing ${direction}`} />
         ) : (
-          "Robot Placeholder"
+          <img src={require(`../Images/up.png`)} alt={`Robot facing ${direction}`} />
         )}
       </div>
       {/* Einblenden-Button, wenn die Infobox eingeklappt ist */}
