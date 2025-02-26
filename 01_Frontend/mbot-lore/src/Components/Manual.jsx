@@ -16,11 +16,10 @@ const ControlPanel = () => {
   const [ledColor, setLedColor] = useState("#ffffff");
   const [ledColorString, setLedColorString] = useState("255,255,255");
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [pressedKeys, setPressedKeys] = useState(new Set());
 
   const handleMove = async (dir) => {
     setDirection(dir);
-    setDistance((prev) => prev + 1);
-    setRuntime((prev) => prev + 1);
     const commandString = `control_${dir}_${value}`;
     console.log(commandString);
     await sendCommand("drive", dir);  // Hier wird die Richtung mitgegeben (forward, backward, etc.)
@@ -83,6 +82,55 @@ const ControlPanel = () => {
     setShowColorPicker((prev) => !prev);
   };
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      setPressedKeys((prevKeys) => new Set(prevKeys).add(event.key));
+      switch (event.key) {
+        case "ArrowUp":
+        case "w":
+        case "W": 
+          handleMove("up");
+          break;
+        case "ArrowLeft":
+        case "a":
+        case "A":
+          handleMove("left");
+          break;
+        case "ArrowDown":
+        case "s":
+        case "S":
+          handleMove("down");
+          break;
+        case "ArrowRight":
+        case "d":
+        case "D":
+          handleMove("right");
+          break;
+        default:
+          break;
+      }
+    };
+
+    const handleKeyUp = (event) => {
+      setPressedKeys((prevKeys) => {
+        const newKeys = new Set(prevKeys);
+        newKeys.delete(event.key);
+        if (newKeys.size === 0) {
+          setDirection(null);
+        }
+        return newKeys;
+      });
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
+
   return (
     <div className="control-panel">
       <div className="left-container">
@@ -123,7 +171,6 @@ const ControlPanel = () => {
           <button
             className={`start-stop-button up ${direction === "up" ? "active" : ""}`}
             onClick={() => handleMove("up")}
-            onMouseLeave={handleMoveStop}
           >
             ↑
           </button>
@@ -131,33 +178,28 @@ const ControlPanel = () => {
         <div className="direction-buttons">
           <button
             className={`start-stop-button left ${direction === "left" ? "active" : ""}`}
-            onClick={() => handleMove("left")}
             onMouseLeave={handleMoveStop}
           >
             ←
           </button>
           <button
             className={`start-stop-button down ${direction === "down" ? "active" : ""}`}
-            onClick={() => handleMove("down")}
-            onMouseLeave={handleMoveStop}
           >
             ↓
           </button>
           <button
             className={`start-stop-button right ${direction === "right" ? "active" : ""}`}
-            onClick={() => handleMove("right")}
-            onMouseLeave={handleMoveStop}
           >
             →
           </button>
         </div>
       </div>
 
-      <div className="robot-placeholder">
+      <div className="mbot-image-container">
         {direction ? (
-          <img src={`/images/${direction}.png`} alt={`Robot facing ${direction}`} />
+          <img src={require(`../Images/${direction}.png`)} alt={`Robot facing ${direction}`} />
         ) : (
-          "Robot Placeholder"
+          <img src={require(`../Images/up.png`)} alt={`Robot facing ${direction}`} />
         )}
       </div>
       {isCollapsed && (
