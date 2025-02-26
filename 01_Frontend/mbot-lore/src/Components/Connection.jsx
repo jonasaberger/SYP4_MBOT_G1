@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { sendIPCommand } from '../API_Service/service';
+import { sendCommand } from '../API_Service/service';
 import './css/Connection.css';
 
 const ConnectionComponent = () => {
@@ -71,7 +71,7 @@ const ConnectionComponent = () => {
     setIpError('');
 
     try {
-      await sendIPCommand(sourceIp, ip);
+      await sendCommand(sourceIp, ip);
       setSuccess('Verbindung erfolgreich!');
 
       const newSession = { ip, name };

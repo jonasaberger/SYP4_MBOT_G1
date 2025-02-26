@@ -101,6 +101,42 @@
   height: 25px;
   border-width: 0;
 }
+.led-color-picker-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.led-color-picker-toggle {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.led-indicator {
+  width: 100%;
+  height: 100%;
+  border-width: 10%;
+  border-color: #000000;
+  
+}
+
+.led-color-picker {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2e2e42;
+  padding: 10px;
+  border-radius: 8px;
+  border-width: 10%;
+  border-color: #000000;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+}
+
 .color-submit-button {
   margin-top: 10px;
   padding: 10px 20px;
@@ -113,29 +149,5 @@
 }
 
 .color-submit-button:hover {
-  background-color: #45a049;
+  background-color: #373937;
 }
-.led-color-picker-container {
-  position: relative;
-}
-
-.led-color-picker-toggle {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid #3a3737;
-}
-
-.led-color-picker {
-  position: absolute;
-  top: 40px;
-  left: 0;
-  background: #2e2e42;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-  z-index: 1000;
-}
-

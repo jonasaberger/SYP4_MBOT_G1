@@ -3,7 +3,7 @@ import { SketchPicker } from "react-color";
 import "./css/Manual.css";
 import "./css/sharedStyles.css";
 import InfoPanel from "./InfoPanel";
-import "./LED_Color";
+import { sendCommand, startDriveSequence } from "../API_Service/service";
 
 const ControlPanel = () => {
   const [direction, setDirection] = useState(null);
@@ -17,18 +17,34 @@ const ControlPanel = () => {
   const [ledColorString, setLedColorString] = useState("255,255,255");
   const [showColorPicker, setShowColorPicker] = useState(false);
 
-  const handleMove = (dir) => {
+  const handleMove = async (dir) => {
     setDirection(dir);
     setDistance((prev) => prev + 1);
     setRuntime((prev) => prev + 1);
+    const commandString = `control_${dir}_${value}`;
+    console.log(commandString);
+    await sendCommand("drive", dir);  // Hier wird die Richtung mitgegeben (forward, backward, etc.)
+    await sendCommand("speed", value);  // Geschwindigkeit wird gesetzt
   };
 
   const toggleCollapse = () => {
     setIsCollapsed((prev) => !prev);
   };
 
-  const handleStartStop = () => {
+  const handleMoveStop = async () => {
+    setDirection(null);
+    const commandString = `control_Stop_${value}`;
+    await sendCommand("drive", "stop");  // "stop"-Befehl senden
+    await sendCommand("speed", value);  // Geschwindigkeit wird weiter gesetzt
+  };
+
+  const handleStartStop = async () => {
     setIsDriving((prev) => !prev);
+    const commandString = `control_${isDriving ? "Stop" : "Forward"}_${value}`;
+    
+    // Starte die Drive-Sequence (stellt sicher, dass IP und Mode zuerst gesetzt sind)
+    await startDriveSequence(isDriving ? "stop" : "drive");
+    await sendCommand("speed", value);  // Geschwindigkeit wird gesetzt
   };
 
   useEffect(() => {
@@ -60,6 +76,7 @@ const ControlPanel = () => {
   const handleColorSubmit = () => {
     console.log("LED Color:", ledColorString);
     setShowColorPicker(false);
+    sendCommand("color", ledColorString); // LED-Farbe setzen
   };
 
   const toggleColorPicker = () => {
@@ -106,6 +123,7 @@ const ControlPanel = () => {
           <button
             className={`start-stop-button up ${direction === "up" ? "active" : ""}`}
             onClick={() => handleMove("up")}
+            onMouseLeave={handleMoveStop}
           >
             ↑
           </button>
@@ -114,18 +132,21 @@ const ControlPanel = () => {
           <button
             className={`start-stop-button left ${direction === "left" ? "active" : ""}`}
             onClick={() => handleMove("left")}
+            onMouseLeave={handleMoveStop}
           >
             ←
           </button>
           <button
             className={`start-stop-button down ${direction === "down" ? "active" : ""}`}
             onClick={() => handleMove("down")}
+            onMouseLeave={handleMoveStop}
           >
             ↓
           </button>
           <button
             className={`start-stop-button right ${direction === "right" ? "active" : ""}`}
             onClick={() => handleMove("right")}
+            onMouseLeave={handleMoveStop}
           >
             →
           </button>
