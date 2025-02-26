@@ -67,12 +67,13 @@ class FrontendBridge:
         # Stop recording when the user enters the mode exit
         if drive == "exit" or mode == "exit":
             self.recording = False
+
             log_file_path = os.path.join('Logs', 'command_log.json')
             with open(log_file_path, "w") as f:
                 json.dump(self.command_log, f, indent=4)
+
             print("Recording stopped and saved to command_log.json")
             print("Command Log:")
-            print(json.dumps(self.command_log, indent=4))  # Print the command log to the console
 
         return jsonify({"status": "success", "message": "Command received"})  # Return a valid response
 
@@ -92,4 +93,4 @@ class FrontendBridge:
 
 if __name__ == "__main__":
     bridge = FrontendBridge()
-    bridge.app.run(host='0.0.0.0', port=5000)
+    bridge.app.run(host='0.0.0.0', port=8080)

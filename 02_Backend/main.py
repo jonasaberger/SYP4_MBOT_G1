@@ -17,4 +17,5 @@ def main():
     frontend_bridge.start_server()
     frontend_bridge.receive_commands()
 
+    
 main()
