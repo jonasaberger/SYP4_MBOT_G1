@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import time
 import json
+import os
 
 class FrontendBridge:
     def __init__(self):
@@ -13,6 +14,10 @@ class FrontendBridge:
         self.configure_routes()
         self.recording = False
         self.command_log = []
+
+        # Ensure Logs directory exists
+        if not os.path.exists('Logs'):
+            os.makedirs('Logs')
 
     def receive_commands(self):
         data = request.json
@@ -43,7 +48,7 @@ class FrontendBridge:
             if self.recording and drive in ["forward", "backward", "left", "right", "stop"]:
                 duration = time.time() - self.start_time
 
-                if speed == None:
+                if speed is None:
                     speed = 50
                     
                 self.command_log.append({
@@ -62,7 +67,8 @@ class FrontendBridge:
         # Stop recording when the user enters the mode exit
         if drive == "exit" or mode == "exit":
             self.recording = False
-            with open("command_log.json", "w") as f:
+            log_file_path = os.path.join('Logs', 'command_log.json')
+            with open(log_file_path, "w") as f:
                 json.dump(self.command_log, f, indent=4)
             print("Recording stopped and saved to command_log.json")
             print("Command Log:")
