@@ -44,7 +44,7 @@ const ControlPanel = () => {
         </div>
         <div className="direction-button-up">
           <button
-            className={`start-stop-button up ${direction === "up" ? "active" : ""}`}
+            className={`start-stop-button up ${direction === "forward" ? "active" : ""}`}
           >
             ↑
           </button>
@@ -56,7 +56,7 @@ const ControlPanel = () => {
             ←
           </button>
           <button
-            className={`start-stop-button down ${direction === "down" ? "active" : ""}`}
+            className={`start-stop-button down ${direction === "backward" ? "active" : ""}`}
           >
             ↓
           </button>
@@ -72,7 +72,7 @@ const ControlPanel = () => {
         {direction ? (
           <img src={require(`../Images/${direction}.png`)} alt={`Robot facing ${direction}`} />
         ) : (
-          <img src={require(`../Images/up.png`)} alt={`Robot facing ${direction}`} />
+          <img src={require(`../Images/forward.png`)} alt={`Robot facing ${direction}`} />
         )}
       </div>
       {/* Einblenden-Button, wenn die Infobox eingeklappt ist */}

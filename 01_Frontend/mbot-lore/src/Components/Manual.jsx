@@ -11,41 +11,48 @@ const ControlPanel = () => {
   const [runtime, setRuntime] = useState(0);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDriving, setIsDriving] = useState(false);
-  const [value, setValue] = useState(50);
-  const [isOn, setIsOn] = useState(false);
+  const [value, setValue] = useState(50); // Speed value
+  const [isOn, setIsOn] = useState(false); // LED toggle
   const [ledColor, setLedColor] = useState("#ffffff");
   const [ledColorString, setLedColorString] = useState("255,255,255");
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [pressedKeys, setPressedKeys] = useState(new Set());
+  const [sentDirection, setSentDirection] = useState(false);
 
+  // Funktion zum Bewegen des Roboters in eine bestimmte Richtung
   const handleMove = async (dir) => {
     setDirection(dir);
     const commandString = `control_${dir}_${value}`;
     console.log(commandString);
+
+    // Senden des Steuerbefehls für die Richtung (forward, backward, etc.)
+    await sendCommand("speed", value.toString());  // Geschwindigkeit wird gesetzt
     await sendCommand("drive", dir);  // Hier wird die Richtung mitgegeben (forward, backward, etc.)
-    await sendCommand("speed", value);  // Geschwindigkeit wird gesetzt
   };
 
+  // Zusammenklappen oder Ausklappen des Info-Panels
   const toggleCollapse = () => {
     setIsCollapsed((prev) => !prev);
   };
 
+  // Funktion zum Stoppen der Bewegung
   const handleMoveStop = async () => {
     setDirection(null);
     const commandString = `control_Stop_${value}`;
     await sendCommand("drive", "stop");  // "stop"-Befehl senden
-    await sendCommand("speed", value);  // Geschwindigkeit wird weiter gesetzt
   };
 
+  // Starten oder Stoppen des Fahrens
   const handleStartStop = async () => {
     setIsDriving((prev) => !prev);
     const commandString = `control_${isDriving ? "Stop" : "Forward"}_${value}`;
     
     // Starte die Drive-Sequence (stellt sicher, dass IP und Mode zuerst gesetzt sind)
-    await startDriveSequence(isDriving ? "stop" : "drive");
-    await sendCommand("speed", value);  // Geschwindigkeit wird gesetzt
+    await startDriveSequence(isDriving ? "stop" : "start");
+    await sendCommand("speed", value.toString());  
   };
 
+  // Aktualisieren der Hintergrundfarbe des Speed-Sliders
   useEffect(() => {
     updateSliderBackground(value);
   }, [value]);
@@ -58,65 +65,83 @@ const ControlPanel = () => {
     }
   };
 
+  // Verarbeiten der Slideränderung
   const handleChange = (e) => {
-    setValue(e.target.value);
+    setValue(e.target.value.toString());
+    sendCommand("speed", e.target.value.toString());
   };
 
+  // Umschalten des LED-Status
   const toggleSwitch = () => {
     setIsOn(!isOn);
   };
 
+  // Verarbeiten der Farbänderung für die LED
   const handleColorChange = (color) => {
     setLedColor(color.hex);
     const rgb = color.rgb;
     setLedColorString(`${rgb.r},${rgb.g},${rgb.b}`);
   };
 
+  // Setzen der LED-Farbe
   const handleColorSubmit = () => {
     console.log("LED Color:", ledColorString);
     setShowColorPicker(false);
     sendCommand("color", ledColorString); // LED-Farbe setzen
   };
 
+  // Umschalten des Color Pickers
   const toggleColorPicker = () => {
     setShowColorPicker((prev) => !prev);
   };
 
+  // Tasteneingaben für Bewegung und Steuerung
   useEffect(() => {
     const handleKeyDown = (event) => {
       setPressedKeys((prevKeys) => new Set(prevKeys).add(event.key));
-      switch (event.key) {
-        case "ArrowUp":
-        case "w":
-        case "W": 
-          handleMove("up");
-          break;
-        case "ArrowLeft":
-        case "a":
-        case "A":
-          handleMove("left");
-          break;
-        case "ArrowDown":
-        case "s":
-        case "S":
-          handleMove("down");
-          break;
-        case "ArrowRight":
-        case "d":
-        case "D":
-          handleMove("right");
-          break;
-        default:
-          break;
+      if (!sentDirection) {
+        switch (event.key) {
+          case "ArrowUp":
+          case "w":
+          case "W":
+            console.log("key down");
+            handleMove("forward"); 
+            setSentDirection(true);
+            break;
+          case "ArrowLeft":
+          case "a":
+          case "A":
+            handleMove("left");
+            setSentDirection(true);
+            break;
+          case "ArrowDown":
+          case "s":
+          case "S":
+            handleMove("backward");
+            setSentDirection(true);
+            break;
+          case "ArrowRight":
+          case "d":
+          case "D":
+            handleMove("right");
+            setSentDirection(true);
+            break;
+          default:
+            break;
+        }
       }
     };
 
     const handleKeyUp = (event) => {
+      console.log("key up");
+      setSentDirection(false);
+      //handleMoveStop();
       setPressedKeys((prevKeys) => {
         const newKeys = new Set(prevKeys);
         newKeys.delete(event.key);
         if (newKeys.size === 0) {
           setDirection(null);
+          handleMoveStop(); // Stoppe Bewegung, wenn keine Taste gedrückt wird
         }
         return newKeys;
       });
@@ -129,7 +154,7 @@ const ControlPanel = () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, []);
+  }, [sentDirection]);
 
   return (
     <div className="control-panel">
@@ -169,8 +194,8 @@ const ControlPanel = () => {
         </div>
         <div className="direction-button-up">
           <button
-            className={`start-stop-button up ${direction === "up" ? "active" : ""}`}
-            onClick={() => handleMove("up")}
+            className={`start-stop-button up ${direction === "forward" ? "active" : ""}`}
+            onClick={() => handleMove("forward")}
           >
             ↑
           </button>
@@ -178,17 +203,19 @@ const ControlPanel = () => {
         <div className="direction-buttons">
           <button
             className={`start-stop-button left ${direction === "left" ? "active" : ""}`}
-            onMouseLeave={handleMoveStop}
+            onClick={() => handleMove("left")}
           >
             ←
           </button>
           <button
-            className={`start-stop-button down ${direction === "down" ? "active" : ""}`}
+            className={`start-stop-button down ${direction === "backward" ? "active" : ""}`}
+            onClick={() => handleMove("backward")}
           >
             ↓
           </button>
           <button
             className={`start-stop-button right ${direction === "right" ? "active" : ""}`}
+            onClick={() => handleMove("right")}
           >
             →
           </button>
@@ -199,7 +226,7 @@ const ControlPanel = () => {
         {direction ? (
           <img src={require(`../Images/${direction}.png`)} alt={`Robot facing ${direction}`} />
         ) : (
-          <img src={require(`../Images/up.png`)} alt={`Robot facing ${direction}`} />
+          <img src={require(`../Images/forward.png`)} alt="Robot" />
         )}
       </div>
       {isCollapsed && (

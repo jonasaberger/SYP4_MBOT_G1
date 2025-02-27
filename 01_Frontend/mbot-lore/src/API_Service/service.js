@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const apiBaseURL = 'http://10.10.0.103:8080';
+const apiBaseURL = 'http://10.10.0.103:8080';  // IP-Adresse
 
 let currentMode = null;
 let lastDriveCommand = "stop";
@@ -8,59 +8,40 @@ let ipTargetSet = false;
 let modeSet = false;
 
 /**
- * Sendet einen einzelnen Befehl an die API.
+ * Sendet einen einzelnen Befehl an die API, verhindert doppelte Mode-Befehle.
  * @param {string} key - Der Name des Befehlsparameters (z. B. 'drive', 'mode', 'speed', 'color', 'ip-target')
  * @param {string|number} value - Der Wert des Befehlsparameters
  */
 export const sendCommand = async (key, value) => {
+  if (key === "mode" && currentMode === value) {
+    console.log(`Modus ${value} wurde bereits gesetzt, übersprungen.`);
+    return;
+  }
+  
   try {
+    const response = await axios.post(`${apiBaseURL}/receive_commands`, { [key]: value });
+
+    if (!response || response.status !== 200) {
+      throw new Error(`Server-Fehler: ${response.status} ${response.statusText}`);
+    }
+
+    console.log(`Befehl gesendet: ${key} = ${value}, Server-Antwort:`, response.data);
+
     if (key === "ip-target") {
-      await axios.post(`${apiBaseURL}/receive_commands`, { [key]: value });
       ipTargetSet = true;
-      console.log(`IP-Adresse gesetzt: ${value}`);
-      return;
-    }
-
-    if (!ipTargetSet) {
-      throw new Error("IP-Adresse muss zuerst gesetzt werden.");
-    }
-
-    if (key === "mode") {
-      if (currentMode) {
-        await axios.post(`${apiBaseURL}/receive_commands`, { mode: "exit" });
-        console.log("Modus verlassen");
-      }
+      console.log(`IP-Adresse erfolgreich gesetzt: ${value}`);
+    } else if (key === "mode") {
       currentMode = value;
       modeSet = true;
-      console.log(`Modus gesetzt: ${value}`);
-      return;
-    }
-
-    if (!modeSet) {
-      throw new Error("Modus muss zuerst gesetzt werden.");
-    }
-
-    if (key === "drive") {
+      console.log(`Modus erfolgreich gesetzt: ${value}`);
+    } else if (key === "drive") {
       lastDriveCommand = value;
     }
 
-    if (key === "color") {
-      await axios.post(`${apiBaseURL}/receive_commands`, { color: value });
-      console.log(`LED-Farbe gesetzt: ${value}`);
-      return;
-    }
-
-    if (key === "speed") {
-      await axios.post(`${apiBaseURL}/receive_commands`, { speed: value });
-      console.log(`Geschwindigkeit gesetzt: ${value}`);
-      return;
-    }
-
-    await axios.post(`${apiBaseURL}/receive_commands`, { [key]: value });
-    console.log(`Befehl gesendet: ${key} =`, value);
+    return response.data;
   } catch (error) {
-    console.error(`Fehler beim Senden des Befehls (${key}):`, error);
-    throw new Error(`Fehler beim Senden des Befehls (${key})`);
+    console.error(`Fehler beim Senden des Befehls (${key}):`, error.response?.data || error.message);
+    throw new Error(`Fehler beim Senden des Befehls (${key}): ${error.message}`);
   }
 };
 
@@ -77,15 +58,9 @@ export const startDriveSequence = async (driveCommand) => {
   }
 
   try {
-    // Drive-Befehl senden (drive oder stop)
     await sendCommand("drive", driveCommand);
     console.log(`Drive-Befehl gesendet: ${driveCommand}`);
     lastDriveCommand = driveCommand;
-
-    // Falls der Drive-Befehl "Stop" ist, sicherstellen, dass der Stopp korrekt durchgeführt wird
-    if (driveCommand === "stop") {
-      await sendStopIfNoDrive();
-    }
   } catch (error) {
     console.error("Fehler beim Starten der Drive-Sequence:", error);
   }
@@ -97,7 +72,7 @@ export const startDriveSequence = async (driveCommand) => {
 export const sendStopIfNoDrive = async () => {
   if (lastDriveCommand === "stop") return;
   try {
-    await axios.post(`${apiBaseURL}/receive_commands`, { drive: "stop" });
+    await sendCommand("drive", "stop");
     console.log("Automatisch Stop gesendet");
     lastDriveCommand = "stop";
   } catch (error) {
@@ -118,3 +93,4 @@ export const fetchSensorData = async () => {
     throw new Error('Fehler beim Abrufen der Sensordaten');
   }
 };
+//save_log --> name mitgeben beim speichern von route
