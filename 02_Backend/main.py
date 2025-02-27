@@ -1,6 +1,8 @@
 import frontend_bridge as feb
+import db_bridge as dbb
 
 # ENDPOINTS : /receive_commands
+
 # POST:
 # 1. ip-target : string -> IP address of the target mbot
 #    |
@@ -11,11 +13,13 @@ import frontend_bridge as feb
 # 5. speed : string -> speed of the mbot (e.g. "1", "100")
 
 
+# POST : /save_command_log
+# Access this endpoint with the collction name as a parameter to save the command log to the database
+
 def main(): 
     print('MBOT-G1 Backend')
     frontend_bridge = feb.FrontendBridge()
     frontend_bridge.start_server()
     frontend_bridge.receive_commands()
-
     
 main()

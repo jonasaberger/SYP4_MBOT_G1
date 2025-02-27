@@ -48,7 +48,6 @@ class TestFrontendBridge(unittest.TestCase):
         self.assertEqual(data['message'], 'Command received')
 
     # Negativ Tests
-
     """
     def test_receive_commands_no_data(self):
         response = self.client.post('/receive_commands', json={})
