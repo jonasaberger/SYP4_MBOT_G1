@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { sendIPCommand } from '../API_Service/service';
+import { sendCommand } from '../API_Service/service';
 import './css/Connection.css';
 
 const ConnectionComponent = () => {
@@ -64,31 +64,43 @@ const ConnectionComponent = () => {
       setIpError('Ungültige IP-Adresse!');
       return;
     }
-
+  
     setLoading(true);
     setSuccess('');
     setError('');
     setIpError('');
-
+  
     try {
-      await sendIPCommand(sourceIp, ip);
+      const response = await sendCommand("ip-target", ip);
+  
+      if (!response || response.status !== "success") {
+        throw new Error("Server hat die Verbindung nicht bestätigt!");
+      }
+  
       setSuccess('Verbindung erfolgreich!');
-
+      navigate('/control');
+  
       const newSession = { ip, name };
-      const updatedSessions = [newSession, ...sessions].slice(0, 5);
+      const updatedSessions = [newSession, ...sessions].slice(0, 3);
       setSessions(updatedSessions);
-
-      await fetch('http://localhost:3001/api/save-sessions', {
+  
+      const saveResponse = await fetch('http://localhost:3001/api/save-sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessions: updatedSessions }),
       });
+  
+      if (!saveResponse.ok) {
+        throw new Error("Fehler beim Speichern der Session");
+      }
     } catch (err) {
       setError('Verbindung fehlgeschlagen: ' + err.message);
     } finally {
       setLoading(false);
     }
   };
+  
+
 
   const handleRestoreSession = (session) => {
     console.log("Ausgewählte Session:", session);
