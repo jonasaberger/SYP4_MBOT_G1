@@ -93,6 +93,8 @@ class FrontendBridge:
         self.db_bridge.save_command_log(log_file_path, collection_name)
         return jsonify({"status": "success", "message": f"Log saved to database collection '{collection_name}'"})
 
+
+    # TODO: Implement the get_status_route method
     def get_status_route(self):
         status = {
             'battery': '80%',
