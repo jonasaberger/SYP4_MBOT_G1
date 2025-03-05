@@ -8,7 +8,7 @@ let ipTargetSet = false;
 let modeSet = false;
 
 /**
- * Sendet einen einzelnen Befehl an die API, verhindert doppelte Mode-Befehle.
+ * Sendet einen einzelnen Befehl an die API, verhindert doppelte Mode- und Stop-Befehle.
  * @param {string} key - Der Name des Befehlsparameters (z. B. 'drive', 'mode', 'speed', 'color', 'ip-target')
  * @param {string|number} value - Der Wert des Befehlsparameters
  */
@@ -18,9 +18,14 @@ export const sendCommand = async (key, value) => {
     return;
   }
   
+  if (key === "drive" && value === "stop" && lastDriveCommand === "stop") {
+    console.log("Stop-Befehl wurde bereits gesendet, übersprungen.");
+    return;
+  }
+
   try {
     const response = await axios.post(`${apiBaseURL}/receive_commands`, { [key]: value });
-
+ 
     if (!response || response.status !== 200) {
       throw new Error(`Server-Fehler: ${response.status} ${response.statusText}`);
     }
@@ -93,4 +98,3 @@ export const fetchSensorData = async () => {
     throw new Error('Fehler beim Abrufen der Sensordaten');
   }
 };
-//save_log --> name mitgeben beim speichern von route

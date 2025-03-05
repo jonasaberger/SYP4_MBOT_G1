@@ -18,13 +18,13 @@ const ControlPanel = () => {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [pressedKeys, setPressedKeys] = useState(new Set());
   const [sentDirection, setSentDirection] = useState(false);
+  const [sendStop, setSendStop] = useState(true);
 
   // Funktion zum Bewegen des Roboters in eine bestimmte Richtung
   const handleMove = async (dir) => {
     setDirection(dir);
     const commandString = `control_${dir}_${value}`;
     console.log(commandString);
-
     // Senden des Steuerbefehls für die Richtung (forward, backward, etc.)
     await sendCommand("speed", value.toString());  // Geschwindigkeit wird gesetzt
     await sendCommand("drive", dir);  // Hier wird die Richtung mitgegeben (forward, backward, etc.)
@@ -98,6 +98,7 @@ const ControlPanel = () => {
   // Tasteneingaben für Bewegung und Steuerung
   useEffect(() => {
     const handleKeyDown = (event) => {
+      setSendStop(true);
       setPressedKeys((prevKeys) => new Set(prevKeys).add(event.key));
       if (!sentDirection) {
         switch (event.key) {
@@ -139,8 +140,10 @@ const ControlPanel = () => {
       setPressedKeys((prevKeys) => {
         const newKeys = new Set(prevKeys);
         newKeys.delete(event.key);
-        if (newKeys.size === 0) {
+        if (newKeys.size === 0 && sendStop) {
+          setSendStop(false);
           setDirection(null);
+          console.log("stop!!!!!!!!!!!!");
           handleMoveStop(); // Stoppe Bewegung, wenn keine Taste gedrückt wird
         }
         return newKeys;
