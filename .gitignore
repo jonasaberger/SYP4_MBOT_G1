@@ -27,3 +27,6 @@ __pycache__/
 
 # Ignore .env file (contains sensitive environment variables)
 .env
+
+# Ignore Logs folder
+Logs/
