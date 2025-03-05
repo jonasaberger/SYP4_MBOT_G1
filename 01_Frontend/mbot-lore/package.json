@@ -10,6 +10,7 @@
     "fs": "^0.0.1-security",
     "papaparse": "^5.5.2",
     "react": "^19.0.0",
+    "react-color": "^2.19.3",
     "react-csv": "^2.2.2",
     "react-dom": "^19.0.0",
     "react-joystick-component": "^6.2.1",

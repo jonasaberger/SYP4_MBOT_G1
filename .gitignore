@@ -22,6 +22,11 @@ __pycache__/
 *.pyo
 *.pyd
 
+# Ignore Node.js generated files
+node_modules/
+npm-debug.log
+yarn-error.log
+
 # VS Code
 .vscode/
 
