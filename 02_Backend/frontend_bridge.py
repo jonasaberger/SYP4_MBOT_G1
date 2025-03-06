@@ -86,14 +86,6 @@ class FrontendBridge:
 
         return jsonify({"status": "success", "message": "Command received"})  # Return a valid response
 
-    def save_log(self):
-        data = request.json
-        collection_name = data.get("collection_name")
-        log_file_path = os.path.join('Logs', 'command_log.json')
-        self.db_bridge.save_command_log(log_file_path, collection_name)
-        return jsonify({"status": "success", "message": f"Log saved to database collection '{collection_name}'"})
-
-
     # TODO: Implement the get_status_route method
     def get_status_route(self):
         status = {
@@ -108,7 +100,7 @@ class FrontendBridge:
     def configure_routes(self):
         self.app.add_url_rule('/receive_commands', 'receive_commands', self.receive_commands, methods=['POST'])
         self.app.add_url_rule('/get_status', 'get_status', self.get_status_route, methods=['GET'])
-        self.app.add_url_rule('/save_log', 'save_log', self.save_log, methods=['POST'])
+        self.app.add_url_rule('/save_log', 'save_log', self.db_bridge.save_log, methods=['POST'])
 
 if __name__ == "__main__":
     bridge = FrontendBridge()
