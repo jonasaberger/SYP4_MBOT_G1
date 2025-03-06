@@ -8,13 +8,6 @@ import os
 
 class FrontendBridge:
     def __init__(self):
-        self.mbot_bridge = mbb.MBotBridge()
-        self.db_bridge = dbb.DB_Bridge()
-        self.app = Flask(__name__)
-
-        # Allow all traffic
-        CORS(self.app, resources={r"/*": {"origins": "*"}})
-        self.configure_routes()
         self.recording = False
         self.command_log = []
         self.current_speed = 50  # Default speed
@@ -90,18 +83,5 @@ class FrontendBridge:
     def get_status_route(self):
         status = {
             'battery': '80%',
-            'distance': '14m',
         }
         return jsonify(status)
-
-    def start_server(self):
-        self.app.run(host='0.0.0.0', port=8080)
-
-    def configure_routes(self):
-        self.app.add_url_rule('/receive_commands', 'receive_commands', self.receive_commands, methods=['POST'])
-        self.app.add_url_rule('/get_status', 'get_status', self.get_status_route, methods=['GET'])
-        self.app.add_url_rule('/save_log', 'save_log', self.db_bridge.save_log, methods=['POST'])
-
-if __name__ == "__main__":
-    bridge = FrontendBridge()
-    bridge.app.run(host='0.0.0.0', port=8080)
