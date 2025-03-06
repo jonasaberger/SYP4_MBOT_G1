@@ -13,7 +13,7 @@ import db_bridge as dbb
 # 5. speed : string -> speed of the mbot (e.g. "1", "100")
 
 
-# POST : /save_command_log
+# POST : /save_log
 # Access this endpoint with the collction name as a parameter to save the command log to the database
 
 def main(): 
