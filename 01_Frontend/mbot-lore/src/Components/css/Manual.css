@@ -108,6 +108,7 @@
   align-items: center;
 }
 
+
 .led-color-picker-toggle {
   display: inline-block;
   width: 30px;
@@ -125,9 +126,8 @@
 
 .led-color-picker {
   position: absolute;
-  top: 40px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(30%);
   background: #2e2e42;
   padding: 10px;
   border-radius: 8px;
@@ -135,8 +135,10 @@
   border-color: #000000;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   z-index: 1000;
+  max-width: 90vw; 
+  max-height: 90vh;
+  overflow: auto; 
 }
-
 .color-submit-button {
   margin-top: 10px;
   padding: 10px 20px;
