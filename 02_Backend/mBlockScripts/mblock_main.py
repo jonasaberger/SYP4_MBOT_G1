@@ -1,6 +1,6 @@
 import cyberpi
 import time
-import usocket
+import usocket # type: ignore
 import os
 
 # Variables

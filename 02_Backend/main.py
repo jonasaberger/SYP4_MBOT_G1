@@ -1,5 +1,4 @@
-import frontend_bridge as feb
-import db_bridge as dbb
+import service_manager as sm
 
 # ENDPOINTS : /receive_commands
 
@@ -18,8 +17,7 @@ import db_bridge as dbb
 
 def main(): 
     print('MBOT-G1 Backend')
-    frontend_bridge = feb.FrontendBridge()
-    frontend_bridge.start_server()
-    frontend_bridge.receive_commands()
+    service_manager = sm.ServiceManager()
+    service_manager.start_server()
     
 main()
