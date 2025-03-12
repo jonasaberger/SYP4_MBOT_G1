@@ -16,7 +16,7 @@ import db_bridge as dbb
 # POST : /save_command_log
 # Access this endpoint with the collction name as a parameter to save the command log to the database
 
-def main(): 
+def main():
     print('MBOT-G1 Backend')
     frontend_bridge = feb.FrontendBridge()
     frontend_bridge.start_server()
