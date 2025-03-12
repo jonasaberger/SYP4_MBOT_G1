@@ -5,6 +5,7 @@ from flask_cors import CORS
 import time
 import json
 import os
+import mbot_bridge as mbb
 
 class FrontendBridge:
     def __init__(self):
@@ -12,6 +13,8 @@ class FrontendBridge:
         self.command_log = []
         self.current_speed = 50  # Default speed
         self.current_color = "255,255,255"  # Default color
+
+        self.mbot_bridge = mbb.MBotBridge()
 
         # Ensure Logs directory exists
         if not os.path.exists('Logs'):

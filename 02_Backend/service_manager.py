@@ -6,7 +6,6 @@ from flask_cors import CORS
 
 class ServiceManager:
     def __init__(self):
-        self.mbot_bridge = mbb.MBotBridge()
         self.frontend_bridge = feb.FrontendBridge()
         self.db_bridge = dbb.DB_Bridge()
         
