@@ -57,5 +57,8 @@ class DB_Bridge:
         self.push_log_DB(collection_name)
         print("Log saved")
         return jsonify({"status": "success", "message": f"Log saved to database collection '{collection_name}'"})
+    
+    def load_log(self):
+        print("yarak")
 
 

@@ -22,6 +22,7 @@ class ServiceManager:
         self.app.add_url_rule('/receive_commands', 'receive_commands', self.frontend_bridge.receive_commands, methods=['POST'])
         self.app.add_url_rule('/get_status', 'get_status', self.frontend_bridge.get_status_route, methods=['GET'])
         self.app.add_url_rule('/save_log', 'save_log', self.db_bridge.save_log, methods=['POST'])
+        self.app.add_url_rule('/load_log', 'load_log', self.db_bridge.load_log, methods=['POST'])
 
 if __name__ == "__main__":
     bridge = ServiceManager()
