@@ -68,7 +68,9 @@ const ControlPanel = () => {
   // Verarbeiten der Slideränderung
   const handleChange = (e) => {
     setValue(e.target.value.toString());
-    sendCommand("speed", e.target.value.toString());
+    setTimeout(() => {
+      sendCommand("speed", e.target.value.toString());
+    },1000);
   };
 
   // Umschalten des LED-Status

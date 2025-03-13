@@ -3,6 +3,8 @@ import "./css/Automatic.css";
 import "./css/sharedStyles.css";
 import InfoPanel from "./InfoPanel";
 import { useEffect } from "react";
+import DefineRouteInterface from "./DefineRouteInterface";
+import "./css/DefineRouteInterface.css";
 
 const ControlPanel = () => {
   const [direction, setDirection] = useState(null);
@@ -11,6 +13,7 @@ const ControlPanel = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDriving, setIsDriving] = useState(false); // Zustand für Drive/Stop Button
   const [route, setRoute] = useState("");
+  const [showDefineRoute, setShowDefineRoute] = useState(false);
 
   const toggleCollapse = () => {
     setIsCollapsed((prev) => !prev);
@@ -25,7 +28,7 @@ const ControlPanel = () => {
   };
 
   const handleDefineRoute = () => {
-    alert("Route defined");
+    setShowDefineRoute(true);
   };
 
   return (
@@ -93,6 +96,7 @@ const ControlPanel = () => {
         onToggleCollapse={toggleCollapse}
         isCollapsed={isCollapsed}
       />
+      {showDefineRoute && <DefineRouteInterface />}
     </div>
   );
 };
