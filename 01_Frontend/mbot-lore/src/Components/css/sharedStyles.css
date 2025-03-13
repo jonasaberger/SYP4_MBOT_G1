@@ -120,10 +120,15 @@
     background-color: #d9534f;
     color: white;
     border: none;
-    border-radius: 50%;
+    border-radius: 50%; /* Ensure the button is round */
     cursor: pointer;
     margin-bottom: 10px;
     font-size: 20px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   /* Pfeil-Toggle-Button im ausgeklappten Zustand */
@@ -149,4 +154,13 @@
     top: 45%;
     right: 1px;
     transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .reveal-info-button:hover {
+    background-color: #e74c3c;
   }

@@ -4,11 +4,14 @@ import "./css/Manual.css";
 import "./css/sharedStyles.css";
 import InfoPanel from "./InfoPanel";
 import { sendCommand, startDriveSequence } from "../API_Service/service";
+import SaveRoutePopup from "./SaveRoutePopup";
+import { fetchBattery } from "../API_Service/service";
 
 const ControlPanel = () => {
   const [direction, setDirection] = useState(null);
   const [distance, setDistance] = useState(0);
   const [runtime, setRuntime] = useState(0);
+  const [battery, setBattery] = useState(0);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDriving, setIsDriving] = useState(false);
   const [value, setValue] = useState(50); // Speed value
@@ -18,6 +21,7 @@ const ControlPanel = () => {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [pressedKeys, setPressedKeys] = useState(new Set());
   const [sentDirection, setSentDirection] = useState(false);
+  const [showPopup, setShowPopup] = useState(false); // State to manage popup visibility
   let sendStop = true;
 
   // Funktion zum Bewegen des Roboters in eine bestimmte Richtung
@@ -49,7 +53,10 @@ const ControlPanel = () => {
     
     // Starte die Drive-Sequence (stellt sicher, dass IP und Mode zuerst gesetzt sind)
     await startDriveSequence(isDriving ? "stop" : "start");
-    await sendCommand("speed", value.toString());  
+    await sendCommand("speed", value.toString());
+    if(commandString == `control_Stop_${value}`) {
+      setShowPopup(true); // Show the popup when stopping
+    }
   };
 
   // Aktualisieren der Hintergrundfarbe des Speed-Sliders
@@ -74,7 +81,11 @@ const ControlPanel = () => {
   };
 
   // Umschalten des LED-Status
-  const toggleSwitch = () => {
+  const toggleSwitch = async () => {
+    //setShowPopup(true);
+    const batteryStatus = await fetchBattery();
+    setBattery(batteryStatus.battery);
+    console.log("Battery:", batteryStatus);
     setIsOn(!isOn);
   };
 
@@ -100,6 +111,8 @@ const ControlPanel = () => {
   // Tasteneingaben für Bewegung und Steuerung
   useEffect(() => {
     const handleKeyDown = (event) => {
+      if (showPopup) return; // Do nothing if the popup is open
+
       sendStop = true;
       setPressedKeys((prevKeys) => new Set(prevKeys).add(event.key));
       if (!sentDirection) {
@@ -136,6 +149,8 @@ const ControlPanel = () => {
     };
 
     const handleKeyUp = (event) => {
+      if (showPopup) return; // Do nothing if the popup is open
+
       console.log("key up");
       setSentDirection(false);
       //handleMoveStop();
@@ -159,7 +174,19 @@ const ControlPanel = () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [sentDirection]);
+  }, [sentDirection, showPopup]);
+
+  /*useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const batteryStatus = await fetchBattery();
+        setBattery(batteryStatus.battery);
+      } catch (error) {
+        console.error("Fehler beim Abrufen des Batteriestatus:", error);
+      }
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);*/
 
   return (
     <div className="control-panel">
@@ -242,9 +269,11 @@ const ControlPanel = () => {
       <InfoPanel
         distance={distance}
         runtime={runtime}
+        battery={battery}
         onToggleCollapse={toggleCollapse}
         isCollapsed={isCollapsed}
       />
+      {showPopup && <SaveRoutePopup onClose={() => setShowPopup(false)} />} {/* Conditionally render the popup */}
     </div>
   );
 };

@@ -15,7 +15,7 @@ import service_manager as sm
 # POST : /save_log
 # Access this endpoint with the collction name as a parameter to save the command log to the database
 
-def main(): 
+def main():
     print('MBOT-G1 Backend')
     service_manager = sm.ServiceManager()
     service_manager.start_server()
