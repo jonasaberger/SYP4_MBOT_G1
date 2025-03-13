@@ -18,7 +18,6 @@ class DB_Bridge:
         except Exception as e:
             print(f"Verbindung fehlgeschlagen: {e}")
 
-
     # Save the command log to the MongoDB database
     def push_log_DB(self, collection_name):
         try:
@@ -39,13 +38,13 @@ class DB_Bridge:
         except Exception as e:
             print(f"Speichern fehlgeschlagen: {e}")
 
-
+    # Save the locally stored command log to the database
     def save_log(self):
         data = request.json
         collection_name = data.get("collection_name")
         log_file_path = os.path.join('Logs', 'command_log.json')
 
-        if collection_name is "":
+        if collection_name == "":
             if os.path.exists(log_file_path):
                 os.remove(log_file_path)
                 print("Log deleted")

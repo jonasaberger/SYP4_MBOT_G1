@@ -15,11 +15,13 @@ class FrontendBridge:
         self.current_color = "255,255,255"  # Default color
 
         self.mbot_bridge = mbb.MBotBridge()
-
         # Ensure Logs directory exists
         if not os.path.exists('Logs'):
             os.makedirs('Logs')
 
+
+    # Receive commands from the frontend
+    # TODO: Add the Automatic-Mode / Route-Loading from DB
     def receive_commands(self):
         data = request.json
         mode = data.get("mode")
@@ -29,12 +31,16 @@ class FrontendBridge:
         color = data.get("color")
         speed = data.get("speed") 
 
+        # IP - Configuration
         if ip_target:
             self.mbot_bridge.configure_connection(ip_target, ip_source)
+        
+        # Send the mode to the mBot
         elif mode:
             self.mbot_bridge.send_message(mode)
             print(mode)
-        elif drive:
+        
+        elif drive and mode == "controller":
             self.mbot_bridge.send_message(drive)
             print(drive)
 
@@ -55,20 +61,20 @@ class FrontendBridge:
                     "color": self.current_color
                 })
                 self.start_time = time.time()  # Reset start time for the next command
-                print("Command recorded")
+                print("Command recorded") 
 
+        # Change the color or speed of the mBot
         elif color:
             self.current_color = color
             self.mbot_bridge.send_message("color:" + color)
             print(f"Color changed to: {color}")
-
         elif speed:
             self.current_speed = speed
             self.mbot_bridge.send_message("speed:" + speed)
             print(f"Speed changed to: {speed}")
 
         # Stop recording when the user enters the mode exit
-        if drive == "exit" or mode == "exit":
+        if drive == "exit":
             self.recording = False
 
             log_file_path = os.path.join('Logs', 'command_log.json')
@@ -82,7 +88,9 @@ class FrontendBridge:
 
         return jsonify({"status": "success", "message": "Command received"})  # Return a valid response
 
-    # TODO: Implement the get_status_route method
+
+
+    # TODO: Send the battery status once when connecting to the frontend
     def get_status_route(self):
         status = {
             'battery': '80%',
