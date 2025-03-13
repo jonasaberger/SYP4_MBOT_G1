@@ -99,6 +99,7 @@ const ControlPanel = () => {
       <InfoPanel
         distance={distance}
         runtime={runtime}
+        speed={runtime} //Placeholder bis Speed Funktionalität eingebaut wird
         onToggleCollapse={toggleCollapse}
         isCollapsed={isCollapsed}
       />
