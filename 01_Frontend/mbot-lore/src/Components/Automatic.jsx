@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./css/Automatic.css";
 import "./css/sharedStyles.css";
 import InfoPanel from "./InfoPanel";
-import { useEffect } from "react";
 import DefineRouteInterface from "./DefineRouteInterface";
 import "./css/DefineRouteInterface.css";
+import { getRoutes } from "../API_Service/service";
 
 const ControlPanel = () => {
   const [direction, setDirection] = useState(null);
@@ -14,6 +14,20 @@ const ControlPanel = () => {
   const [isDriving, setIsDriving] = useState(false); // Zustand für Drive/Stop Button
   const [route, setRoute] = useState("");
   const [showDefineRoute, setShowDefineRoute] = useState(false);
+  const [routes, setRoutes] = useState([]);
+
+  useEffect(() => {
+    const fetchRoutes = async () => {
+      try {
+        const routesData = await getRoutes();
+        setRoutes(routesData);
+      } catch (error) {
+        console.error("Fehler beim Abrufen der Routen:", error);
+      }
+    };
+
+    fetchRoutes();
+  }, []);
 
   const toggleCollapse = () => {
     setIsCollapsed((prev) => !prev);
@@ -40,9 +54,11 @@ const ControlPanel = () => {
           </button>
           <select className="route-select" value={route} onChange={handleRouteChange}>
             <option value="">Select Route</option>
-            <option value="route1">Route 1</option>
-            <option value="route2">Route 2</option>
-            <option value="route3">Route 3</option>
+            {routes.map((routeName) => (
+              <option key={routeName} value={routeName}>
+                {routeName}
+              </option>
+            ))}
           </select>
           <button className="start-stop-button" onClick={handleDriveStop}>
             {isDriving ? "Stop" : "Drive"}

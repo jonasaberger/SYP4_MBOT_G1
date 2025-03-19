@@ -108,3 +108,14 @@ export const sendSaveRoute = async (routeName) => {
     throw new Error('Fehler beim Speichern der Route');
   }
 }
+
+export const getRoutes = async () => {
+  try{
+    const response = await axios.get(`${apiBaseURL}/get_all_Routes`);
+    console.log('Routes:', response.data);
+    return response.data;
+  } catch(error){
+    console.error('Fehler beim Abrufen der Routen:', error);
+    throw new Error('Fehler beim Abrufen der Routen');
+  }
+}
