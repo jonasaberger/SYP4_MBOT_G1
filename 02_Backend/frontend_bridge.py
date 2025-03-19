@@ -15,6 +15,8 @@ class FrontendBridge:
         self.current_mode = None
 
         self.mbot_bridge = mbb.MBotBridge()
+        self.db_bridge = dbb.DB_Bridge()
+
         # Ensure Logs directory exists
         if not os.path.exists('Logs'):
             os.makedirs('Logs')
@@ -63,6 +65,13 @@ class FrontendBridge:
                 })
                 self.start_time = time.time()  # Reset start time for the next command
                 print(f"Command recorded: {self.command_log[-1]}")
+
+        if self.current_mode == "automatic":
+            # TODO: Send all the Collection names
+            print("HOOOOOOOONNSSSS YARAKKK")
+            collection_names = self.db_bridge.get_collection_names()
+            print(f"Collection names: {collection_names}")
+            pass
 
         # Change the color or speed of the mBot
         elif color:
