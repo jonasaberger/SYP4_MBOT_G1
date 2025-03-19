@@ -96,7 +96,7 @@ const ControlPanel = () => {
         onToggleCollapse={toggleCollapse}
         isCollapsed={isCollapsed}
       />
-      {showDefineRoute && <DefineRouteInterface />}
+      {showDefineRoute && <DefineRouteInterface onClose={() => setShowDefineRoute(false)} />} {/* Pass the onClose prop */}
     </div>
   );
 };
