@@ -69,6 +69,13 @@ body, html {
 }
 
 @media (max-width: 768px) {
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #005974; /* Passe die Hintergrundfarbe an */
+  }
+  
   .title {
       font-size: 1.5rem;
       padding: 10px;

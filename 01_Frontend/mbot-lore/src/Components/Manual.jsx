@@ -3,7 +3,7 @@ import "./css/Manual.css";
 import "./css/sharedStyles.css";
 import InfoPanel from "./InfoPanel";
 
-const ControlPanel = () => {
+const ControlPanel = ({ isConnected }) => {
   const [direction, setDirection] = useState(null);
   const [distance, setDistance] = useState(0);
   const [runtime, setRuntime] = useState(0);
@@ -12,11 +12,27 @@ const ControlPanel = () => {
   const [route, setRoute] = useState("");
   const [value, setValue] = useState(50);
   const [isOn, setIsOn] = useState(false);
+  const [startTime, setStartTime] = useState(null);
+
+  useEffect(() => {
+    if (isConnected) {
+      setStartTime(Date.now());
+    }
+  }, [isConnected]);
+
+  useEffect(() => {
+    let interval;
+    if (startTime) {
+      interval = setInterval(() => {
+        setRuntime(Math.floor((Date.now() - startTime) / 1000));
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [startTime]);
 
   const handleMove = (dir) => {
     setDirection(dir);
     setDistance((prev) => prev + 1);
-    setRuntime((prev) => prev + 1);
   };
 
   const toggleCollapse = () => {

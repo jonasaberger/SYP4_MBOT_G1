@@ -2,23 +2,27 @@ import React, { useState } from "react";
 import AutomaticControl from "./Automatic";
 import ManualControl from "./Manual";
 import MapControl from "./MapControl";
+import ConnectionComponent from "./Connection";
 import "./css/MainControl.css";
 
 const MainControl = () => {
   const [mode, setMode] = useState("manual");
+  const [isConnected, setIsConnected] = useState(false);
 
   const handleModeChange = (newMode) => {
     setMode(newMode);
   };
 
+  const handleConnect = () => {
+    setIsConnected(true);
+  };
+
   const renderComponent = () => {
     switch (mode) {
       case "manual":
-        return <ManualControl/>;
-       break;
+        return <ManualControl isConnected={isConnected} />;
       case "map":
         return <MapControl />;
-        break;
       case "automatic":
       default:
         return <AutomaticControl />;
@@ -34,7 +38,7 @@ const MainControl = () => {
         <button className={`map ${mode === "map" ? "active" : ""}`} onClick={() => handleModeChange("map")}>Map</button>
       </div>
       <div className="control-section">
-        {renderComponent()}
+        {isConnected ? renderComponent() : <ConnectionComponent onConnect={handleConnect} />}
       </div>
     </div>
   );
