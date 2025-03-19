@@ -52,7 +52,7 @@ const ControlPanel = () => {
     const commandString = `control_${isDriving ? "Stop" : "Forward"}_${value}`;
     
     // Starte die Drive-Sequence (stellt sicher, dass IP und Mode zuerst gesetzt sind)
-    await startDriveSequence(isDriving ? "stop" : "start");
+    await startDriveSequence(isDriving ? "exit" : "start");
     await sendCommand("speed", value.toString());
     if(commandString == `control_Stop_${value}`) {
       setShowPopup(true); // Show the popup when stopping
