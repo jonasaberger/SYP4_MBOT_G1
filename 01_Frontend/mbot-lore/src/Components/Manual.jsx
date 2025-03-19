@@ -49,7 +49,7 @@ const ControlPanel = () => {
     
     // Starte die Drive-Sequence (stellt sicher, dass IP und Mode zuerst gesetzt sind)
     await startDriveSequence(isDriving ? "stop" : "start");
-    await sendCommand("speed", value.toString());  
+    await sendCommand("drive", "start");  
   };
 
   // Aktualisieren der Hintergrundfarbe des Speed-Sliders
