@@ -5,7 +5,6 @@ from flask_cors import CORS
 import time
 import json
 import os
-import mbot_bridge as mbb
 
 class FrontendBridge:
     def __init__(self):
@@ -13,15 +12,14 @@ class FrontendBridge:
         self.command_log = []
         self.current_speed = 50  # Default speed
         self.current_color = "255,255,255"  # Default color
+        self.current_mode = None
 
         self.mbot_bridge = mbb.MBotBridge()
         # Ensure Logs directory exists
         if not os.path.exists('Logs'):
             os.makedirs('Logs')
 
-
     # Receive commands from the frontend
-    # TODO: Add the Automatic-Mode / Route-Loading from DB
     def receive_commands(self):
         data = request.json
         mode = data.get("mode")
@@ -29,20 +27,23 @@ class FrontendBridge:
         ip_target = data.get("ip-target")
         ip_source = request.remote_addr
         color = data.get("color")
-        speed = data.get("speed") 
+        speed = data.get("speed")
+
 
         # IP - Configuration
         if ip_target:
             self.mbot_bridge.configure_connection(ip_target, ip_source)
-        
+            print(f"Configured connection with target IP: {ip_target} and source IP: {ip_source}")
+
         # Send the mode to the mBot
         elif mode:
             self.mbot_bridge.send_message(mode)
-            print(mode)
-        
-        elif drive and mode == "controller":
+            self.current_mode = mode
+            print(f"Mode sent to mBot: {mode}")
+
+        elif drive and self.current_mode == "controller":
             self.mbot_bridge.send_message(drive)
-            print(drive)
+            print(f"Drive command sent to mBot: {drive}")
 
             # Start the tracking process
             if drive == "start":
@@ -61,7 +62,7 @@ class FrontendBridge:
                     "color": self.current_color
                 })
                 self.start_time = time.time()  # Reset start time for the next command
-                print("Command recorded") 
+                print(f"Command recorded: {self.command_log[-1]}")
 
         # Change the color or speed of the mBot
         elif color:
@@ -87,8 +88,6 @@ class FrontendBridge:
                 print(f.read())  # Print the command log to the console
 
         return jsonify({"status": "success", "message": "Command received"})  # Return a valid response
-
-
 
     # TODO: Send the battery status once when connecting to the frontend
     def get_status_route(self):
