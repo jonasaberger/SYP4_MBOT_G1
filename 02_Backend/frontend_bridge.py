@@ -25,9 +25,12 @@ class FrontendBridge:
     # Receive commands from the frontend
     def receive_commands(self):
         data = request.json
-        mode = data.get("mode")
-        drive = data.get("drive")
         ip_target = data.get("ip-target")
+        mode = data.get("mode")
+
+        drive = data.get("drive")
+        route = data.get("route")
+        
         ip_source = request.remote_addr
         color = data.get("color")
         speed = data.get("speed")
@@ -68,10 +71,31 @@ class FrontendBridge:
                 print(f"Command recorded: {self.command_log[-1]}")
 
         if self.current_mode == "automatic":
-            print("HOOOOOOOONNSSSS YARAKKK")
-
             # Update the collection names from the database
             self.collection_names = self.db_bridge.get_collection_names()
+
+
+            if route:
+                # Get the specific route from the database
+                route_data = self.db_bridge.get_route(route)
+                print(f"Route data: {route_data}")
+
+
+                for command in route_data:
+                    direction = command.get("direction")
+                    speed = command.get("speed")
+                    duration = command.get("duration")
+                    color = command.get("color")
+
+                    # Send the command to the mBot
+
+                    # Change the color or speed of the mBot
+                    self.mbot_bridge.send_message("color:" + color)
+                    self.mbot_bridge.send_message("speed:" + speed)
+
+                    self.mbot_bridge.send_message(direction)
+                    time.sleep(duration)
+
 
             pass
 
