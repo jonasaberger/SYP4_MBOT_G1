@@ -15,7 +15,7 @@ class ServiceManager:
         self.configure_routes()
 
     def start_server(self):
-        self.app.run(host='0.0.0.0', port=8081)
+        self.app.run(host='0.0.0.0', port=8080)
 
     def configure_routes(self):
         self.app.add_url_rule('/receive_commands', 'receive_commands', self.frontend_bridge.receive_commands, methods=['POST'])
