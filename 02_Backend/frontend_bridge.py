@@ -13,6 +13,7 @@ class FrontendBridge:
         self.current_speed = 50  # Default speed
         self.current_color = "255,255,255"  # Default color
         self.current_mode = None
+        self.collection_names = []
 
         self.mbot_bridge = mbb.MBotBridge()
         self.db_bridge = dbb.DB_Bridge()
@@ -67,10 +68,11 @@ class FrontendBridge:
                 print(f"Command recorded: {self.command_log[-1]}")
 
         if self.current_mode == "automatic":
-            # TODO: Send all the Collection names
             print("HOOOOOOOONNSSSS YARAKKK")
-            collection_names = self.db_bridge.get_collection_names()
-            print(f"Collection names: {collection_names}")
+
+            # Update the collection names from the database
+            self.collection_names = self.db_bridge.get_collection_names()
+
             pass
 
         # Change the color or speed of the mBot
@@ -97,6 +99,11 @@ class FrontendBridge:
                 print(f.read())  # Print the command log to the console
 
         return jsonify({"status": "success", "message": "Command received"})  # Return a valid response
+
+
+    # Return all the prev saved routes to the frontend
+    def get_all_routes(self):
+        return jsonify(self.collection_names)
 
     # TODO: Send the battery status once when connecting to the frontend
     def get_status_route(self):
