@@ -111,7 +111,7 @@ export const sendSaveRoute = async (routeName) => {
 
 export const getRoutes = async () => {
   try{
-    const response = await axios.get(`${apiBaseURL}/get_all_Routes`);
+    const response = await axios.get(`${apiBaseURL}/get_all_routes`);
     console.log('Routes:', response.data);
     return response.data;
   } catch(error){

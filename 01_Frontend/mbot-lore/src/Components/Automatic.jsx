@@ -4,7 +4,9 @@ import "./css/sharedStyles.css";
 import InfoPanel from "./InfoPanel";
 import DefineRouteInterface from "./DefineRouteInterface";
 import "./css/DefineRouteInterface.css";
-import { getRoutes } from "../API_Service/service";
+import { getRoutes, sendCommand } from "../API_Service/service";
+
+//Die ganze liste mti dem Chekcpoint schicken. am ende muss stop sein.
 
 const ControlPanel = () => {
   const [direction, setDirection] = useState(null);
@@ -37,8 +39,24 @@ const ControlPanel = () => {
     setRoute(event.target.value);
   };
 
-  const handleDriveStop = () => {
+  const handleDriveStop = async () => {
     setIsDriving((prev) => !prev); // Toggle zwischen Drive und Stop
+    if (!isDriving && route) {
+      try {
+        await sendCommand("route", route);
+        console.log(`Route ${route} gestartet`);
+      } catch (error) {
+        console.error("Fehler beim Starten der Route:", error);
+      }
+    }
+    else if(isDriving){
+      try {
+        await sendCommand("drive", "exit");
+        console.log("Drive gestoppt");
+      } catch (error) {
+        console.error("Fehler beim Stoppen der Route:", error);
+      }
+    }
   };
 
   const handleDefineRoute = () => {
@@ -53,7 +71,7 @@ const ControlPanel = () => {
             Define Route
           </button>
           <select className="route-select" value={route} onChange={handleRouteChange}>
-            <option value="">Select Route</option>
+            {/* <option value="">Select Route</option> */}
             {routes.map((routeName) => (
               <option key={routeName} value={routeName}>
                 {routeName}
