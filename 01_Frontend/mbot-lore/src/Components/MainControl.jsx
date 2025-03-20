@@ -3,11 +3,13 @@ import AutomaticControl from "./Automatic";
 import ManualControl from "./Manual";
 import MapControl from "./MapControl";
 import { sendCommand } from "../API_Service/service";
+import ConnectionComponent from "./Connection";
 import "./css/MainControl.css";
 
 const MainControl = () => {
   const [mode, setMode] = useState("manual");
-  const isChangingMode = useRef(false);
+  const isChangingMode = useRef(false);  const [isConnected, setIsConnected] = useState(false);
+
   const hasInitialized = useRef(false);
 
   useEffect(() => {
@@ -42,10 +44,14 @@ const MainControl = () => {
     }
   };
 
+  const handleConnect = () => {
+    setIsConnected(true);
+  };
+
   const renderComponent = () => {
     switch (mode) {
       case "manual":
-        return <ManualControl />;
+        return <ManualControl isConnected={isConnected} />;
       case "map":
         return <MapControl />;
       case "automatic":
@@ -77,7 +83,9 @@ const MainControl = () => {
           Map
         </button>
       </div>
-      <div className="control-section">{renderComponent()}</div>
+      <div className="control-section">
+        {isConnected ? renderComponent() : <ConnectionComponent onConnect={handleConnect} />}
+      </div>
     </div>
   );
 };

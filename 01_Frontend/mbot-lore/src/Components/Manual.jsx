@@ -7,7 +7,7 @@ import { sendCommand, startDriveSequence } from "../API_Service/service";
 import SaveRoutePopup from "./SaveRoutePopup";
 import { fetchBattery } from "../API_Service/service";
 
-const ControlPanel = () => {
+const ControlPanel = ({ isConnected }) => {
   const [direction, setDirection] = useState(null);
   const [distance, setDistance] = useState(0);
   const [runtime, setRuntime] = useState(0);
@@ -24,9 +24,29 @@ const ControlPanel = () => {
   const [showPopup, setShowPopup] = useState(false); // State to manage popup visibility
   let sendStop = true;
 
+  const [startTime, setStartTime] = useState(null);
+
+  useEffect(() => {
+    if (isConnected) {
+      setStartTime(Date.now());
+    }
+  }, [isConnected]);
+
+  useEffect(() => {
+    let interval;
+    if (startTime) {
+      interval = setInterval(() => {
+        setRuntime(Math.floor((Date.now() - startTime) / 1000));
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [startTime]);
+
+
   // Funktion zum Bewegen des Roboters in eine bestimmte Richtung
   const handleMove = async (dir) => {
     setDirection(dir);
+    setDistance((prev) => prev + 1);
     const commandString = `control_${dir}_${value}`;
     console.log(commandString);
     // Senden des Steuerbefehls für die Richtung (forward, backward, etc.)
@@ -269,7 +289,7 @@ const ControlPanel = () => {
       <InfoPanel
         distance={distance}
         runtime={runtime}
-        battery={battery}
+        speed={value}
         onToggleCollapse={toggleCollapse}
         isCollapsed={isCollapsed}
       />

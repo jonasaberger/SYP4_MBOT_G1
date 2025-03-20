@@ -153,3 +153,43 @@
 .color-submit-button:hover {
   background-color: #373937;
 }
+
+@media (max-width: 768px) {
+  .control-button, .route-select {
+      font-size: 14px;
+      padding: 8px 15px;
+  }
+
+  .speed-slider {
+      height: 6px;
+  }
+
+  .speed-slider::-webkit-slider-thumb {
+      width: 12px;
+      height: 12px;
+  }
+
+  .led-container {
+      height: 35px;
+      margin-bottom: 30px;
+  }
+
+  .led-label {
+      font-size: 1rem;
+      margin-left: 10px;
+  }
+
+  .toggle-switch {
+      width: 40px;
+      height: 20px;
+  }
+
+  .toggle-handle {
+      width: 18px;
+      height: 18px;
+  }
+
+  .toggle-switch.on .toggle-handle {
+      left: 20px;
+  }
+}
