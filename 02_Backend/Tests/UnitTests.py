@@ -82,7 +82,8 @@ class Testing(unittest.TestCase):
         with patch('builtins.print') as mock_print:
             self.db_bridge.check_connection()
             mock_print.assert_called_with("Verbindung erfolgreich!")
-        
+    
+    # Hilfe von KI
     """
     @patch('pymongo.MongoClient')
     def test_check_connection_failure(self, mock_mongo_client):
