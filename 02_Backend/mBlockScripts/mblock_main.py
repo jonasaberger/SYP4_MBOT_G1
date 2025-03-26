@@ -97,7 +97,8 @@ def automatic_module(socket, speed=50):
             start_initialized = False
             cyberpi.console.println("Exiting Automatic Mode..")
             break 
-        elif txt == "stop":
+        elif txt == "end":
+            cyberpi.console.println("Ended Current-Route")
             cyberpi.mbot2.EM_stop("all")
             continue
         elif txt.startswith("color:"):
@@ -111,7 +112,7 @@ def automatic_module(socket, speed=50):
                 cyberpi.console.println("Invalid speed!")
                 continue
         
-        if start_initialized and txt in ["forward", "backward", "left", "right"]:
+        if start_initialized and txt in ["forward", "backward", "left", "right", "stop"]:
             if txt == "forward":
                 cyberpi.mbot2.forward(speed)
             elif txt == "backward":
@@ -120,6 +121,8 @@ def automatic_module(socket, speed=50):
                 cyberpi.mbot2.turn_left(speed)
             elif txt == "right":
                 cyberpi.mbot2.turn_right(speed)
+            elif txt == "stop":
+                cyberpi.mbot2.EM_stop("all")
         time.sleep(0.1)
 
 def discover_module():

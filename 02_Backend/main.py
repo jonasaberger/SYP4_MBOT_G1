@@ -23,5 +23,4 @@ def main():
     print('MBOT-G1 Backend')
     service_manager = sm.ServiceManager()
     service_manager.start_server()
-    
 main()
