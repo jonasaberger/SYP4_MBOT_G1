@@ -41,6 +41,57 @@ def network_module():
     socket.bind((sockaddr, 6666))
     
     return socket
+    
+def measure_dimension(direction):
+    counter = 0
+    while cyberpi.ultrasonic2.get(1) > 10:  # Falls kein Hindernis in 10cm
+        cyberpi.mbot2.forward(20)
+        time.sleep(1)  # 1 Sekunde fahren
+        cyberpi.mbot2.EM_stop("all")
+        counter = counter + 1
+    
+    if direction == "height":
+        cyberpi.mbot2.turn(90)
+        time.sleep(1)
+    
+    return counter
+
+def bfs_mapping(start_x, start_y):
+    queue = [(start_x, start_y)]  # Start with the initial position
+    visited[start_x][start_y] = 0  # Mark the start point as visited
+
+    directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # Directions for BFS (right, down, left, up)
+
+    while queue:
+        x, y = queue.pop(0)  # Pop the next coordinate from the queue
+
+        # Move and check each direction
+        for dx, dy in directions:
+            nx = x + dx
+            ny = y + dy
+
+            # Ensure the new coordinates are within bounds and not visited
+            if 0 <= nx < height and 0 <= ny < width and visited[nx][ny] == 1:
+                # Check for obstacle *before* moving
+                if cyberpi.ultrasonic2.get(1) > 10:  # No obstacle within 10cm
+                    # Move towards the new position
+                    cyberpi.mbot2.forward(20)
+                    time.sleep(1)  # Move forward for 1 second
+                    cyberpi.mbot2.EM_stop("all")  # Stop after moving
+
+                    # After moving, mark as visited and update map
+                    room_map[nx][ny] = 0  # Free space
+                    visited[nx][ny] = 0  # Mark as visited
+                    queue.append((nx, ny))  # Add to the queue for further exploration
+                else:
+                    # If obstacle detected, mark as a wall
+                    room_map[nx][ny] = 1  # Wall
+
+        # Turn 90 degrees to explore the next direction
+        cyberpi.mbot2.turn(90)
+        time.sleep(1)  # Adjust sleep to give time for turning
+
+
 
 def physical_module(socket, speed=50):
     global start_initialized
@@ -123,8 +174,24 @@ def automatic_module(socket, speed=50):
         time.sleep(0.1)
 
 def discover_module():
-    cyberpi.console.println("Discovery Mode")
-    pass
+    global height, width, room_map, visited
+    cyberpi.console.println("Discovery Mode: Raum Mapping")
+    
+    height = measure_dimension("height")  # Measure height
+    width = measure_dimension("width")  # Measure width
+
+    room_map = [[0 for _ in range(width)] for _ in range(height)]  # Initialize the map
+    visited = [[1 for _ in range(width)] for _ in range(height)]  # Initialize visited cells
+
+    cyberpi.console.println("Room size detected: " + str(width) + "x" + str(height))
+
+    # Start BFS to explore and drive through the room map
+    bfs_mapping(0, 0)  # Start BFS from (0, 0)
+
+    # After the BFS exploration, print the map
+    cyberpi.console.println("Mapped Room:")
+    for row in room_map:
+        cyberpi.console.println(" ".join(str(cell) for cell in row))
 
 def change_color(txt):
     color_data = txt.split(":")[1]
