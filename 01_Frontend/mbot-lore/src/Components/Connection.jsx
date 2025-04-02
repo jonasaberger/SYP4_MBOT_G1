@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { sendCommand } from '../API_Service/service';
 import './css/Connection.css';
 
-const ConnectionComponent = ({ onConnect }) => {
+const ConnectionComponent = () => {
   const [ip, setIp] = useState('');
   const [name, setName] = useState('');
   const [sourceIp, setSourceIp] = useState('');
@@ -79,8 +79,7 @@ const ConnectionComponent = ({ onConnect }) => {
   
       setSuccess('Verbindung erfolgreich!');
       navigate('/control');
-      onConnect(); // Verbindung erfolgreich, starte die Runtime
-
+  
       const newSession = { ip, name };
       const updatedSessions = [newSession, ...sessions].slice(0, 3);
       setSessions(updatedSessions);

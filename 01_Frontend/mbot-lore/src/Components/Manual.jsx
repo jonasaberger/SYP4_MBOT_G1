@@ -32,15 +32,22 @@ const ControlPanel = ({ isConnected }) => {
     }
   }, [isConnected]);
 
-  useEffect(() => {
-    let interval;
-    if (startTime) {
-      interval = setInterval(() => {
-        setRuntime(Math.floor((Date.now() - startTime) / 1000));
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [startTime]);
+// Aktualisiere die Laufzeit und Distanz in einem Intervall
+useEffect(() => {
+  let interval;
+  if (isDriving) {
+    interval = setInterval(() => {
+      setRuntime((prevRuntime) => prevRuntime + 1); // Erhöhe die Laufzeit um 1 Sekunde
+      const speed = value * 0.174; // Geschwindigkeit in m/min
+      setDistance((prevDistance) => prevDistance + (speed / 60)); // Erhöhe die Distanz
+    }, 1000);
+  } else {
+    // Wenn der Roboter nicht fährt, setze das Intervall zurück
+    clearInterval(interval);
+  }
+
+  return () => clearInterval(interval); // Bereinige das Intervall
+}, [isDriving, value]);
 
 
   // Funktion zum Bewegen des Roboters in eine bestimmte Richtung
@@ -286,6 +293,7 @@ const ControlPanel = ({ isConnected }) => {
           ◁
         </button>
       )}
+     
       <InfoPanel
         distance={distance}
         runtime={runtime}

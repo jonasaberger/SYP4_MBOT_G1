@@ -23,7 +23,7 @@
   margin: 20px 0;
 }
 
-.div .control-section{
+.div .control-section {
   background-color: #005974;
 }
 
@@ -48,6 +48,30 @@
   background-color: gray;
 }
 
+.manual {
+  background-color: gray;
+}
+
+.manual.active {
+  background-color: white;
+}
+
+.automatic {
+  background-color: gray;
+}
+
+.automatic.active {
+  background-color: white;
+}
+
+.map {
+  background-color: gray;
+}
+
+.map.active {
+  background-color: white;
+}
+
 .active {
   box-shadow: 0 0 10px white;
 }
@@ -66,10 +90,12 @@
 
 body {
   height: 100%;
+  background-color: #005974;
 }
 
 body, html {
   overflow: hidden;
+  
 }
 
 @media (max-width: 768px) {
@@ -79,30 +105,6 @@ body, html {
     padding: 0;
     background-color: #005974; /* Passe die Hintergrundfarbe an */
   }
-<<<<<<< HEAD
-
-  .title {
-    font-size: 1.5rem;
-    padding: 10px;
-    padding-left: 20%;
-    padding-right: 20%;
-  }
-
-  .mode-buttons {
-    flex-direction: row;
-    gap: 5px;
-  }
-
-  .mode-buttons button {
-    width: 100%;
-    font-size: 0.9rem;
-    padding: 8px 15px;
-  }
-
-  .control-section {
-    width: 100%;
-    padding: 10px;
-=======
   
   .title {
       font-size: 1.5rem;
@@ -125,6 +127,5 @@ body, html {
   .control-section {
       width: 100%;
       padding: 10px;
->>>>>>> 9e44aa91ecadf29717d15b0dfa087a8dcccb11c4
   }
 }

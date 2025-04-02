@@ -189,17 +189,6 @@
     height: 200px;
   }
 
-<<<<<<< HEAD
-  .info-panel {
-    width: 150px;
-    padding: 10px;
-  }
-
-  .reveal-info-button {
-    padding: 8px 16px;
-    font-size: 14px;
-  }
-=======
   .reveal-info-button:hover {
     background-color: #e74c3c;
   }
@@ -239,5 +228,5 @@
         padding: 8px 16px;
         font-size: 14px;
     }
->>>>>>> 9e44aa91ecadf29717d15b0dfa087a8dcccb11c4
+}
 }

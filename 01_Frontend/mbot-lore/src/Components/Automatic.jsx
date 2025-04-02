@@ -29,6 +29,22 @@ const ControlPanel = () => {
     fetchRoutes();
   }, []);
 
+  useEffect(() => {
+    let interval;
+    if (isDriving) {
+      interval = setInterval(() => {
+        setRuntime((prevRuntime) => prevRuntime + 1); // Erhöhe die Laufzeit um 1 Sekunde
+        const speed = 50 * 0.174; // Beispielgeschwindigkeit: 50 (Slider-Wert) * 0.174 m/min
+        setDistance((prevDistance) => prevDistance + (speed / 60)); // Erhöhe die Distanz
+      }, 1000);
+    } else {
+      clearInterval(interval); // Stoppe das Intervall, wenn der Roboter nicht fährt
+    }
+
+    return () => clearInterval(interval); // Bereinige das Intervall, wenn sich der Zustand ändert
+  }, [isDriving]);
+
+
   const toggleCollapse = () => {
     setIsCollapsed((prev) => !prev);
   };
@@ -143,11 +159,7 @@ const ControlPanel = () => {
       <InfoPanel
         distance={distance}
         runtime={runtime}
-<<<<<<< HEAD
-        speed={runtime} // Placeholder bis Speed Funktionalität eingebaut wird
-=======
         speed={runtime} //Placeholder bis Speed Funktionalität eingebaut wird
->>>>>>> 9e44aa91ecadf29717d15b0dfa087a8dcccb11c4
         onToggleCollapse={toggleCollapse}
         isCollapsed={isCollapsed}
       />
