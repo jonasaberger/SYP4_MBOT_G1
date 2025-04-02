@@ -1,6 +1,6 @@
 import cyberpi
 import time
-import usocket # type: ignore
+import usocket  # type: ignore
 import os
 
 # Variables
@@ -83,7 +83,47 @@ def physical_module(socket, speed=50):
             elif txt == "right":
                 cyberpi.mbot2.turn_right(speed)
         time.sleep(0.1)
+
+def automatic_module(socket, speed=50):
+    start_initialized = True
+    cyberpi.console.println("Automatic Mode")
+
+    while True:
+        command, adr = socket.recvfrom(1024)
+        txt = str(command, "utf-8").strip()
+
+        if txt == "exit":
+            cyberpi.mbot2.EM_stop("all")
+            start_initialized = False
+            cyberpi.console.println("Exiting Automatic Mode..")
+            break 
+        elif txt == "end":
+            cyberpi.console.println("Ended Current-Route")
+            cyberpi.mbot2.EM_stop("all")
+            continue
+        elif txt.startswith("color:"):
+            change_color(txt)
+        elif txt.startswith("speed:"):
+            new_speed = int(txt.split(":")[1])
+            if 0 <= new_speed <= 100:
+                speed = new_speed
+                cyberpi.console.println("Speed: " + str(new_speed) + "%")
+            else:
+                cyberpi.console.println("Invalid speed!")
+                continue
         
+        if start_initialized and txt in ["forward", "backward", "left", "right", "stop"]:
+            if txt == "forward":
+                cyberpi.mbot2.forward(speed)
+            elif txt == "backward":
+                cyberpi.mbot2.backward(speed)
+            elif txt == "left":
+                cyberpi.mbot2.turn_left(speed)
+            elif txt == "right":
+                cyberpi.mbot2.turn_right(speed)
+            elif txt == "stop":
+                cyberpi.mbot2.EM_stop("all")
+        time.sleep(0.1)
 
 def discover_module():
     cyberpi.console.println("Discovery Mode")
@@ -110,6 +150,7 @@ cyberpi.led.on(0, 0, 0)
 
 physical_mode = False
 discover_mode = False
+automatic_mode = False
 connection_count = 0
 
 while True:
@@ -136,6 +177,11 @@ while True:
     elif txt == "controller" and not physical_mode:
         physical_mode = True
         physical_module(socket, movement_speed)
+
+    elif txt == "automatic" and not automatic_mode:
+        automatic_mode = True
+        automatic_module(socket, movement_speed)
+
     elif txt == "discovery" and not discover_mode:
         discover_mode = True
         discover_module()

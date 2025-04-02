@@ -57,5 +57,16 @@ class DB_Bridge:
         print("Log saved")
         return jsonify({"status": "success", "message": f"Log saved to database collection '{collection_name}'"})
     
+    def get_collection_names(self):
+        return self.db.list_collection_names()
 
+
+    def get_route(self, collection_name):
+        try:
+            collection = self.db[collection_name]
+            route = list(collection.find())
+            return route
+        except Exception as e:
+            print(f"Route not found: {e}")
+            return None
 

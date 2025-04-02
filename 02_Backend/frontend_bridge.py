@@ -13,18 +13,32 @@ class FrontendBridge:
         self.current_speed = 50  # Default speed
         self.current_color = "255,255,255"  # Default color
         self.current_mode = None
+        self.collection_names = []
+
+        self.stoproute = False
 
         self.mbot_bridge = mbb.MBotBridge()
+        self.db_bridge = dbb.DB_Bridge()
+
         # Ensure Logs directory exists
         if not os.path.exists('Logs'):
             os.makedirs('Logs')
 
+
+    def end_route(self):
+        self.stoproute = True
+        return jsonify({"status": "success", "message": "Route stopped"})
+
+
     # Receive commands from the frontend
     def receive_commands(self):
         data = request.json
-        mode = data.get("mode")
-        drive = data.get("drive")
         ip_target = data.get("ip-target")
+        mode = data.get("mode")
+
+        drive = data.get("drive")
+        route = data.get("route")
+        
         ip_source = request.remote_addr
         color = data.get("color")
         speed = data.get("speed")
@@ -64,6 +78,42 @@ class FrontendBridge:
                 self.start_time = time.time()  # Reset start time for the next command
                 print(f"Command recorded: {self.command_log[-1]}")
 
+        if self.current_mode == "automatic":
+
+            # Update the collection names from the database
+            self.collection_names = self.db_bridge.get_collection_names()
+
+            if route:
+                # Get the specific route from the database
+                route_data = self.db_bridge.get_route(route)
+                print(f"Route data: {route_data}")
+
+                for command in route_data:
+                    if self.stoproute:
+                        print("Automatic mode stopped its route")
+                        self.mbot_bridge.send_message("end")
+                        self.stoproute = False
+                        break
+
+                    direction = command.get("direction")
+                    speed = command.get("speed")
+                    duration = command.get("duration")
+                    color = command.get("color")
+
+                    # Send the command to the mBot
+
+                    # Change the color or speed of the mBot
+                    self.mbot_bridge.send_message("color:" + color)
+                    self.mbot_bridge.send_message("speed:" + speed)
+
+                    # Send the drive command to the mBot
+                    if direction in ["forward", "backward", "left", "right", "stop"]:
+                        self.mbot_bridge.send_message(direction)
+
+                    time.sleep(duration)
+
+                
+
         # Change the color or speed of the mBot
         elif color:
             self.current_color = color
@@ -75,7 +125,7 @@ class FrontendBridge:
             print(f"Speed changed to: {speed}")
 
         # Stop recording when the user enters the mode exit
-        if drive == "exit":
+        if drive == "exit" and mode == "controller":
             self.recording = False
 
             log_file_path = os.path.join('Logs', 'command_log.json')
@@ -87,7 +137,16 @@ class FrontendBridge:
             with open(log_file_path, "r") as f:
                 print(f.read())  # Print the command log to the console
 
+
+        if drive == "exit" and mode == "automatic":
+            print("Exiting automatic mode")
+            
         return jsonify({"status": "success", "message": "Command received"})  # Return a valid response
+
+
+    # Return all the prev saved routes to the frontend
+    def get_all_routes(self):
+        return jsonify(self.collection_names)
 
     # TODO: Send the battery status once when connecting to the frontend
     def get_status_route(self):
