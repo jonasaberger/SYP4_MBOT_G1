@@ -226,6 +226,37 @@
   border-width: 0;
 }
 
+.map-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  width: fit-content;
+  margin: auto;
+}
+
+.map-row {
+  display: flex;
+  gap: 5px;
+}
+
+.map-cell {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #ddd;
+}
+
+.map-cell.empty {
+  background-color: white;
+}
+
+.map-cell.obstacle {
+  background-color: red;
+}
+
 @media (max-width: 768px) {
   .control-section {
       height: auto;
