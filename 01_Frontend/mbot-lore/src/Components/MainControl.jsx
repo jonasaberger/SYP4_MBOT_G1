@@ -6,7 +6,7 @@ import { sendCommand } from "../API_Service/service";
 import "./css/MainControl.css";
 
 const MainControl = () => {
-  const [mode, setMode] = useState("manual");
+  const [mode, setMode] = useState("automatic");
   const isChangingMode = useRef(false);
   const hasInitialized = useRef(false);
 

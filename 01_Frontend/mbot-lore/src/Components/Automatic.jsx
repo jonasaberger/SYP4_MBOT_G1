@@ -7,7 +7,7 @@ import "./css/DefineRouteInterface.css";
 import { getRoutes, sendCommand, sendEndRouteCommand } from "../API_Service/service";
 
 const ControlPanel = () => {
-  const [direction, setDirection] = useState(null);
+  const [direction, setDirection] = useState("forward");
   const [distance, setDistance] = useState(0);
   const [runtime, setRuntime] = useState(0);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -126,8 +126,9 @@ const ControlPanel = () => {
       </div>
 
       <div className="robot-placeholder">
+        {console.log(`Robot is moving ${direction}`)}
         {direction ? (
-          <img src={`/images/${direction}.png`} alt={`Robot facing ${direction}`} />
+          <img src={require(`../Images/${direction}.png`)} alt={`Robot facing ${direction}`} />
         ) : (
           "Robot Placeholder"
         )}
