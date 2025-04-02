@@ -31,27 +31,27 @@ const DefineRouteInterface = ({ onClose }) => {
     };
 
     setCheckpoints([...checkpoints, newCheckpoint]);
-    setDirection(""); // Reset direction input
-    setLength(""); // Reset length input
+    setDirection(""); 
+    setLength(""); 
   };
 
   const finalizeRoute = async () => {
-    // Füge den letzten Checkpoint mit "stop" hinzu
+    
     const stopCheckpoint = {
       direction: "stop",
       length: "0",
       speed: "0",
-      color: "#000000", // Standardfarbe für "stop"
+      color: "#000000", 
     };
 
     const finalCheckpoints = [...checkpoints, stopCheckpoint];
     console.log("Final Route:", finalCheckpoints);
 
     try {
-      // Route an das Backend senden
+      
       await sendDefinedRoute("MyRoute", finalCheckpoints);
       alert("Route erfolgreich erstellt und gesendet!");
-      onClose(); // Schließe das Interface
+      onClose(); 
     } catch (error) {
       console.error("Fehler beim Senden der Route:", error);
       alert("Fehler beim Senden der Route. Bitte erneut versuchen.");
