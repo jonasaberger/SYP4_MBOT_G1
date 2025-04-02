@@ -4,9 +4,7 @@ import "./css/sharedStyles.css";
 import InfoPanel from "./InfoPanel";
 import DefineRouteInterface from "./DefineRouteInterface";
 import "./css/DefineRouteInterface.css";
-import { getRoutes, sendCommand } from "../API_Service/service";
-
-//Die ganze liste mti dem Chekcpoint schicken. am ende muss stop sein.
+import { getRoutes, sendCommand, sendEndRouteCommand } from "../API_Service/service";
 
 const ControlPanel = () => {
   const [direction, setDirection] = useState(null);
@@ -48,10 +46,10 @@ const ControlPanel = () => {
       } catch (error) {
         console.error("Fehler beim Starten der Route:", error);
       }
-    }
-    else if(isDriving){
+    } else if (isDriving) {
       try {
-        await sendCommand("drive", "exit");
+        console.log("Drive stoppen");
+        await sendEndRouteCommand();
         console.log("Drive gestoppt");
       } catch (error) {
         console.error("Fehler beim Stoppen der Route:", error);
@@ -63,6 +61,12 @@ const ControlPanel = () => {
     setShowDefineRoute(true);
   };
 
+  const handleMove = (dir) => {
+    setDirection(dir);
+    setDistance((prev) => prev + 1);
+    setRuntime((prev) => prev + 1);
+  };
+
   return (
     <div className="control-panel">
       <div className="left-container">
@@ -70,8 +74,15 @@ const ControlPanel = () => {
           <button className="define-route-button" onClick={handleDefineRoute}>
             Define Route
           </button>
-          <select className="route-select" value={route} onChange={handleRouteChange}>
-            {/* <option value="">Select Route</option> */}
+          <select
+            className="route-select"
+            value={route}
+            onChange={handleRouteChange}
+            disabled={isDriving} // Dropdown deaktivieren, wenn eine Route aktiv ist
+          >
+            <option value="" disabled>
+              Select Route
+            </option>
             {routes.map((routeName) => (
               <option key={routeName} value={routeName}>
                 {routeName}
@@ -85,7 +96,8 @@ const ControlPanel = () => {
         <div className="direction-buttons-container">
           <div className="direction-button-up">
             <button
-              className={`start-stop-button up ${direction === "forward" ? "active" : ""}`}
+              className={`start-stop-button up ${direction === "up" ? "active" : ""}`}
+              onClick={() => handleMove("up")}
             >
               ↑
             </button>
@@ -93,16 +105,19 @@ const ControlPanel = () => {
           <div className="direction-buttons">
             <button
               className={`start-stop-button left ${direction === "left" ? "active" : ""}`}
+              onClick={() => handleMove("left")}
             >
               ←
             </button>
             <button
-              className={`start-stop-button down ${direction === "backward" ? "active" : ""}`}
+              className={`start-stop-button down ${direction === "down" ? "active" : ""}`}
+              onClick={() => handleMove("down")}
             >
               ↓
             </button>
             <button
               className={`start-stop-button right ${direction === "right" ? "active" : ""}`}
+              onClick={() => handleMove("right")}
             >
               →
             </button>
@@ -110,11 +125,11 @@ const ControlPanel = () => {
         </div>
       </div>
 
-      <div className="mbot-image-container">
+      <div className="robot-placeholder">
         {direction ? (
-          <img src={require(`../Images/${direction}.png`)} alt={`Robot facing ${direction}`} />
+          <img src={`/images/${direction}.png`} alt={`Robot facing ${direction}`} />
         ) : (
-          <img src={require(`../Images/forward.png`)} alt={`Robot facing ${direction}`} />
+          "Robot Placeholder"
         )}
       </div>
       {/* Einblenden-Button, wenn die Infobox eingeklappt ist */}
@@ -127,10 +142,11 @@ const ControlPanel = () => {
       <InfoPanel
         distance={distance}
         runtime={runtime}
+        speed={runtime} // Placeholder bis Speed Funktionalität eingebaut wird
         onToggleCollapse={toggleCollapse}
         isCollapsed={isCollapsed}
       />
-      {showDefineRoute && <DefineRouteInterface onClose={() => setShowDefineRoute(false)} />} {/* Pass the onClose prop */}
+      {showDefineRoute && <DefineRouteInterface onClose={() => setShowDefineRoute(false)} />}
     </div>
   );
 };

@@ -3,7 +3,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import ConnectionComponent from './Connection';
+import ConnectionComponent from '../Components/Connection';
 import { sendCommand } from '../API_Service/service';
 
 jest.mock('../API_Service/service');

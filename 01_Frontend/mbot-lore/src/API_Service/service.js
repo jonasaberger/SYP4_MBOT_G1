@@ -24,6 +24,7 @@ export const sendCommand = async (key, value) => {
   }
 
   try {
+    console.log(`Sende Befehl: ${key} = ${value}...`);
     const response = await axios.post(`${apiBaseURL}/receive_commands`, { [key]: value });
  
     if (!response || response.status !== 200) {
@@ -71,6 +72,18 @@ export const startDriveSequence = async (driveCommand) => {
   }
 };
 
+
+export const sendEndRouteCommand = async () => {
+  try {
+    const response = await axios.post(`${apiBaseURL}/end_route`);
+    console.log("EndRoute-Befehl erfolgreich gesendet:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Fehler beim Senden des EndRoute-Befehls:", error.response?.data || error.message);
+    throw new Error("Fehler beim Senden des EndRoute-Befehls");
+  }
+};
+
 /**
  * Sendet ein Stop-Signal, falls keine Fahrtrichtung gewählt wurde.
  */
@@ -108,6 +121,27 @@ export const sendSaveRoute = async (routeName) => {
     throw new Error('Fehler beim Speichern der Route');
   }
 }
+
+export const sendDefinedRoute = async (routeName, checkpoints) => {
+  try {
+    const payload = {
+      routeName: routeName, // Name der Route
+      checkpoints: checkpoints.map((checkpoint) => ({
+        direction: checkpoint.direction,
+        length: checkpoint.length,
+        speed: checkpoint.speed,
+        color: checkpoint.color,
+      })),
+    };
+
+    const response = await axios.post(`${apiBaseURL}/send_route`, payload);
+    console.log(`Route "${routeName}" erfolgreich gesendet:`, payload);
+    return response.data;
+  } catch (error) {
+    console.error('Fehler beim Senden der Route:', error.response?.data || error.message);
+    throw new Error('Fehler beim Senden der Route');
+  }
+};
 
 export const getRoutes = async () => {
   try{

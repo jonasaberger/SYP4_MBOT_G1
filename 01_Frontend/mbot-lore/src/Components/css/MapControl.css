@@ -27,8 +27,8 @@
   left: 10%;
 }
 
-.control-button.active{
-  background-color:#016E8F
+.control-button.active {
+  background-color: #016E8F;
 }
 
 .control-button {
@@ -103,40 +103,6 @@
   opacity: 0;
 }
 
-.toggle-button {
-  padding: 5px;
-  background-color: #d9534f;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  margin-bottom: 10px;
-}
-
-.info-panel p {
-  margin: 5px 0;
-}
-/* Einklappbare Infobox auf der rechten Seite */
-.info-panel {
-  position: absolute;
-  right: 10px;
-  top: 10%;
-  background-color: rgba(51, 51, 51, 0.8);
-  color: white;
-  padding: 15px;
-  border-radius: 8px;
-  width: 200px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  z-index: 10;
-}
-
-/* Style, wenn die Infobox eingeklappt ist */
-.info-panel.collapsed {
-  transform: translateX(100%);
-  opacity: 0;
-}
-
 /* Button zum Einklappen */
 .toggle-button {
   padding: 5px;
@@ -149,7 +115,6 @@
   font-size: 20px;
 }
 
-/* Pfeil-Toggle-Button im ausgeklappten Zustand */
 .toggle-button:hover {
   background-color: #e74c3c;
 }
@@ -157,6 +122,7 @@
 .info-panel p {
   margin: 5px 0;
 }
+
 /* Button zum Einblenden der Infobox */
 .reveal-info-button {
   padding: 10px 20px;
@@ -177,7 +143,7 @@
   background-color: #005974;
 }
 
-.speed-slider{
+.speed-slider {
   appearance: none;
   width: 100%;
   height: 8px;
@@ -220,7 +186,7 @@
   width: 50px;
   height: 25px;
   background-color: #ccc;
-  border-radius: 25px;  
+  border-radius: 25px;
   position: relative;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -253,9 +219,46 @@
   background-color: red;
 }
 
-.led-color-button{
+.led-color-button {
   background-color: red;
   width: 25px;
   height: 25px;
   border-width: 0;
+}
+
+@media (max-width: 768px) {
+  .control-section {
+    height: auto;
+  }
+
+  .control-panel {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .left-container {
+    position: static;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .control-button, .route-select {
+    font-size: 14px;
+    padding: 8px 15px;
+  }
+
+  .robot-placeholder {
+    width: 100%;
+    height: 200px;
+  }
+
+  .info-panel {
+    width: 150px;
+    padding: 10px;
+  }
+
+  .reveal-info-button {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
 }

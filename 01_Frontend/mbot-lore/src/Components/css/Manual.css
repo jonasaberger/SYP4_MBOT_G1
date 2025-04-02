@@ -1,7 +1,7 @@
 @import './sharedStyles.css';
 
-.control-button.active{
-  background-color:#016E8F
+.control-button.active {
+  background-color: #016E8F;
 }
 
 .control-button:hover {
@@ -20,7 +20,7 @@
   margin-bottom: 10px;
 }
 
-.speed-slider{
+.speed-slider {
   appearance: none;
   width: 100%;
   height: 8px;
@@ -63,7 +63,7 @@
   width: 50px;
   height: 25px;
   background-color: #ccc;
-  border-radius: 25px;  
+  border-radius: 25px;
   position: relative;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -95,19 +95,19 @@
   background-color: red;
 }
 
-.led-color-button{
+.led-color-button {
   background-color: red;
   width: 25px;
   height: 25px;
   border-width: 0;
 }
+
 .led-color-picker-container {
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-
 
 .led-color-picker-toggle {
   display: inline-block;
@@ -116,29 +116,21 @@
   cursor: pointer;
 }
 
-.led-indicator {
-  width: 100%;
-  height: 100%;
-  border-width: 10%;
-  border-color: #000000;
-  
-}
-
 .led-color-picker {
   position: absolute;
   left: 50%;
-  transform: translateX(30%);
+  transform: translateX(-50%);
   background: #2e2e42;
   padding: 10px;
   border-radius: 8px;
-  border-width: 10%;
-  border-color: #000000;
+  border: 1px solid #000000;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   z-index: 1000;
-  max-width: 90vw; 
+  max-width: 90vw;
   max-height: 90vh;
-  overflow: auto; 
+  overflow: auto;
 }
+
 .color-submit-button {
   margin-top: 10px;
   padding: 10px 20px;
@@ -152,4 +144,62 @@
 
 .color-submit-button:hover {
   background-color: #373937;
+}
+
+.mbot-image-container {
+  width: 300px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin-top: 20px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.mbot-image-container img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .control-button, .route-select {
+    font-size: 14px;
+    padding: 8px 15px;
+  }
+
+  .speed-slider {
+    height: 6px;
+  }
+
+  .speed-slider::-webkit-slider-thumb {
+    width: 12px;
+    height: 12px;
+  }
+
+  .led-container {
+    height: 35px;
+    margin-bottom: 30px;
+  }
+
+  .led-label {
+    font-size: 1rem;
+    margin-left: 10px;
+  }
+
+  .toggle-switch {
+    width: 40px;
+    height: 20px;
+  }
+
+  .toggle-handle {
+    width: 18px;
+    height: 18px;
+  }
+
+  .toggle-switch.on .toggle-handle {
+    left: 20px;
+  }
 }
