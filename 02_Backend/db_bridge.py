@@ -38,6 +38,21 @@ class DB_Bridge:
         except Exception as e:
             print(f"Speichern fehlgeschlagen: {e}")
 
+    # Save a custom-defined route to the MongoDB database
+    def push_data_DB(self, collection_name, route_data):
+        try:
+            # Drop the existing collection if it exists
+            if collection_name in self.db.list_collection_names():
+                self.db.drop_collection(collection_name)
+            
+            # Create a new collection
+            collection = self.db[collection_name]
+            # Insert the route data into the new collection
+            collection.insert_many(route_data)
+            print("Route erfolgreich gespeichert!")
+        except Exception as e:
+            print(f"Speichern fehlgeschlagen: {e}")
+
     # Save the locally stored command log to the database
     def save_log(self):
         data = request.json

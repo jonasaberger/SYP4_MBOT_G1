@@ -25,6 +25,22 @@ class FrontendBridge:
             os.makedirs('Logs')
 
 
+    # Get a custom-defined route from the frontend and save it to the database
+    def define_route(self):
+        data = request.json
+        route_name = data.get("route_name")
+        route_data = data.get("route_data")
+
+        if not route_name or not route_data:
+            return jsonify({"status": "error", "message": "Route name and data are required"}), 400
+
+        # Save the route to the database
+        self.db_bridge.push_data_DB(route_name, route_data)
+        print(f"Route '{route_name}' saved to database")
+
+        return jsonify({"status": "success", "message": f"Route '{route_name}' saved to database"})
+
+
     def end_route(self):
         self.stoproute = True
         return jsonify({"status": "success", "message": "Route stopped"})
@@ -113,7 +129,6 @@ class FrontendBridge:
                     time.sleep(duration)
 
                 
-
         # Change the color or speed of the mBot
         elif color:
             self.current_color = color
