@@ -2,6 +2,7 @@ import cyberpi
 import time
 import usocket  # type: ignore
 import os
+import heapq
 
 # Variables
 movement_speed = 50
@@ -56,42 +57,41 @@ def measure_dimension(direction):
     
     return counter
 
-def bfs_mapping(start_x, start_y):
-    queue = [(start_x, start_y)]  # Start with the initial position
-    visited[start_x][start_y] = 0  # Mark the start point as visited
+def mapping(start_x, start_y):
+    visited[start_x][start_y] = 1  # Mark the start point as visited
+    
+    while all_spots_visited() == False:
+        target = find_next_target()
+        
+        
+        
 
-    directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # Directions for BFS (right, down, left, up)
+def find_next_target():
+    for row_index, row in enumerate(visited):
+        for col_index, value in enumerate(row):
+            if value == 0:
+                return row_index, col_index
+    return None
 
-    while queue:
-        x, y = queue.pop(0)  # Pop the next coordinate from the queue
+def all_spots_visited():
+    for row in visited:
+        for elem in row:
+            if elem == 1 or elem == 2:
+                return True
+    return False
+    
+    
+def move_straight():
+    cyberpi.mbot2.forward(20)
+    time.sleep(1)
+    cyberpi.mbot2.EM_stop("all")
 
-        # Move and check each direction
-        for dx, dy in directions:
-            nx = x + dx
-            ny = y + dy
+def turn_right():
+    cyberpi.mbot2.turn(90)
 
-            # Ensure the new coordinates are within bounds and not visited
-            if 0 <= nx < height and 0 <= ny < width and visited[nx][ny] == 1:
-                # Check for obstacle *before* moving
-                if cyberpi.ultrasonic2.get(1) > 10:  # No obstacle within 10cm
-                    # Move towards the new position
-                    cyberpi.mbot2.forward(20)
-                    time.sleep(1)  # Move forward for 1 second
-                    cyberpi.mbot2.EM_stop("all")  # Stop after moving
-
-                    # After moving, mark as visited and update map
-                    room_map[nx][ny] = 0  # Free space
-                    visited[nx][ny] = 0  # Mark as visited
-                    queue.append((nx, ny))  # Add to the queue for further exploration
-                else:
-                    # If obstacle detected, mark as a wall
-                    room_map[nx][ny] = 1  # Wall
-
-        # Turn 90 degrees to explore the next direction
-        cyberpi.mbot2.turn(90)
-        time.sleep(1)  # Adjust sleep to give time for turning
-
-
+def turn_left():
+    cyberpi.mbot2.turn(-90)
+    
 
 def physical_module(socket, speed=50):
     global start_initialized
@@ -180,18 +180,30 @@ def discover_module():
     height = measure_dimension("height")  # Measure height
     width = measure_dimension("width")  # Measure width
 
-    room_map = [[0 for _ in range(width)] for _ in range(height)]  # Initialize the map
-    visited = [[1 for _ in range(width)] for _ in range(height)]  # Initialize visited cells
+    # Initialize room map with zeros (free space)
+    room_map = []  
+    for _ in range(height):  
+        row = []  
+        for _ in range(width):  
+            row.append(0)  
+        room_map.append(row) 
+     
+    visited = []  
+    for _ in range(height):  
+        row = []  
+        for _ in range(width):  
+            row.append(1)  
+        visited.append(row)
 
     cyberpi.console.println("Room size detected: " + str(width) + "x" + str(height))
 
-    # Start BFS to explore and drive through the room map
-    bfs_mapping(0, 0)  # Start BFS from (0, 0)
+    # Start algorithm to explore and drive through the room map
+    mapping(0, 0) 
 
     # After the BFS exploration, print the map
-    cyberpi.console.println("Mapped Room:")
-    for row in room_map:
-        cyberpi.console.println(" ".join(str(cell) for cell in row))
+    # cyberpi.console.println("Mapped Room:")
+    # for row in room_map:
+        #cyberpi.console.println(" ".join(str(cell) for cell in row))
 
 def change_color(txt):
     color_data = txt.split(":")[1]
