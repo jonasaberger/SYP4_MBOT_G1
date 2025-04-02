@@ -21,7 +21,7 @@ const ControlPanel = () => {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [pressedKeys, setPressedKeys] = useState(new Set());
   const [sentDirection, setSentDirection] = useState(false);
-  const [showPopup, setShowPopup] = useState(false); // State to manage popup visibility
+  const [showPopup, setShowPopup] = useState(false);
   let sendStop = true;
 
   // Funktion zum Bewegen des Roboters in eine bestimmte Richtung
@@ -82,7 +82,7 @@ const ControlPanel = () => {
 
   // Umschalten des LED-Status
   const toggleSwitch = async () => {
-    //setShowPopup(true);
+    setShowPopup(true);
     const batteryStatus = await fetchBattery();
     setBattery(batteryStatus.battery);
     console.log("Battery:", batteryStatus);
@@ -273,7 +273,7 @@ const ControlPanel = () => {
         onToggleCollapse={toggleCollapse}
         isCollapsed={isCollapsed}
       />
-      {showPopup && <SaveRoutePopup onClose={() => setShowPopup(false)} />} {/* Conditionally render the popup */}
+      {showPopup && <SaveRoutePopup onClose={() => setShowPopup(false)} />} {}
     </div>
   );
 };

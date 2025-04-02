@@ -31,7 +31,7 @@ const ConnectionComponent = () => {
   useEffect(() => {
     const loadSessions = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/sessions'); // Port 3001
+        const response = await fetch('http://localhost:3000/api/sessions'); // Port 3001
   
         if (!response.ok) throw new Error("Fehler beim Laden der Sessions");
   

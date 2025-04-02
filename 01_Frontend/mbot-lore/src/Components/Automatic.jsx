@@ -39,7 +39,6 @@ const ControlPanel = () => {
             Define Route
           </button>
           <select className="route-select" value={route} onChange={handleRouteChange}>
-            <option value="">Select Route</option>
             <option value="route1">Route 1</option>
             <option value="route2">Route 2</option>
             <option value="route3">Route 3</option>

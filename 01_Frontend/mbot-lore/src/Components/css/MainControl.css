@@ -4,6 +4,7 @@
   align-items: center;
   background-color: #005974;
   padding: 20px;
+  box-sizing: border-box; 
 }
 
 .title {
