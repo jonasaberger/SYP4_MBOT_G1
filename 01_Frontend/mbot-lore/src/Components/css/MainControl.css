@@ -79,6 +79,7 @@ body, html {
     padding: 0;
     background-color: #005974; /* Passe die Hintergrundfarbe an */
   }
+<<<<<<< HEAD
 
   .title {
     font-size: 1.5rem;
@@ -101,5 +102,29 @@ body, html {
   .control-section {
     width: 100%;
     padding: 10px;
+=======
+  
+  .title {
+      font-size: 1.5rem;
+      padding: 10px;
+      padding-left: 20%;
+      padding-right: 20%;
+  }
+
+  .mode-buttons {
+      flex-direction: row;
+      gap: 5px;
+  }
+
+  .mode-buttons button {
+      width: 100%;
+      font-size: 0.9rem;
+      padding: 8px 15px;
+  }
+
+  .control-section {
+      width: 100%;
+      padding: 10px;
+>>>>>>> 9e44aa91ecadf29717d15b0dfa087a8dcccb11c4
   }
 }
