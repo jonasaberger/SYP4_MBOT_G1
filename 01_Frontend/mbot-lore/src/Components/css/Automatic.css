@@ -40,3 +40,20 @@
     cursor: pointer;
     margin-bottom: 10px;
 }
+
+@media (max-width: 768px) {
+    .define-route-button, .route-select, .drive-button {
+        padding: 8px 15px; /* Kleinere Buttons auf mobilen Geräten */
+        font-size: 14px; /* Kleinere Schriftgröße */
+        height: 35px; /* Kleinere Höhe */
+    }
+
+    .route-select {
+        padding-right: 35px; /* Weniger Platz für das Pfeil-Symbol */
+    }
+
+    .toggle-button {
+        padding: 4px;
+        font-size: 16px;
+    }
+}

@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 
 const app = express();
 app.use(cors({
-  origin: 'http://localhost:3002',  // Erlaubt Anfragen vom React-Frontend
+  origin: 'http://localhost:3000',  // Erlaubt Anfragen vom React-Frontend
   methods: 'GET,POST',
   allowedHeaders: 'Content-Type'
 }));
@@ -26,9 +26,6 @@ app.get('/api/sessions', (req, res) => {
     res.json({ sessions });
   });
 });
-
-
-
 
 app.post('/api/save-sessions', (req, res) => {
   console.log("POST /api/save-sessions aufgerufen");

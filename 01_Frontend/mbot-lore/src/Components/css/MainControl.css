@@ -8,8 +8,8 @@
 
 .title {
   font-size: 2rem;
-  color: black;
-  background-color: #f3e5ab;
+  color: rgb(255, 255, 255);
+  background-color: #292D32;
   padding: 10px 20px;
   border-radius: 5px;
   padding-left: 35%;
@@ -21,6 +21,10 @@
   display: flex;
   gap: 10px;
   margin: 20px 0;
+}
+
+.div .control-section{
+  background-color: #005974;
 }
 
 .mode-buttons button {
@@ -36,11 +40,11 @@
   width: 10em;
 }
 
-.mode-buttons button.active{
+.mode-buttons button.active {
   background-color: white;
 }
 
-.mode-buttons button.inactive{
+.mode-buttons button.inactive {
   background-color: gray;
 }
 
@@ -60,10 +64,42 @@
   min-height: 100%;
 }
 
-body{
-    height: 100%;
+body {
+  height: 100%;
 }
 
 body, html {
   overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #005974; /* Passe die Hintergrundfarbe an */
+  }
+
+  .title {
+    font-size: 1.5rem;
+    padding: 10px;
+    padding-left: 20%;
+    padding-right: 20%;
+  }
+
+  .mode-buttons {
+    flex-direction: row;
+    gap: 5px;
+  }
+
+  .mode-buttons button {
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 8px 15px;
+  }
+
+  .control-section {
+    width: 100%;
+    padding: 10px;
+  }
 }

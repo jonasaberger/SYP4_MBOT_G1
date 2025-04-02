@@ -1,0 +1,409 @@
+.define-route-interface {
+  padding: 16px;
+  background-color: #1a202c; /* Dunkelgrauer Hintergrund */
+  color: #ffffff; /* Weißer Text */
+  border-radius: 8px;
+  max-width: 300px;
+  margin: 0 auto;
+} 
+
+.define-route-interface button {
+  background-color: #4a5568; /* Mittelgrauer Hintergrund */
+  color: #ffffff; /* Weißer Text */
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-right: 8px;
+}
+
+.define-route-interface button:hover {
+  background-color: #2d3748; /* Dunklerer Hintergrund beim Hover */
+}
+
+.define-route-interface .input-group {
+  margin-top: 16px;
+}
+
+.define-route-interface label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+
+.define-route-interface input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #cbd5e0; /* Hellgrauer Rand */
+  border-radius: 4px;
+  margin-bottom: 8px;
+  background-color: #2d3748;
+  color: #ffffff;
+}
+
+.define-route-interface .led-control {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.define-route-interface .led-control span {
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.define-route-interface .led-control input[type="checkbox"] {
+  margin-left: 8px;
+}
+
+.define-route-interface .led-control .color-preview {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #cbd5e0; /* Hellgrauer Rand */
+  border-radius: 4px;
+  margin-left: 8px;
+}
+
+.define-route-interface .checkpoints {
+  background-color: #e9d8fd; /* Helles Lila */
+  color: #1a202c; /* Dunkelgrauer Text */
+  padding: 16px;
+  margin-top: 16px;
+  border-radius: 8px;
+}
+
+.define-route-interface .checkpoints .checkpoint {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  border-bottom: 1px solid #cbd5e0; /* Hellgrauer Rand */
+}
+
+.define-route-interface .checkpoints .checkpoint:last-child {
+  border-bottom: none;
+}
+
+.define-route-interface .checkpoints .checkpoint button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #e53e3e; /* Rote Farbe für den Lösch-Button */
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .define-route-interface {
+    padding: 12px;
+  }
+
+  .define-route-interface button {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+
+  .define-route-interface label {
+    font-size: 14px;
+  }
+
+  .define-route-interface input[type="text"] {
+    padding: 6px;
+    font-size: 14px;
+  }
+
+  .define-route-interface .led-control span {
+    font-size: 14px;
+  }
+
+  .define-route-interface .led-control .color-preview {
+    width: 20px;
+    height: 20px;
+  }
+
+  .define-route-interface .checkpoints {
+    padding: 12px;
+  }
+
+  .define-route-interface .checkpoints .checkpoint {
+    padding: 6px;
+  }
+
+  .define-route-interface .checkpoints .checkpoint button {
+    font-size: 14px;
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #1a202c;
+  color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 400px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.modal-body {
+  max-height: 70vh;
+  overflow-y: auto; /* Allow vertical scrolling */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.modal-body label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.modal-body input {
+  width: 100%;
+  border: 1px solid #cbd5e0;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  background-color: #2d3748;
+  color: #ffffff;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.modal-body .led-control {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.modal-body .led-control span {
+  margin-right: 8px;
+  font-weight: bold;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.modal-body .led-control input[type="checkbox"] {
+  margin-left: 8px;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.modal-body .led-control .color-preview {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #cbd5e0;
+  border-radius: 4px;
+  margin-left: 8px;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.modal-body .checkpoints {
+  background-color: #e9d8fd;
+  color: #1a202c;
+  padding: 16px;
+  margin-top: 16px;
+  border-radius: 8px;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.modal-body .checkpoints .checkpoint {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  border-bottom: 1px solid #cbd5e0;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.modal-body .checkpoints .checkpoint:last-child {
+  border-bottom: none;
+}
+
+.modal-body .checkpoints .checkpoint button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #e53e3e;
+  font-size: 16px;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.led-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  background-color: white;
+  height: 40px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.led-label {
+  font-size: 1.2rem;
+  color: black;
+  margin-left: 20px;
+  margin-right: 10px;
+  font-weight: bold;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.toggle-switch {
+  width: 50px;
+  height: 25px;
+  background-color: #ccc;
+  border-radius: 25px;  
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-right: 14px;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.toggle-switch.on {
+  background-color: #005974;
+}
+
+.toggle-handle {
+  width: 23px;
+  height: 23px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  transition: left 0.3s;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.toggle-switch.on .toggle-handle {
+  left: 26px;
+}
+
+.led-indicator {
+  width: 1.5em;
+  height: 1.5em;
+  background-color: red;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.led-color-picker-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.led-color-picker-toggle {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.led-color-picker {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2e2e42;
+  padding: 10px;
+  border-radius: 8px;
+  border-width: 10%;
+  border-color: #000000;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  max-width: 90vw; 
+  max-height: 90vh;
+  overflow: auto; 
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.color-submit-button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #000000;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.color-submit-button:hover {
+  background-color: #373937;
+}
+
+.speed-slider {
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 5px;
+  outline: none;
+  background: linear-gradient(to right, #016E8F 50%, #ddd 50%);
+  transition: background 0.1s;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.speed-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  background: #016E8F;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.3s;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.speed-slider::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  background: #016E8F;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.3s;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}
+
+.speed-slider::-ms-thumb {
+  width: 15px;
+  height: 15px;
+  background: #016E8F;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.3s;
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+}

@@ -6,27 +6,31 @@ import { sendCommand } from "../API_Service/service";
 import "./css/MainControl.css";
 
 const MainControl = () => {
-  const [mode, setMode] = useState("manual");
+  const [mode, setMode] = useState("automatic");
   const isChangingMode = useRef(false);
   const hasInitialized = useRef(false);
 
   useEffect(() => {
     if (!hasInitialized.current) {
-      sendCommand("mode", "controller");
+      sendCommand("mode", "controller")
+        .then(() => console.log("Initial mode set to controller"))
+        .catch((error) => console.error("Fehler beim Setzen des Modus:", error));
       hasInitialized.current = true;
     }
   }, []);
 
   const handleModeChange = async (newMode, event) => {
-    event.preventDefault();
+    if (event) event.preventDefault();
     if (isChangingMode.current || newMode === mode) {
+      console.log("Moduswechsel blockiert oder Modus bereits aktiv.");
       return;
     }
 
     isChangingMode.current = true;
 
     try {
-      await sendCommand("mode", "exit");
+      console.log(`Wechsle Modus zu: ${newMode}`);
+      await sendCommand("mode", "exit"); // Beende den aktuellen Modus
       if (newMode === "manual") {
         await sendCommand("mode", "controller");
       } else if (newMode === "map") {
@@ -35,10 +39,11 @@ const MainControl = () => {
         await sendCommand("mode", "automatic");
       }
       setMode(newMode);
+      console.log(`Modus erfolgreich gewechselt zu: ${newMode}`);
+    } catch (error) {
+      console.error("Fehler beim Wechseln des Modus:", error);
     } finally {
-      setTimeout(() => {
-        isChangingMode.current = false;
-      }, 500);
+      isChangingMode.current = false;
     }
   };
 
