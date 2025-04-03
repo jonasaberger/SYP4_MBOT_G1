@@ -7,6 +7,8 @@ import heapq
 # Variables
 movement_speed = 50
 tracking_enabled = False  # To track whether "start" has been received
+x_pos, y_pos = 0, 0
+direction = 1  # Startet nach rechts (Osten)
 
 def network_module():
     # Connect the MBOT to the school Wi-Fi
@@ -57,40 +59,71 @@ def measure_dimension(direction):
     
     return counter
 
-def mapping(start_x, start_y):
-    visited[start_x][start_y] = 1  # Mark the start point as visited
-    
-    while all_spots_visited() == False:
-        target = find_next_target()
-        
-        
-        
+# Simulierte Bewegungsfunktionen (statt CyberPi)
+def move_forward():
+    global x_pos, y_pos, direction
+    if direction == 0:  # Norden
+        y_pos -= 1
+    elif direction == 1:  # Osten
+        x_pos += 1
+    elif direction == 2:  # Süden
+        y_pos += 1
+    elif direction == 3:  # Westen
+        x_pos -= 1
 
-def find_next_target():
-    for row_index, row in enumerate(visited):
-        for col_index, value in enumerate(row):
-            if value == 0:
-                return row_index, col_index
-    return None
-
-def all_spots_visited():
-    for row in visited:
-        for elem in row:
-            if elem == 1 or elem == 2:
-                return True
-    return False
-    
-    
-def move_straight():
     cyberpi.mbot2.forward(20)
     time.sleep(1)
-    cyberpi.mbot2.EM_stop("all")
+
+def move_backwards():
+    global x_pos, y_pos, direction
+    if direction == 0:  # Norden
+        y_pos += 1
+    elif direction == 1:  # Osten
+        x_pos -= 1
+    elif direction == 2:  # Süden
+        y_pos -= 1
+    elif direction == 3:  # Westen
+        x_pos += 1
+
+    cyberpi.mbot2.backward(20)
+    time.sleep(1)
 
 def turn_right():
+    global direction
+    direction = (direction + 1) % 4  # 0=N, 1=E, 2=S, 3=W
     cyberpi.mbot2.turn(90)
+    time.sleep(1)
 
 def turn_left():
+    global direction
+    direction = (direction - 1) % 4  # 0=N, 1=E, 2=S, 3=W
     cyberpi.mbot2.turn(-90)
+    time.sleep(1)
+
+def obstacle_detected():
+    return False
+
+def mapping():
+    global x_pos, y_pos, direction
+    
+    for y in range(height):  
+        for x in range(width - 1):  
+            if obstacle_detected():
+                room_map[y_pos][x_pos] = 1  # Hindernis speichern
+                cyberpi.mbot2.println("Hindernis an " + str(x_pos) + str(y_pos))
+            move_forward()
+        
+        # Am Ende einer Reihe nach unten bewegen
+        if y < height - 1:
+            if direction == 1:  # Wenn nach rechts bewegt wurde
+                turn_right()
+                move_forward()
+                turn_right()
+            else:  # Wenn nach links bewegt wurde
+                turn_left()
+                move_forward()
+                turn_left()
+    print("Raum erkundet!")
     
 
 def physical_module(socket, speed=50):
@@ -192,13 +225,16 @@ def discover_module():
     for _ in range(height):  
         row = []  
         for _ in range(width):  
-            row.append(1)  
+            row.append(0)  
         visited.append(row)
+    
+    visited[0][0] = 1
+
 
     cyberpi.console.println("Room size detected: " + str(width) + "x" + str(height))
 
     # Start algorithm to explore and drive through the room map
-    mapping(0, 0) 
+    mapping() 
 
     # After the BFS exploration, print the map
     # cyberpi.console.println("Mapped Room:")
