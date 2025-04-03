@@ -6,6 +6,14 @@
     gap: 10px;
 }
 
+.stopping-message {
+    color: red;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+  }
+
 .define-route-button {
     padding: 10px 20px;
     background-color: white;

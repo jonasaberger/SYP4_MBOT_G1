@@ -119,26 +119,7 @@ export const sendSaveRoute = async (routeName) => {
   }
 }
 
-export const sendDefinedRoute = async (routeName, checkpoints) => {
-  try {
-    const payload = {
-      routeName: routeName, // Name der Route
-      checkpoints: checkpoints.map((checkpoint) => ({
-        direction: checkpoint.direction,
-        length: checkpoint.length,
-        speed: checkpoint.speed,
-        color: checkpoint.color,
-      })),
-    };
 
-    const response = await axios.post(`${apiBaseURL}/send_route`, payload);
-    console.log(`Route "${routeName}" erfolgreich gesendet:`, payload);
-    return response.data;
-  } catch (error) {
-    console.error('Fehler beim Senden der Route:', error.response?.data || error.message);
-    throw new Error('Fehler beim Senden der Route');
-  }
-};
 
 export const getRoutes = async () => {
   try{
