@@ -73,8 +73,7 @@ class DB_Bridge:
         return jsonify({"status": "success", "message": f"Log saved to database collection '{collection_name}'"})
     
     def get_collection_names(self):
-        return self.db.list_collection_names()
-
+        return jsonify(self.db.list_collection_names())
 
     def get_route(self, collection_name):
         try:
@@ -85,3 +84,15 @@ class DB_Bridge:
             print(f"Route not found: {e}")
             return None
 
+    def delete_route(self, collection_name):
+        try:
+            if collection_name in self.db.list_collection_names():
+                self.db.drop_collection(collection_name)
+                print(f"Route '{collection_name}' deleted successfully")
+                return jsonify({"status": "success", "message": f"Route '{collection_name}' deleted successfully"})
+            else:
+                print(f"Route '{collection_name}' not found")
+                return jsonify({"status": "error", "message": f"Route '{collection_name}' not found"})
+        except Exception as e:
+            print(f"Error deleting route: {e}")
+            return jsonify({"status": "error", "message": str(e)})

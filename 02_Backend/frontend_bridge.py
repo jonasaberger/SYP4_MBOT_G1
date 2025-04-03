@@ -13,7 +13,6 @@ class FrontendBridge:
         self.current_speed = 50  # Default speed
         self.current_color = "255,255,255"  # Default color
         self.current_mode = None
-        self.collection_names = []
 
         self.stoproute = False
 
@@ -46,7 +45,7 @@ class FrontendBridge:
         return jsonify({"status": "success", "message": "Route stopped"})
 
 
-    # Receive commands from the frontend
+    # Main receive method for commands from the frontend
     def receive_commands(self):
         data = request.json
         ip_target = data.get("ip-target")
@@ -95,9 +94,6 @@ class FrontendBridge:
                 print(f"Command recorded: {self.command_log[-1]}")
 
         if self.current_mode == "automatic":
-
-            # Update the collection names from the database
-            self.collection_names = self.db_bridge.get_collection_names()
 
             if route:
                 # Get the specific route from the database
@@ -159,9 +155,6 @@ class FrontendBridge:
         return jsonify({"status": "success", "message": "Command received"})  # Return a valid response
 
 
-    # Return all the prev saved routes to the frontend
-    def get_all_routes(self):
-        return jsonify(self.collection_names)
 
     # TODO: Send the battery status once when connecting to the frontend
     def get_status_route(self):

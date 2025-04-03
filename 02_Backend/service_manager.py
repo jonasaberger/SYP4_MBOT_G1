@@ -35,12 +35,19 @@ class ServiceManager:
         self.app.run(host='0.0.0.0', port=8080)
 
     def configure_routes(self):
+
+        # Main endpoints
         self.app.add_url_rule('/receive_commands', 'receive_commands', self.frontend_bridge.receive_commands, methods=['POST'])
-        self.app.add_url_rule('/end_route', 'end_route', self.frontend_bridge.end_route, methods=['POST'])
         self.app.add_url_rule('/get_status', 'get_status', self.frontend_bridge.get_status_route, methods=['GET'])
+
+        
+        # Route-related endpoints
         self.app.add_url_rule('/save_log', 'save_log', self.frontend_bridge.db_bridge.save_log, methods=['POST'])
+        self.app.add_url_rule('/get_all_routes', 'get_all_routes', self.frontend_bridge.db_bridge.get_collection_names, methods=['GET'])
         self.app.add_url_rule('/define_route', 'define_route', self.frontend_bridge.define_route, methods=['POST'])
-        self.app.add_url_rule('/get_all_routes', 'get_all_routes', self.frontend_bridge.get_all_routes, methods=['GET'])
+        self.app.add_url_rule('/end_route', 'end_route', self.frontend_bridge.end_route, methods=['POST'])
+        self.app.add_url_rule('/delete_route', 'delete_route', self.frontend_bridge.db_bridge.delete_route, methods=['POST'])
+
 
 if __name__ == "__main__":
     service_manager = ServiceManager()
