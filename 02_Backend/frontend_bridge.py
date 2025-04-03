@@ -58,6 +58,18 @@ class FrontendBridge:
         color = data.get("color")
         speed = data.get("speed")
 
+        # Ensure the Logs directory exists
+        logs_dir = 'Logs'
+        os.makedirs(logs_dir, exist_ok=True)
+
+        # Path to the command log file
+        log_file_path = os.path.join(logs_dir, 'command_log.json')
+
+        # Create the command_log.json file if it doesn't exist
+        if not os.path.exists(log_file_path):
+            with open(log_file_path, "w") as f:
+                json.dump([], f)  # Initialize with an empty list
+            print(f"Created new command log file at {log_file_path}")
 
         # IP - Configuration
         if ip_target:
