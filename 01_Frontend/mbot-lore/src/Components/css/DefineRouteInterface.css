@@ -5,8 +5,8 @@
   border-radius: 8px;
   max-width: 300px;
   margin: 0 auto;
-} 
-
+}
+ 
 .define-route-interface button {
   background-color: #4a5568; /* Mittelgrauer Hintergrund */
   color: #ffffff; /* Weißer Text */
@@ -17,21 +17,21 @@
   transition: background-color 0.3s ease;
   margin-right: 8px;
 }
-
+ 
 .define-route-interface button:hover {
   background-color: #2d3748; /* Dunklerer Hintergrund beim Hover */
 }
-
+ 
 .define-route-interface .input-group {
   margin-top: 16px;
 }
-
+ 
 .define-route-interface label {
   display: block;
   margin-bottom: 4px;
   font-weight: bold;
 }
-
+ 
 .define-route-interface input[type="text"] {
   width: 100%;
   padding: 8px;
@@ -41,22 +41,22 @@
   background-color: #2d3748;
   color: #ffffff;
 }
-
+ 
 .define-route-interface .led-control {
   display: flex;
   align-items: center;
   margin-top: 16px;
 }
-
+ 
 .define-route-interface .led-control span {
   margin-right: 8px;
   font-weight: bold;
 }
-
+ 
 .define-route-interface .led-control input[type="checkbox"] {
   margin-left: 8px;
 }
-
+ 
 .define-route-interface .led-control .color-preview {
   width: 24px;
   height: 24px;
@@ -64,26 +64,25 @@
   border-radius: 4px;
   margin-left: 8px;
 }
-
+ 
 .define-route-interface .checkpoints {
-  background-color: #e9d8fd; /* Helles Lila */
-  color: #1a202c; /* Dunkelgrauer Text */
+  color: #1a202c;
   padding: 16px;
   margin-top: 16px;
   border-radius: 8px;
 }
-
+ 
 .define-route-interface .checkpoints .checkpoint {
   display: flex;
   justify-content: space-between;
   padding: 8px;
   border-bottom: 1px solid #cbd5e0; /* Hellgrauer Rand */
 }
-
+ 
 .define-route-interface .checkpoints .checkpoint:last-child {
   border-bottom: none;
 }
-
+ 
 .define-route-interface .checkpoints .checkpoint button {
   background-color: transparent;
   border: none;
@@ -91,48 +90,48 @@
   color: #e53e3e; /* Rote Farbe für den Lösch-Button */
   font-size: 16px;
 }
-
+ 
 @media (max-width: 768px) {
   .define-route-interface {
     padding: 12px;
   }
-
+ 
   .define-route-interface button {
     padding: 6px 12px;
     font-size: 14px;
   }
-
+ 
   .define-route-interface label {
     font-size: 14px;
   }
-
+ 
   .define-route-interface input[type="text"] {
     padding: 6px;
     font-size: 14px;
   }
-
+ 
   .define-route-interface .led-control span {
     font-size: 14px;
   }
-
+ 
   .define-route-interface .led-control .color-preview {
     width: 20px;
     height: 20px;
   }
-
+ 
   .define-route-interface .checkpoints {
     padding: 12px;
   }
-
+ 
   .define-route-interface .checkpoints .checkpoint {
     padding: 6px;
   }
-
+ 
   .define-route-interface .checkpoints .checkpoint button {
     font-size: 14px;
   }
 }
-
+ 
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -145,29 +144,30 @@
   align-items: center;
   z-index: 1000;
 }
-
+ 
 .modal-content {
   background-color: #1a202c;
   color: #ffffff;
   padding: 20px;
   border-radius: 8px;
-  width: 80%;
-  max-width: 400px;
+  width: 100%;
+  max-width: 110vh;
+  max-height: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box; /* Ensure padding and border are included in the width */
+  box-sizing: border-box;
 }
-
+ 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
-
+ 
 .modal-header h2 {
   margin: 0;
 }
-
+ 
 .modal-close {
   background: none;
   border: none;
@@ -175,21 +175,81 @@
   font-size: 24px;
   cursor: pointer;
 }
-
+ 
 .modal-body {
+  display: flex;
+  flex-direction: row;
   max-height: 70vh;
-  overflow-y: auto; /* Allow vertical scrolling */
-  overflow-x: hidden; /* Prevent horizontal scrolling */
-  box-sizing: border-box; /* Ensure padding and border are included in the width */
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
-
+ 
+.input-section {
+  flex: 1;
+  padding-right: 16px;
+}
+ 
+.checkpoints-section {
+  flex: 1; /* Take up equal space */
+  background-color: #1a202c;
+  color: white;
+  padding: 16px;
+  margin-right: 16px; /* Add space between the sections */
+  border-radius: 8px;
+  box-sizing: border-box;
+  max-height: 45vh;
+  overflow-y: auto;
+}
+ 
+.map-section {
+  flex: 1; /* Take up equal space */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 8px;
+  box-sizing: border-box;
+  max-height: 55%;
+  overflow: hidden;
+}
+ 
+.map-section-container {
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  align-items: stretch; /* Ensure children take up full width */
+  margin-top: 16px; /* Add some space above the container */
+  max-width: 35vh;
+  max-height: 100%
+}
+ 
+.checkpoints-section .checkpoint {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  border-bottom: 1px solid #cbd5e0; /* Hellgrauer Rand */
+}
+ 
+.checkpoints-section .checkpoint:last-child {
+  border-bottom: none;
+}
+ 
+.checkpoints-section .checkpoint button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #e53e3e; /* Rote Farbe für den Lösch-Button */
+  font-size: 16px;
+}
+ 
 .modal-body label {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .modal-body input {
   width: 100%;
   border: 1px solid #cbd5e0;
@@ -199,25 +259,25 @@
   color: #ffffff;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .modal-body .led-control {
   display: flex;
   align-items: center;
   margin-top: 16px;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .modal-body .led-control span {
   margin-right: 8px;
   font-weight: bold;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .modal-body .led-control input[type="checkbox"] {
   margin-left: 8px;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .modal-body .led-control .color-preview {
   width: 24px;
   height: 24px;
@@ -226,16 +286,16 @@
   margin-left: 8px;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .modal-body .checkpoints {
-  background-color: #e9d8fd;
+  background-color: white;
   color: #1a202c;
   padding: 16px;
   margin-top: 16px;
   border-radius: 8px;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .modal-body .checkpoints .checkpoint {
   display: flex;
   justify-content: space-between;
@@ -243,11 +303,11 @@
   border-bottom: 1px solid #cbd5e0;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .modal-body .checkpoints .checkpoint:last-child {
   border-bottom: none;
 }
-
+ 
 .modal-body .checkpoints .checkpoint button {
   background-color: transparent;
   border: none;
@@ -256,7 +316,7 @@
   font-size: 16px;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .led-container {
   display: flex;
   align-items: center;
@@ -268,7 +328,7 @@
   margin-bottom: 10px;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .led-label {
   font-size: 1.2rem;
   color: black;
@@ -277,7 +337,7 @@
   font-weight: bold;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .toggle-switch {
   width: 50px;
   height: 25px;
@@ -289,11 +349,11 @@
   margin-right: 14px;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .toggle-switch.on {
   background-color: #005974;
 }
-
+ 
 .toggle-handle {
   width: 23px;
   height: 23px;
@@ -305,18 +365,18 @@
   transition: left 0.3s;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .toggle-switch.on .toggle-handle {
   left: 26px;
 }
-
+ 
 .led-indicator {
   width: 1.5em;
   height: 1.5em;
   background-color: red;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .led-color-picker-container {
   position: relative;
   display: flex;
@@ -324,7 +384,7 @@
   align-items: center;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .led-color-picker-toggle {
   display: inline-block;
   width: 30px;
@@ -332,7 +392,7 @@
   cursor: pointer;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .led-color-picker {
   position: absolute;
   left: 50%;
@@ -344,12 +404,12 @@
   border-color: #000000;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   z-index: 1000;
-  max-width: 90vw; 
+  max-width: 90vw;
   max-height: 90vh;
-  overflow: auto; 
+  overflow: auto;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .color-submit-button {
   margin-top: 10px;
   padding: 10px 20px;
@@ -361,11 +421,11 @@
   transition: background-color 0.3s ease;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .color-submit-button:hover {
   background-color: #373937;
 }
-
+ 
 .speed-slider {
   appearance: none;
   width: 100%;
@@ -376,7 +436,7 @@
   transition: background 0.1s;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .speed-slider::-webkit-slider-thumb {
   appearance: none;
   width: 15px;
@@ -387,7 +447,7 @@
   transition: background 0.3s;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .speed-slider::-moz-range-thumb {
   width: 15px;
   height: 15px;
@@ -397,7 +457,7 @@
   transition: background 0.3s;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
-
+ 
 .speed-slider::-ms-thumb {
   width: 15px;
   height: 15px;
@@ -407,3 +467,55 @@
   transition: background 0.3s;
   box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
+ 
+.direction-select {
+  padding: 8px 15px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  width: 100%;
+}
+ 
+.save-button-container {
+  display: flex;
+  justify-content: flex-end; /* Align the button to the right */
+  margin-top: 16px; /* Add some space above the button */
+}
+ 
+.save-button {
+  padding: 10px 20px;
+  background-color: white;
+  color: black;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: bold;
+  margin: 10px 0;
+  width: 100%;
+}
+ 
+.save-button:hover {
+  background-color: #016E8F;
+}
+ 
+.new-checkpoint-button{
+  padding: 10px 20px;
+  background-color: white;
+  color: black;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: bold;
+  margin: 10px 0;
+  width: 100%;
+}
+ 
+.new-checkpoint-button:hover {
+  background-color: #016E8F;
+}
+ 

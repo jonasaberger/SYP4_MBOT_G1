@@ -15,6 +15,7 @@ const ControlPanel = () => {
   const [route, setRoute] = useState("");
   const [showDefineRoute, setShowDefineRoute] = useState(false);
   const [routes, setRoutes] = useState([]);
+  const [stoppingMessage, setStoppingMessage] = useState(false); // Zustand für "Route is stopping"
 
   useEffect(() => {
     const fetchRoutes = async () => {
@@ -29,6 +30,7 @@ const ControlPanel = () => {
     fetchRoutes();
   }, []);
 
+  // Aktualisiere die Laufzeit und Distanz in einem Intervall
   useEffect(() => {
     let interval;
     if (isDriving) {
@@ -44,7 +46,6 @@ const ControlPanel = () => {
     return () => clearInterval(interval); // Bereinige das Intervall, wenn sich der Zustand ändert
   }, [isDriving]);
 
-
   const toggleCollapse = () => {
     setIsCollapsed((prev) => !prev);
   };
@@ -59,6 +60,7 @@ const ControlPanel = () => {
       try {
         await sendCommand("route", route);
         console.log(`Route ${route} gestartet`);
+        setDirection("forward"); // Beispiel: Richtung auf "forward" setzen
       } catch (error) {
         console.error("Fehler beim Starten der Route:", error);
       }
@@ -67,6 +69,9 @@ const ControlPanel = () => {
         console.log("Drive stoppen");
         await sendEndRouteCommand();
         console.log("Drive gestoppt");
+        setStoppingMessage(true); // Zeige die Nachricht "Route is stopping"
+        setTimeout(() => setStoppingMessage(false), 5000); // Verberge die Nachricht nach 5 Sekunden
+        setDirection(null); // Setze die Richtung zurück
       } catch (error) {
         console.error("Fehler beim Stoppen der Route:", error);
       }
@@ -77,10 +82,9 @@ const ControlPanel = () => {
     setShowDefineRoute(true);
   };
 
-  const handleMove = (dir) => {
-    setDirection(dir);
-    setDistance((prev) => prev + 1);
-    setRuntime((prev) => prev + 1);
+  const handleMove = (newDirection) => {
+    setDirection(newDirection);
+    console.log(`Robot bewegt sich in Richtung: ${newDirection}`);
   };
 
   return (
@@ -112,8 +116,8 @@ const ControlPanel = () => {
         <div className="direction-buttons-container">
           <div className="direction-button-up">
             <button
-              className={`start-stop-button up ${direction === "up" ? "active" : ""}`}
-              onClick={() => handleMove("up")}
+              className={`start-stop-button up ${direction === "forward" ? "active" : ""}`}
+              onClick={() => handleMove("forward")}
             >
               ↑
             </button>
@@ -126,8 +130,8 @@ const ControlPanel = () => {
               ←
             </button>
             <button
-              className={`start-stop-button down ${direction === "down" ? "active" : ""}`}
-              onClick={() => handleMove("down")}
+              className={`start-stop-button down ${direction === "backward" ? "active" : ""}`}
+              onClick={() => handleMove("backward")}
             >
               ↓
             </button>
@@ -149,6 +153,8 @@ const ControlPanel = () => {
           "Robot Placeholder"
         )}
       </div>
+      {/* Nachricht "Route is stopping" */}
+      {stoppingMessage && <p className="stopping-message">Route is stopping</p>}
       {/* Einblenden-Button, wenn die Infobox eingeklappt ist */}
       {isCollapsed && (
         <button className="reveal-info-button" onClick={toggleCollapse}>
@@ -159,7 +165,7 @@ const ControlPanel = () => {
       <InfoPanel
         distance={distance}
         runtime={runtime}
-        speed={runtime} //Placeholder bis Speed Funktionalität eingebaut wird
+        value={50} // Beispielgeschwindigkeit (kann angepasst werden)
         onToggleCollapse={toggleCollapse}
         isCollapsed={isCollapsed}
       />

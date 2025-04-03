@@ -7,7 +7,7 @@ import { sendCommand } from "../API_Service/service";
 import "./css/MainControl.css";
 
 const MainControl = () => {
-  const [mode, setMode] = useState("manual");
+  const [mode, setMode] = useState("map");
   const isChangingMode = useRef(false);
   const hasInitialized = useRef(false);
 
@@ -62,7 +62,8 @@ const MainControl = () => {
 
   return (
     <div className="main-control">
-      <h1 className="title">Control</h1>
+      <h1 className="title">Control
+      </h1>
       <div className="mode-buttons">
         <button
           className={`manual ${mode === "manual" ? "active" : ""}`}

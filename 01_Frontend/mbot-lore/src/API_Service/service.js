@@ -98,9 +98,6 @@ export const sendStopIfNoDrive = async () => {
   }
 };
 
-/**
- * Holt die aktuellen Sensordaten vom MBOT.
- */
 export const fetchBattery = async () => {
   try {
     const response = await axios.get(`${apiBaseURL}/get_status`);
@@ -122,26 +119,7 @@ export const sendSaveRoute = async (routeName) => {
   }
 }
 
-export const sendDefinedRoute = async (routeName, checkpoints) => {
-  try {
-    const payload = {
-      routeName: routeName, // Name der Route
-      checkpoints: checkpoints.map((checkpoint) => ({
-        direction: checkpoint.direction,
-        length: checkpoint.length,
-        speed: checkpoint.speed,
-        color: checkpoint.color,
-      })),
-    };
 
-    const response = await axios.post(`${apiBaseURL}/send_route`, payload);
-    console.log(`Route "${routeName}" erfolgreich gesendet:`, payload);
-    return response.data;
-  } catch (error) {
-    console.error('Fehler beim Senden der Route:', error.response?.data || error.message);
-    throw new Error('Fehler beim Senden der Route');
-  }
-};
 
 export const getRoutes = async () => {
   try{
@@ -151,5 +129,21 @@ export const getRoutes = async () => {
   } catch(error){
     console.error('Fehler beim Abrufen der Routen:', error);
     throw new Error('Fehler beim Abrufen der Routen');
+  }
+}
+
+export const sendDefinedRoute = async (name, route) => {
+  console.log("Route:", route);
+  console.log("Name:", name);
+  const payload = {
+    route_name: name,
+    route_data: route,
+  };
+  try {
+    const response = await axios.post(`${apiBaseURL}/define_route`, payload);
+    console.log('Route erfolgreich gespeichert:', response.data);
+  } catch (error) {
+    console.error('Fehler beim Speichern der Route:', error);
+    throw new Error('Fehler beim Speichern der Route');
   }
 }
