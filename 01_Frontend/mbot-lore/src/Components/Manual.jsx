@@ -21,7 +21,7 @@ const ControlPanel = ({ isConnected }) => {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [pressedKeys, setPressedKeys] = useState(new Set());
   const [sentDirection, setSentDirection] = useState(false);
-  const [showPopup, setShowPopup] = useState(false); // State to manage popup visibility
+  const [showPopup, setShowPopup] = useState(false);
   let sendStop = true;
 
   const [startTime, setStartTime] = useState(null);
@@ -109,7 +109,7 @@ useEffect(() => {
 
   // Umschalten des LED-Status
   const toggleSwitch = async () => {
-    //setShowPopup(true);
+    setShowPopup(true);
     const batteryStatus = await fetchBattery();
     setBattery(batteryStatus.battery);
     console.log("Battery:", batteryStatus);
@@ -301,7 +301,7 @@ useEffect(() => {
         onToggleCollapse={toggleCollapse}
         isCollapsed={isCollapsed}
       />
-      {showPopup && <SaveRoutePopup onClose={() => setShowPopup(false)} />} {/* Conditionally render the popup */}
+      {showPopup && <SaveRoutePopup onClose={() => setShowPopup(false)} />} {}
     </div>
   );
 };

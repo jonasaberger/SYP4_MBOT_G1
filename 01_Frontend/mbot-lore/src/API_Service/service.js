@@ -98,9 +98,6 @@ export const sendStopIfNoDrive = async () => {
   }
 };
 
-/**
- * Holt die aktuellen Sensordaten vom MBOT.
- */
 export const fetchBattery = async () => {
   try {
     const response = await axios.get(`${apiBaseURL}/get_status`);
@@ -151,5 +148,21 @@ export const getRoutes = async () => {
   } catch(error){
     console.error('Fehler beim Abrufen der Routen:', error);
     throw new Error('Fehler beim Abrufen der Routen');
+  }
+}
+
+export const sendDefinedRoute = async (name, route) => {
+  console.log("Route:", route);
+  console.log("Name:", name);
+  const payload = {
+    route_name: name,
+    route_data: route,
+  };
+  try {
+    const response = await axios.post(`${apiBaseURL}/define_route`, payload);
+    console.log('Route erfolgreich gespeichert:', response.data);
+  } catch (error) {
+    console.error('Fehler beim Speichern der Route:', error);
+    throw new Error('Fehler beim Speichern der Route');
   }
 }
