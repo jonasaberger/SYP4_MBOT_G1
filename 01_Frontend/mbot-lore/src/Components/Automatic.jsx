@@ -153,6 +153,7 @@ const ControlPanel = () => {
           "Robot Placeholder"
         )}
       </div>
+      
       {/* Nachricht "Route is stopping" */}
       {stoppingMessage && <p className="stopping-message">Route is stopping</p>}
       {/* Einblenden-Button, wenn die Infobox eingeklappt ist */}
