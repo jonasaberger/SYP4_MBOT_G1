@@ -110,9 +110,6 @@ useEffect(() => {
   // Umschalten des LED-Status
   const toggleSwitch = async () => {
     setShowPopup(true);
-    const batteryStatus = await fetchBattery();
-    setBattery(batteryStatus.battery);
-    console.log("Battery:", batteryStatus);
     setIsOn(!isOn);
   };
 

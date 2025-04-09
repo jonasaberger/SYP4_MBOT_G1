@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const apiBaseURL = 'http://10.10.0.103:8080';  // IP-Adresse
+const apiBaseURL = 'http://10.10.0.103:8081';  // IP-Adresse
 
 let currentMode = null;
 let lastDriveCommand = "stop";
@@ -109,6 +109,37 @@ export const fetchBattery = async () => {
   }
 };
 
+export const getCurrentDirection = async (direction, duration) => {
+  try {
+    const payload = { direction, duration };
+    const response = await axios.post(`${apiBaseURL}/get_direction`, payload);
+    console.log('Aktuelle Richtung:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Fehler beim Abrufen der aktuellen Richtung:', error.response?.data || error.message);
+    throw new Error('Fehler beim Abrufen der aktuellen Richtung');
+  }
+};
+
+export const getCurrentRoute = async () => {
+  try {
+    const response = await axios.get(`${apiBaseURL}/get_current_route`);
+    console.log('Aktuelle Route:', response.data);
+
+    // Speichere die gesamte Liste der Route
+    const routeList = response.data;
+
+
+    return routeList;
+  } catch (error) {
+    console.error('Fehler beim Abrufen der aktuellen Route:', error.response?.data || error.message);
+    throw new Error('Fehler beim Abrufen der aktuellen Route');
+  }
+};
+
+
+
+
 export const sendSaveRoute = async (routeName) => {
   const key = "collection_name";
   try{
@@ -147,3 +178,13 @@ export const sendDefinedRoute = async (name, route) => {
     throw new Error('Fehler beim Speichern der Route');
   }
 }
+export const deleteRoute = async (routeName) => {
+  try {
+    const response = await axios.post(`${apiBaseURL}/delete_route`, { collection_name: routeName });
+    console.log(`Route ${routeName} erfolgreich gelöscht:`, response.data);
+    return response.data;
+  } catch (error) {
+    console.error(`Fehler beim Löschen der Route ${routeName}:`, error);
+    throw new Error(`Fehler beim Löschen der Route ${routeName}`);
+  }
+};
