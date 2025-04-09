@@ -1,0 +1,69 @@
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  position: relative;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  align-items: center;
+}
+
+.popup-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+}
+
+.map-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background-color: #f0f0f0; /* Optional: Background color */
+  border: 2px solid #ccc; /* Optional: Border for visibility */
+  border-radius: 8px; /* Optional: Rounded corners */
+  padding: 10px; /* Optional: Padding around the grid */
+  width: fit-content; /* Adjust width to fit the grid */
+  height: fit-content; /* Adjust height to fit the grid */
+  margin: auto; /* Center the container */
+}
+
+.map-row {
+  display: flex;
+  gap: 5px;
+}
+
+.map-cell {
+  width: 30px;
+  height: 30px;
+  border: 2px solid #ddd;
+}
+
+.map-cell.empty {
+  background-color: #f0f0f0;
+}
+
+.map-cell.obstacle {
+  background-color: red;
+}

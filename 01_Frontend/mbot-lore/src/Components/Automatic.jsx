@@ -187,6 +187,10 @@ const ControlPanel = () => {
           <img src={require(`../Images/forward.png`)} alt="Robot" />
         )}
       </div>
+      
+      {/* Nachricht "Route is stopping" */}
+      {stoppingMessage && <p className="stopping-message">Route is stopping</p>}
+      {/* Einblenden-Button, wenn die Infobox eingeklappt ist */}
       {isCollapsed && (
         <button className="reveal-info-button" onClick={toggleCollapse}>
           ◁
