@@ -2,6 +2,10 @@
 /* Google Font */
 @import url('https://fonts.googleapis.com/css2?family=Kaushan+Script&display=swap');
 
+.body{
+  background-color: #005974;
+}
+
 /* Titel-Styling */
 .title {
   background-color: #F7E6B1; 

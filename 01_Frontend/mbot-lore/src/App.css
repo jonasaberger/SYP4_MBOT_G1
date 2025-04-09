@@ -2,6 +2,15 @@
   text-align: center;
 }
 
+.Body {
+  background-color: #005974;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

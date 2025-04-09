@@ -1,3 +1,7 @@
+.body{
+  background-color: #005974;
+}
+
 .main-control {
   display: flex;
   flex-direction: column;
