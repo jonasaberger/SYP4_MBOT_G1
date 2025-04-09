@@ -1,3 +1,4 @@
+from gc import collect
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
@@ -84,7 +85,13 @@ class DB_Bridge:
             print(f"Route not found: {e}")
             return None
 
-    def delete_route(self, collection_name):
+    def delete_route(self):
+        data = request.json
+        collection_name = data.get("collection_name")
+        print(f"Deleting route '{collection_name}'...")
+        
+
+
         try:
             if collection_name in self.db.list_collection_names():
                 self.db.drop_collection(collection_name)
