@@ -12,6 +12,7 @@ const ControlPanel = ({ isConnected }) => {
   const [distance, setDistance] = useState(0);
   const [runtime, setRuntime] = useState(0);
   const [battery, setBattery] = useState(0);
+  const [speed, setSpeed] = useState(0); // Geschwindigkeit
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDriving, setIsDriving] = useState(false);
   const [value, setValue] = useState(50); // Speed value
@@ -35,20 +36,20 @@ const ControlPanel = ({ isConnected }) => {
 // Aktualisiere die Laufzeit und Distanz in einem Intervall
 useEffect(() => {
   let interval;
+  const calculatedSpeed = value * 0.174; // Geschwindigkeit in m/min
+  setSpeed(calculatedSpeed.toFixed(2)); // Geschwindigkeit im State speichern
+
   if (isDriving) {
     interval = setInterval(() => {
       setRuntime((prevRuntime) => prevRuntime + 1); // Erhöhe die Laufzeit um 1 Sekunde
-      const speed = value * 0.174; // Geschwindigkeit in m/min
-      setDistance((prevDistance) => prevDistance + (speed / 60)); // Erhöhe die Distanz
+      setDistance((prevDistance) => prevDistance + (calculatedSpeed / 60)); // Erhöhe die Distanz
     }, 1000);
   } else {
-    // Wenn der Roboter nicht fährt, setze das Intervall zurück
-    clearInterval(interval);
+    clearInterval(interval); // Stoppe das Intervall, wenn der Roboter nicht fährt
   }
 
   return () => clearInterval(interval); // Bereinige das Intervall
 }, [isDriving, value]);
-
 
   // Funktion zum Bewegen des Roboters in eine bestimmte Richtung
   const handleMove = async (dir) => {
@@ -108,10 +109,17 @@ useEffect(() => {
   };
 
   // Umschalten des LED-Status
-  const toggleSwitch = async () => {
-    setShowPopup(true);
-    setIsOn(!isOn);
-  };
+const toggleSwitch = async () => {
+  try {
+    const newStatus = !isOn;
+    setIsOn(newStatus); // LED-Status umschalten
+    const command = newStatus ? "on" : "off";
+    await sendCommand("led", command); // LED-Befehl senden
+    console.log(`LED toggled: ${command}`);
+  } catch (error) {
+    console.error("Fehler beim Umschalten der LED:", error);
+  }
+};
 
   // Verarbeiten der Farbänderung für die LED
   const handleColorChange = (color) => {
@@ -172,6 +180,13 @@ useEffect(() => {
       }
     };
 
+    const showDetails = () => {
+      if (typeof distance === "number" && typeof runtime === "number") {
+        return `Distance: ${distance.toFixed(2)} m, Runtime: ${runtime} s`;
+      }
+      return "Details not available";
+    };
+
     const handleKeyUp = (event) => {
       if (showPopup) return; // Do nothing if the popup is open
 
@@ -211,7 +226,13 @@ useEffect(() => {
     }, 10000);
     return () => clearInterval(interval);
   }, []);*/
-
+// Funktion zum Anzeigen von Details
+  const showDetails = () => {
+  if (distance && runtime) {
+    return `Distance: ${distance.toFixed(2)} m, Runtime: ${runtime} s`;
+  }
+  return "Details not available";
+};
   return (
     <div className="control-panel">
       <div className="left-container">
@@ -294,7 +315,7 @@ useEffect(() => {
       <InfoPanel
         distance={distance}
         runtime={runtime}
-        speed={value}
+        speed={speed}
         onToggleCollapse={toggleCollapse}
         isCollapsed={isCollapsed}
       />
