@@ -15,6 +15,7 @@ class FrontendBridge:
         self.current_mode = None
 
         self.stoproute = False
+        self.discovery_points = []
 
         self.mbot_bridge = mbb.MBotBridge()
         self.db_bridge = dbb.DB_Bridge()
@@ -136,7 +137,34 @@ class FrontendBridge:
 
                     time.sleep(duration)
 
-                
+        
+        if self.current_mode == "discovery" and drive == "start":
+
+            # Handle discovery mode commands here
+            print("Discovery mode activated")
+            self.mbot_bridge.send_message("start")
+
+            while drive != "stop":
+
+                # Wait for receiving messages from the mBot
+                received_data = self.mbot_bridge.receive_message()
+
+                # Ensure the received data is in the correct format
+                try:
+                    self.discovery_points = eval(received_data)  # Convert string to list of tuples
+                    if isinstance(self.discovery_points, list):
+                        for point in self.discovery_points:
+                            print(f"Discovery point: {point}")
+                except Exception as e:
+                    print(f"Error parsing discovery points: {e}")
+                    self.discovery_points = []
+
+                if drive == "stop":
+                    self.mbot_bridge.send_message("stop")
+                    print("Discovery mode stopped")
+                    break
+
+
         # Change the color or speed of the mBot
         elif color:
             self.current_color = color
@@ -160,10 +188,14 @@ class FrontendBridge:
             with open(log_file_path, "r") as f:
                 print(f.read())  # Print the command log to the console
 
-
         if drive == "exit" and mode == "automatic":
             print("Exiting automatic mode")
-            
+            self.mbot_bridge.send_message("end")
+        
+        if drive == "exit" and mode == "discovery":
+            print("Exiting discovery mode")
+            self.mbot_bridge.send_message("exit")
+        
         return jsonify({"status": "success", "message": "Command received"})  # Return a valid response
 
 
@@ -174,3 +206,7 @@ class FrontendBridge:
             'battery': '80%',
         }
         return jsonify(status)
+    
+
+    def get_discover_points(self):
+        return jsonify(self.discovery_points)

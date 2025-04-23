@@ -15,7 +15,6 @@ import service_manager as sm
 # 4. color : string -> color of the mbot (e.g. "255,255,255")
 # 5. speed : string -> speed of the mbot (e.g. "1", "100")
 
-
 # POST : /save_log
 # Access this endpoint with the collction name as a parameter to save the command log to the database
 

@@ -40,8 +40,6 @@ class ServiceManager:
         self.app.run(host='0.0.0.0', port=8080)
 
     
-
-
     def configure_routes(self):
         # Main endpoints
         self.app.add_url_rule('/receive_commands', 'receive_commands', self.frontend_bridge.receive_commands, methods=['POST'])
@@ -53,7 +51,7 @@ class ServiceManager:
         self.app.add_url_rule('/define_route', 'define_route', self.frontend_bridge.define_route, methods=['POST'])
         self.app.add_url_rule('/end_route', 'end_route', self.frontend_bridge.end_route, methods=['POST'])
         self.app.add_url_rule('/delete_route', 'delete_route', self.frontend_bridge.db_bridge.delete_route, methods=['POST'])
-
+        self.app.add_url_rule('/get_discovery_points', 'get_discover_points', self.frontend_bridge.get_discover_points, methods=['GET'])
 
 if __name__ == "__main__":
     service_manager = ServiceManager()

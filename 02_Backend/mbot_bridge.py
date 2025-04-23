@@ -39,6 +39,7 @@ class MBotBridge:
             while True:
                 data, addr = sock.recvfrom(BUFFER_SIZE)
                 print(f"Received message from {addr}: {data.decode()}")
+                return data.decode()
 
         except Exception as e:
             print(f"An error occurred: {e}")

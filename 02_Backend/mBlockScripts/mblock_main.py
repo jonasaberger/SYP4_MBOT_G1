@@ -2,6 +2,7 @@ import cyberpi
 import time
 import usocket  # type: ignore
 import os
+import random
 
 # Variables
 movement_speed = 50
@@ -138,38 +139,68 @@ def automatic_module(socket, speed=50):
         time.sleep(0.1)
 
 def discover_module(socket):
-    cyberpi.console.println("Discovery Mode: Raum Mapping")
-   
-    speed = 20
-    speed_factor = 0.29 # 1 Speed = lt. Messung: 17,4cm/min
-    
-    points = []
-    counter = 1
-    
+    global discover_mode
+
+    discover_mode = True
+    cyberpi.console.println("Discovery Mode")
+
     while True:
-        start_time = time.time()
-        cyberpi.mbot2.forward(speed)
+        command, adr = socket.recvfrom(1024)
+        txt = str(command, "utf-8").strip()
+
+        if txt == "start":
+            cyberpi.console.println("Discovery Mode started")
+            
+            # Discovery Logic
+            speed = 20
+            speed_factor = 0.29 # 1 Speed = lt. Messung: 17,4cm/min
         
-        while cyberpi.ultrasonic2.get(1) > 10:
-             pass  # Weiterfahren bis Wand
+            points = []
+            counter = 1
         
-        cyberpi.mbot2.EM_stop("all")
-        
-        end_time = time.time()
-        duration = end_time - start_time
-        distance = round(duration * speed_factor * 100, 2)  # cm
-        
-        cyberpi.console.println("Wand erreicht!")
-        cyberpi.console.println("Punkt " + str(counter) + ":" + str(distance) + "cm")
-        
-        angle = random.randint(0, 360)
-        
-        points.append((counter, distance, angle))
-        counter += 1
-        
-        cyberpi.mbot2.turn(angle)
-        
-        time.sleep(1)
+            while True:
+                start_time = time.time()
+                cyberpi.mbot2.forward(speed)
+            
+                while cyberpi.ultrasonic2.get(1) > 10:
+                    pass  # Weiterfahren bis Wand
+            
+                cyberpi.mbot2.EM_stop("all")
+            
+                end_time = time.time()
+                duration = end_time - start_time
+                distance = round(duration * speed_factor * 100, 2)  # cm
+            
+                cyberpi.console.println("Wand erreicht!")
+                cyberpi.console.println("Punkt " + str(counter) + ":" + str(distance) + "cm")
+            
+                angle = random.randint(0, 360)
+            
+                points.append((counter, distance, angle))
+                counter += 1
+            
+                cyberpi.mbot2.turn(angle)
+            
+                time.sleep(1)
+
+                # Send data to backend
+                backend_ip = "10.10.0.103"
+                send_to_backend(socket, backend_ip, str(points))
+
+        if txt == "exit":
+            discover_mode = False  # Exit the mode
+            cyberpi.console.println("Exiting Discovery Mode..")
+            break
+
+
+
+def send_to_backend(socket, backend_ip, data):
+    try:
+        socket.sendto(data.encode(), (backend_ip, 5555))
+        cyberpi.console.println("Data sent to backend!")
+    except Exception as e:
+        cyberpi.console.println("Error sending data to backend!")
+
 
 def change_color(txt):
     color_data = txt.split(":")[1]
