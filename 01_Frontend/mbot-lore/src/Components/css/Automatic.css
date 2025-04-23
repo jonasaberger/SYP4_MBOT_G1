@@ -24,7 +24,7 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
     font-weight: bold;
-    margin: 10px 0;
+    margin: 3px 0;
 }
 
 .define-route-button:hover {
@@ -32,7 +32,7 @@
 }
 
 .route-select {
-    padding: 8px 15px;
+    padding: 8px 12px;
     border-radius: 8px;
     border: none;
     font-size: 16px;
@@ -66,20 +66,25 @@
     }
 }
 .custom-dropdown {
-    position: relative;
-    display: inline-block;
-    width: 100%;
-  }
-  
-  .dropdown-toggle {
-    width: 100%;
-    padding: 10px;
-    background-color: #f9f9f9;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    cursor: pointer;
-    text-align: left;
-  }
+  position: relative;
+  display: inline-block;
+  width: 100%; 
+}
+.dropdown-toggle {
+  padding: 10px 20px;
+  background-color: white;
+  color: black;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: center;
+  width: 100%; 
+  box-sizing: border-box; 
+
+}
   
   .dropdown-menu {
     position: absolute;

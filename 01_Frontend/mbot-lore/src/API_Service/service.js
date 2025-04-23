@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const apiBaseURL = 'http://10.10.0.103:8081';  // IP-Adresse
+const apiBaseURL = 'http://10.10.0.103:8080';  // IP-Adresse
 
 let currentMode = null;
 let lastDriveCommand = "stop";
