@@ -108,9 +108,6 @@ class FrontendBridge:
         if self.current_mode == "automatic":
 
             if route:
-
-                
-
                 # Get the specific route from the database
                 route_data = self.db_bridge.get_route(route)
                 print(f"Route data: {route_data}")

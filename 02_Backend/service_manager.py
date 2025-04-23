@@ -25,7 +25,6 @@ class ServiceManager:
         self.configure_routes()
 
     def generate_swagger_json(self):
-        
         # Generate swagger.json dynamically
         static_dir = os.path.join(os.path.dirname(__file__), 'static')
         os.makedirs(static_dir, exist_ok=True)  # Create the static directory if it doesn't exist
