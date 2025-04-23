@@ -7,7 +7,9 @@ swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
     API_URL,
     config={
-        'app_name': "SYP4_MBOT_G1"
+        'app_name': "SYP4_MBOT_G1",
+        'favicon32': '/static/favicon.ico',
+        'favicon16': '/static/favicon.ico'  
     }
 )
 

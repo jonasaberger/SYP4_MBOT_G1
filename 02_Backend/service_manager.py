@@ -9,8 +9,12 @@ from swagger_config import swaggerui_blueprint, SWAGGER_URL, swagger_config
 
 class ServiceManager:
     def __init__(self):
-        self.app = Flask(__name__)
+        self.app = Flask(__name__, static_folder='static')
         self.frontend_bridge = feb.FrontendBridge()
+
+        @self.app.route('/favicon.ico')
+        def favicon():
+            return send_from_directory('static', 'favicon.ico')
 
         # Allow all traffic
         CORS(self.app, resources={r"/*": {"origins": "*"}})
@@ -34,6 +38,9 @@ class ServiceManager:
 
     def start_server(self):
         self.app.run(host='0.0.0.0', port=8080)
+
+    
+
 
     def configure_routes(self):
         # Main endpoints
