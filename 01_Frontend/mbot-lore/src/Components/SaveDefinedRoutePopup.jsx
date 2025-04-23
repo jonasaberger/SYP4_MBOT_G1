@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import './css/SaveRoutePopup.css';
+import './css/SaveDefinedRoutePopup.css';
 
 const SaveDefinedRoutePopup = ({ onClose, onSave }) => {
   const routeInputRef = useRef(null);
@@ -28,8 +28,10 @@ const SaveDefinedRoutePopup = ({ onClose, onSave }) => {
           Route name: <input type="text" name="routeInput" ref={routeInputRef} />
         </label>
         <p ref={errorText} style={{ color: "red" }}></p>
-        <button onClick={handleYes}>Save</button>
-        <button onClick={handleNo}>Cancel</button>
+        <div className="popup-buttons">
+          <button onClick={handleYes}>Save</button>
+          <button onClick={handleNo}>Cancel</button>
+        </div>
       </div>
     </div>
   );
