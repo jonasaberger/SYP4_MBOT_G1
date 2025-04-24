@@ -148,7 +148,7 @@ def physical_module(socket, speed=50):
     while True:
         command, adr = socket.recvfrom(1024)
         txt = str(command, "utf-8").strip()
-        
+        w
         if txt == "exit":
             cyberpi.mbot2.EM_stop("all")
             start_initialized = False
