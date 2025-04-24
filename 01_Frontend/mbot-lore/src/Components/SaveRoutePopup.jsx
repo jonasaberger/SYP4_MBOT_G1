@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import './css/SaveRoutePopup.css';
+import styles from './css/SaveRoutePopup.module.css';
 import { sendSaveRoute } from '../API_Service/service';
 
 const SaveRoutePopup = ({ onClose }) => {
@@ -23,15 +23,15 @@ const SaveRoutePopup = ({ onClose }) => {
   };
 
   return (
-    <div className="popup-overlay">
-      <div className="popup-content">
+    <div className={styles['popup-overlay']}>
+      <div className={styles['popup-content']}>
         <p>Do you want to save this route?</p>
         <label>
           Route name: <input type="text" name="routeInput" ref={routeInputRef} />
         </label>
         <p ref={errorText} style={{color:"red"}}></p>
-        <button onClick={handleYes}>Yes</button>
-        <button onClick={handleNo}>No</button>
+        <button className={styles['popup-content-button']} onClick={handleYes}>Yes</button>
+        <button className={styles['popup-content-button']} onClick={handleNo}>No</button>
       </div>
     </div>
   );

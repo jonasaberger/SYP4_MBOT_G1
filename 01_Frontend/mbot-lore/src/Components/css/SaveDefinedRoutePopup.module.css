@@ -9,9 +9,10 @@
     align-items: center;
     align-self: center;
     justify-self: center;
-    height: 30vh;
-    width: 55vh;
+    height: 27vh;
+    width: 40vh;
     box-shadow: none;
+
   }
   
   .popup-content {
@@ -19,6 +20,11 @@
     padding: 20px;
     border-radius: 8px;
     text-align: center;
+    height: 27vh;
+    width: 40vh;
+    border-color: black;
+    border-width: 1px;
+    border-style: solid;
   }
   
   .popup-buttons {
