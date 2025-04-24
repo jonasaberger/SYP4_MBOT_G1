@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import './css/SaveDefinedRoutePopup.css';
+import styles from './css/SaveDefinedRoutePopup.module.css';
 
 const SaveDefinedRoutePopup = ({ onClose, onSave }) => {
   const routeInputRef = useRef(null);
@@ -12,23 +12,23 @@ const SaveDefinedRoutePopup = ({ onClose, onSave }) => {
       console.log("Route name is empty.");
     } else {
       console.log("Route name:", routeName);
-      onSave(routeName); // Call the onSave function with the route name
+      onSave(routeName);
     }
   };
 
   const handleNo = () => {
-    onClose(); // Close the popup without saving
+    onClose();
   };
 
   return (
-    <div className="popup-overlay">
-      <div className="popup-content">
+    <div className={styles['popup-overlay']}> {/* Use styles.className */}
+      <div className={styles['popup-content']}>
         <p>Do you want to save this route?</p>
         <label>
           Route name: <input type="text" name="routeInput" ref={routeInputRef} />
         </label>
         <p ref={errorText} style={{ color: "red" }}></p>
-        <div className="popup-buttons">
+        <div className={styles['popup-buttons']}>
           <button onClick={handleYes}>Save</button>
           <button onClick={handleNo}>Cancel</button>
         </div>
