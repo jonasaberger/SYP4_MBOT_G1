@@ -9,6 +9,7 @@ import { deleteRoute, getRoutes, sendCommand, sendEndRouteCommand, getCurrentRou
 const ControlPanel = () => {
   const [direction, setDirection] = useState(null); // Visualisierte Richtung
   const [distance, setDistance] = useState(0);
+  const [speed, setSpeed] = useState(0); // Geschwindigkeit
   const [runtime, setRuntime] = useState(0);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDriving, setIsDriving] = useState(false); // Zustand für Drive/Stop Button
@@ -36,9 +37,9 @@ const ControlPanel = () => {
   // Route vom Backend abrufen und Checkpoints setzen
   const fetchRouteDetails = async () => {
     try {
-      const routeDetails = await getCurrentRoute(); // Abrufen der Route vom Server
-      setCheckpoints(routeDetails); // Setze die Checkpoints
-      setCurrentCheckpointIndex(0); // Starte bei Checkpoint 0
+      //const routeDetails = await getCurrentRoute(); // Abrufen der Route vom Server
+      //setCheckpoints(routeDetails); // Setze die Checkpoints
+      //setCurrentCheckpointIndex(0); // Starte bei Checkpoint 0
     } catch (error) {
       console.error("Fehler beim Abrufen der Route:", error);
     }
@@ -67,6 +68,11 @@ const ControlPanel = () => {
   const toggleCollapse = () => {
     setIsCollapsed((prev) => !prev);
   };
+
+  useEffect(() => {
+    const calculatedSpeed = 50 * 0.174; // Beispiel: Geschwindigkeit basierend auf einem festen Wert (50)
+    setSpeed(calculatedSpeed.toFixed(2)); // Geschwindigkeit im State speichern
+  }, []);
 
   const handleRouteChange = (routeName) => {
     setRoute(routeName);
@@ -187,10 +193,6 @@ const ControlPanel = () => {
           <img src={require(`../Images/forward.png`)} alt="Robot" />
         )}
       </div>
-      
-      {/* Nachricht "Route is stopping" */}
-      {stoppingMessage && <p className="stopping-message">Route is stopping</p>}
-      {/* Einblenden-Button, wenn die Infobox eingeklappt ist */}
       {isCollapsed && (
         <button className="reveal-info-button" onClick={toggleCollapse}>
           ◁
@@ -199,7 +201,7 @@ const ControlPanel = () => {
       <InfoPanel
         distance={distance}
         runtime={runtime}
-        speed={50} // Beispielgeschwindigkeit
+        speed={speed} // Beispielgeschwindigkeit
         onToggleCollapse={toggleCollapse}
         isCollapsed={isCollapsed}
       />

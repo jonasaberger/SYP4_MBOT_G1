@@ -138,19 +138,38 @@ def automatic_module(socket, speed=50):
         time.sleep(0.1)
 
 def discover_module(socket):
-    global discover_mode
-
-    discover_mode = True
-    cyberpi.console.println("Discovery Mode")
-
+    cyberpi.console.println("Discovery Mode: Raum Mapping")
+   
+    speed = 20
+    speed_factor = 0.29 # 1 Speed = lt. Messung: 17,4cm/min
+    
+    points = []
+    counter = 1
+    
     while True:
-        command, adr = socket.recvfrom(1024)
-        txt = str(command, "utf-8").strip()
-
-        if txt == "exit":
-            discover_mode = False  # Exit the mode
-            cyberpi.console.println("Exiting Discovery Mode..")
-            break
+        start_time = time.time()
+        cyberpi.mbot2.forward(speed)
+        
+        while cyberpi.ultrasonic2.get(1) > 10:
+             pass  # Weiterfahren bis Wand
+        
+        cyberpi.mbot2.EM_stop("all")
+        
+        end_time = time.time()
+        duration = end_time - start_time
+        distance = round(duration * speed_factor * 100, 2)  # cm
+        
+        cyberpi.console.println("Wand erreicht!")
+        cyberpi.console.println("Punkt " + str(counter) + ":" + str(distance) + "cm")
+        
+        angle = random.randint(0, 360)
+        
+        points.append((counter, distance, angle))
+        counter += 1
+        
+        cyberpi.mbot2.turn(angle)
+        
+        time.sleep(1)
 
 def change_color(txt):
     color_data = txt.split(":")[1]
