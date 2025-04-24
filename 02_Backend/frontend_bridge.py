@@ -149,15 +149,23 @@ class FrontendBridge:
                 # Wait for receiving messages from the mBot
                 received_data = self.mbot_bridge.receive_message()
 
-                # Ensure the received data is in the correct format
+                # Process the received data directly as a tuple
                 try:
-                    self.discovery_points = eval(received_data)  # Convert string to list of tuples
-                    if isinstance(self.discovery_points, list):
-                        for point in self.discovery_points:
-                            print(f"Discovery point: {point}")
+                    if isinstance(received_data, str):
+                        # Convert the received string to a tuple if necessary
+                        point = eval(received_data) if "(" in received_data else received_data
+                    else:
+                        point = received_data
+
+                    # Ensure the point is a tuple
+                    if isinstance(point, tuple) and len(point) == 3:
+                        self.discovery_points.append(point)
+                        print(f"Discovery point: {point}")
+                    else:
+                        print(f"Invalid discovery point format: {point}")
+
                 except Exception as e:
-                    print(f"Error parsing discovery points: {e}")
-                    self.discovery_points = []
+                    print(f"Error processing discovery point: {e}")
 
                 if drive == "stop":
                     self.mbot_bridge.send_message("stop")

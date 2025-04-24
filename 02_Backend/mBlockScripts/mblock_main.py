@@ -43,9 +43,13 @@ def network_module():
     cyberpi.console.println("Waiting for Host")
  
     socket = usocket.socket(usocket.AF_INET, usocket.SOCK_DGRAM)
+    socket.setsockopt(usocket.SOL_SOCKET, usocket.SO_REUSEADDR, 1)  # Allow address reuse
     socket.bind((sockaddr, 6666))
     
     return socket
+
+# Reuse the same socket instance across all modules
+socket = network_module()
 
 def physical_module(socket, speed=50):
     global physical_mode
@@ -153,9 +157,8 @@ def discover_module(socket):
             
             # Discovery Logic
             speed = 20
-            speed_factor = 0.29 # 1 Speed = lt. Messung: 17,4cm/min
+            speed_factor = 0.29  # 1 Speed = lt. Messung: 17,4cm/min
         
-            points = []
             counter = 1
         
             while True:
@@ -163,7 +166,7 @@ def discover_module(socket):
                 cyberpi.mbot2.forward(speed)
             
                 while cyberpi.ultrasonic2.get(1) > 10:
-                    pass  # Weiterfahren bis Wand
+                    pass  # Continue moving until an obstacle is detected
             
                 cyberpi.mbot2.EM_stop("all")
             
@@ -172,27 +175,33 @@ def discover_module(socket):
                 distance = round(duration * speed_factor * 100, 2)  # cm
             
                 cyberpi.console.println("Wand erreicht!")
-                cyberpi.console.println("Punkt " + str(counter) + ":" + str(distance) + "cm")
+                cyberpi.console.println("Punkt " + str(counter) + ": " + str(distance) + "cm")
             
                 angle = random.randint(0, 360)
             
-                points.append((counter, distance, angle))
+                # Create a single detection point
+                point = (counter, distance, angle)
+                cyberpi.console.println(f"Sending point: {point}")
+                
+                # Send the single detection point to the backend
+                backend_ip = "10.10.0.103"
+                send_to_backend(socket, backend_ip, str(point))
+                
                 counter += 1
             
                 cyberpi.mbot2.turn(angle)
             
                 time.sleep(1)
 
-                # Send data to backend
-                backend_ip = "10.10.0.103"
-                send_to_backend(socket, backend_ip, str(points))
+        if txt == "stop":
+            cyberpi.mbot2.EM_stop("all")
+            cyberpi.console.println("Discovery Mode stopped")
+            break
 
         if txt == "exit":
             discover_mode = False  # Exit the mode
             cyberpi.console.println("Exiting Discovery Mode..")
             break
-
-
 
 def send_to_backend(socket, backend_ip, data):
     try:
@@ -213,8 +222,6 @@ def change_color(txt):
 cyberpi.led.on(0, 0, 255)
 cyberpi.console.println("MBOT Grp. 1")
 time.sleep(2)
-
-socket = network_module()
 
 time.sleep(1)
 cyberpi.led.on(255, 255, 255)
