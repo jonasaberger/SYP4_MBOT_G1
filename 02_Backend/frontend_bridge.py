@@ -207,7 +207,6 @@ class FrontendBridge:
         return jsonify({"status": "success", "message": "Command received"})  # Return a valid response
 
 
-
     # TODO: Send the battery status once when connecting to the frontend
     def get_status_route(self):
         status = {
