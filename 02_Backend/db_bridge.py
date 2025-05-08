@@ -85,13 +85,26 @@ class DB_Bridge:
             print(f"Route not found: {e}")
             return None
 
+
+    def get_route_data(self):
+        data = request.json
+        collection_name = data.get("collection_name")
+        print(f"Retrieving route '{collection_name}'...")
+
+        route_data = self.db[collection_name].find()
+        if route_data:
+            print(f"Route '{collection_name}' retrieved successfully")
+            return jsonify(list(route_data))
+        else:
+            print(f"Route '{collection_name}' not found")
+            return jsonify({"status": "error", "message": f"Route '{collection_name}' not found"}), 404
+
+
     def delete_route(self):
         data = request.json
         collection_name = data.get("collection_name")
         print(f"Deleting route '{collection_name}'...")
         
-
-
         try:
             if collection_name in self.db.list_collection_names():
                 self.db.drop_collection(collection_name)

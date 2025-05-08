@@ -162,12 +162,35 @@ def discover_module(socket):
             counter = 1
         
             while True:
+                # Non-blocking check for "stop" command
+                socket.settimeout(1)  # Set a timeout of 1 second for non-blocking behavior
+                try:
+                    stop_command, _ = socket.recvfrom(1024)
+                    if stop_command.decode("utf-8").strip() == "stop":
+                        cyberpi.mbot2.EM_stop("all")
+                        discover_mode = False
+                        cyberpi.console.println("Discovery Mode stopped")
+                        socket.settimeout(None)  # Reset to blocking mode
+                        return  # Exit the function
+                except Exception:
+                    pass  # Timeout occurred, continue with discovery logic
+
                 start_time = time.time()
                 cyberpi.mbot2.forward(speed)
             
                 while cyberpi.ultrasonic2.get(1) > 10:
-                    pass  # Continue moving until an obstacle is detected
-            
+                    # Check for "stop" command during obstacle detection
+                    try:
+                        stop_command, _ = socket.recvfrom(1024)
+                        if stop_command.decode("utf-8").strip() == "stop":
+                            cyberpi.mbot2.EM_stop("all")
+                            discover_mode = False
+                            cyberpi.console.println("Discovery Mode stopped")
+                            socket.settimeout(None)  # Reset to blocking mode
+                            return  # Exit the function
+                    except Exception:
+                        pass  # Timeout occurred, continue moving
+
                 cyberpi.mbot2.EM_stop("all")
             
                 end_time = time.time()
@@ -181,11 +204,10 @@ def discover_module(socket):
             
                 # Create a single detection point
                 point = (counter, distance, angle)
-                cyberpi.console.println(f"Sending point: {point}")
                 
                 # Send the single detection point to the backend
                 backend_ip = "10.10.0.103"
-                send_to_backend(socket, backend_ip, str(point))
+                send_to_backend(socket, backend_ip, point)  # Pass the tuple directly
                 
                 counter += 1
             
@@ -195,6 +217,7 @@ def discover_module(socket):
 
         if txt == "stop":
             cyberpi.mbot2.EM_stop("all")
+            discover_mode = False  # Stop discovery mode
             cyberpi.console.println("Discovery Mode stopped")
             break
 
@@ -203,13 +226,18 @@ def discover_module(socket):
             cyberpi.console.println("Exiting Discovery Mode..")
             break
 
+    # Reset the socket timeout to blocking mode before exiting
+    socket.settimeout(None)
+
 def send_to_backend(socket, backend_ip, data):
     try:
+        # Ensure data is a string before sending
+        if isinstance(data, tuple):
+            data = str(data)  # Convert tuple to string
         socket.sendto(data.encode(), (backend_ip, 5555))
         cyberpi.console.println("Data sent to backend!")
     except Exception as e:
-        cyberpi.console.println("Error sending data to backend!")
-
+        cyberpi.console.println(f"Error sending data to backend: {e}")
 
 def change_color(txt):
     color_data = txt.split(":")[1]

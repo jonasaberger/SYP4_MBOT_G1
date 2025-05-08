@@ -24,6 +24,8 @@ class FrontendBridge:
         if not os.path.exists('Logs'):
             os.makedirs('Logs')
 
+        self.connected_users = {}  # Map of ip_target to ip_source
+
 
     # Get a custom-defined route from the frontend and save it to the database
     def define_route(self):
@@ -43,6 +45,7 @@ class FrontendBridge:
 
     def end_route(self):
         self.stoproute = True
+        self.mbot_bridge.send_message("stop")
         return jsonify({"status": "success", "message": "Route stopped"})
 
 
@@ -51,10 +54,8 @@ class FrontendBridge:
         data = request.json
         ip_target = data.get("ip-target")
         mode = data.get("mode")
-
         drive = data.get("drive")
         route = data.get("route")
-        
         ip_source = request.remote_addr
         color = data.get("color")
         speed = data.get("speed")
@@ -74,11 +75,27 @@ class FrontendBridge:
 
         # IP - Configuration
         if ip_target:
+            # Associate the user's IP with the mBot's IP
+            self.connected_users[ip_target] = ip_source
             self.mbot_bridge.configure_connection(ip_target, ip_source)
             print(f"Configured connection with target IP: {ip_target} and source IP: {ip_source}")
+            return jsonify({"status": "success", "message": "Connection configured"})
+
+        # Check if the user's IP is authorized to access any mBot
+        authorized_ip_target = None
+        for target, source in self.connected_users.items():
+            if source == ip_source:
+                authorized_ip_target = target
+                break
+
+        if not authorized_ip_target:
+            return jsonify({"status": "error", "message": "Unauthorized access or no configured mBot"}), 403
+
+        # Log the authorized target for debugging
+        print(f"User {ip_source} is authorized to send commands to mBot with IP {authorized_ip_target}")
 
         # Send the mode to the mBot
-        elif mode:
+        if mode:
             self.mbot_bridge.send_message(mode)
             self.current_mode = mode
             print(f"Mode sent to mBot: {mode}")
@@ -107,7 +124,6 @@ class FrontendBridge:
                 print(f"Command recorded: {self.command_log[-1]}")
 
         if self.current_mode == "automatic":
-
             if route:
                 # Get the specific route from the database
                 route_data = self.db_bridge.get_route(route)
@@ -136,17 +152,11 @@ class FrontendBridge:
                         self.mbot_bridge.send_message(direction)
 
                     time.sleep(duration)
-
-        
         if self.current_mode == "discovery" and drive == "start":
-
-            # Handle discovery mode commands here
             print("Discovery mode activated")
             self.mbot_bridge.send_message("start")
 
             while drive != "stop":
-
-                # Wait for receiving messages from the mBot
                 received_data = self.mbot_bridge.receive_message()
 
                 # Process the received data directly as a tuple
@@ -203,8 +213,7 @@ class FrontendBridge:
         if drive == "exit" and mode == "discovery":
             print("Exiting discovery mode")
             self.mbot_bridge.send_message("exit")
-        
-        return jsonify({"status": "success", "message": "Command received"})  # Return a valid response
+        return jsonify({"status": "success", "message": "Command received"}) 
 
 
     # TODO: Send the battery status once when connecting to the frontend

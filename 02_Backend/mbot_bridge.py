@@ -1,6 +1,7 @@
 import socket
 import os
 from dotenv import load_dotenv
+import time
 
 class MBotBridge:
     def __init__(self):
@@ -9,7 +10,7 @@ class MBotBridge:
         self.source_ip = None
         self.target_port = int(os.getenv('TARGET_PORT'))
 
-    def send_message(self, message):
+    def send_message(self, message): 
         if self.target_ip is None:
             print('Target IP is not configured.')
             return
@@ -17,7 +18,6 @@ class MBotBridge:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
             s.sendto(message.encode(), (self.target_ip, self.target_port))
-            print(f'Sent message: {message}')
         finally:
             s.close()
 
@@ -29,20 +29,30 @@ class MBotBridge:
     def receive_message(self):
         UDP_IP = "0.0.0.0"
         UDP_PORT = int(os.getenv('SOURCE_PORT'))
-        BUFFER_SIZE = 1024  # Define a buffer size for receiving data
+        BUFFER_SIZE = 1024
 
+        # Create socket with reuse options
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        
         try:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             sock.bind((UDP_IP, UDP_PORT))
             print(f"Listening on port: {UDP_PORT}")
 
-            while True:
-                data, addr = sock.recvfrom(BUFFER_SIZE)
-                print(f"Received message from {addr}: {data.decode()}")
-                return data.decode()
+            # Set timeout
+            sock.settimeout(5.0)  # 5 second timeout
 
+            data, addr = sock.recvfrom(BUFFER_SIZE)
+            print(f"Received message from {addr}: {data.decode()}")
+            return data.decode()
+
+        except socket.timeout:
+            print("Timeout occurred, no data received")
+            return None
         except Exception as e:
             print(f"An error occurred: {e}")
-
+            return None
         finally:
             sock.close()
+            # Small delay to ensure proper socket closure
+            time.sleep(0.1)

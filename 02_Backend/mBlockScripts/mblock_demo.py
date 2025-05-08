@@ -2,19 +2,30 @@ import cyberpi
 import time
 import usocket  # type: ignore
 import os
+import random
 
-# Global variables
+# Variables
 movement_speed = 50
 tracking_enabled = False
-start_initialized = False
-height = 0
-width = 0
-room_map = []
-visited = []
+
+physical_mode = False
+discover_mode = False
+automatic_mode = False
+
+current_socket = None
+backend_ip = "10.10.0.103"  # Define backend IP here
+
+def create_socket():
+    """Create and return a new socket instance"""
+    sock = usocket.socket(usocket.AF_INET, usocket.SOCK_DGRAM)
+    sock.setsockopt(usocket.SOL_SOCKET, usocket.SO_REUSEADDR, 1)
+    local_ip = cyberpi.network.get_ip()
+    sock.bind((local_ip, 6666))
+    return sock
 
 def network_module():
-    # Connect the MBOT to the school Wi-Fi
     cyberpi.network.config_sta("htljoh-public", "joh12345")
+    
     while True:
         cyberpi.console.clear()
         cyberpi.console.print("Configuring Network")
@@ -34,201 +45,202 @@ def network_module():
             cyberpi.console.println("--------------")
             cyberpi.console.println("")
             break
-    
-    # Assign socket address
+        
     sockaddr = cyberpi.network.get_ip()
     cyberpi.console.println("My IP Address: " + sockaddr)
     cyberpi.console.println("--------------")
     cyberpi.console.println("Waiting for Host")
-    socket = usocket.socket(usocket.AF_INET, usocket.SOCK_DGRAM)
-    socket.bind((sockaddr, 6666))
-    return socket
+ 
+    return create_socket()
 
-def measure_dimension(direction):
-    counter = 0
-    while cyberpi.ultrasonic2.get(1) > 10:  # While no obstacle within 10cm
-        cyberpi.mbot2.forward(20)
-        time.sleep(1)  # Move for 1 second
-        cyberpi.mbot2.EM_stop("all")
-        counter += 1
-        # Additional check to prevent infinite loop
-        if counter > 20:  # Safety limit of 20 units
-            break
-    if direction == "height":
-        # Turn 90 degrees to measure the other dimension
-        cyberpi.mbot2.turn_right(30)
-        time.sleep(3)  # Adjust time for 90 degree turn
-        cyberpi.mbot2.EM_stop("all")
-    return counter
+def close_socket(sock):
+    """Properly close a socket"""
+    try:
+        if sock:
+            sock.close()
+    except:
+        pass
 
-def discover_module():
-    global height, width, room_map, visited
-    cyberpi.console.println("Discovery Mode: Raum Mapping")
-    
-    # Measure dimensions
-    height = measure_dimension("height")  # First dimension
-    width = measure_dimension("width")    # Second dimension
-    
-    # Initialize maps
-    room_map = [[0 for _ in range(width)] for _ in range(height)]  # 0 = free space
-    visited = [[0 for _ in range(width)] for _ in range(height)]   # 0 = unvisited
-    
-    
-    # Start position (assuming corner)
-    start_x = 0
-    start_y = 0
-    visited[start_x][start_y] = 1  # Mark start as visited
-    
-    # Queue for BFS
-    queue = [(start_x, start_y)]
-    current_dir = 0  # 0=right, 1=down, 2=left, 3=up
-    
-    while queue:
-        x, y = queue.pop(0)
-        
-        # Explore adjacent cells
-        for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
-            nx, ny = x + dx, y + dy
-            
-            # Check bounds and if not visited
-            if 0 <= nx < height and 0 <= ny < width and not visited[nx][ny]:
-                # Calculate required turn
-                target_dir = [(0, 1), (1, 0), (0, -1), (-1, 0)].index((dx, dy))
-                turn_degrees = (target_dir - current_dir) * 90
-                
-                # Perform turn if needed
-                if turn_degrees != 0:
-                    if turn_degrees > 180:
-                        turn_degrees -= 360
-                    elif turn_degrees < -180:
-                        turn_degrees += 360
-                    
-                    if turn_degrees > 0:
-                        cyberpi.mbot2.turn_right(30)
-                    else:
-                        cyberpi.mbot2.turn_left(30)
-                    time.sleep(abs(turn_degrees)/90)  # Adjust for 90 degree turn
-                    cyberpi.mbot2.EM_stop("all")
-                    current_dir = target_dir
-                
-                # Check for obstacle
-                distance = cyberpi.ultrasonic2.get(1)
-                if distance > 10:  # No obstacle
-                    # Move forward
-                    cyberpi.mbot2.forward(20)
-                    move_time = 1.0  # Base move time
-                    
-                    # Adjust for diagonal moves if needed
-                    if dx != 0 and dy != 0:
-                        move_time *= 1.414  # sqrt(2) for diagonal
-                    
-                    time.sleep(move_time)
-                    cyberpi.mbot2.EM_stop("all")
-                    
-                    # Update position and maps
-                    visited[nx][ny] = 1
-                    room_map[nx][ny] = 0
-                    queue.append((nx, ny))
-                else:
-                    # Mark as obstacle
-                    room_map[nx][ny] = 1
-    
-    # Return to start (optional)
-    cyberpi.console.println("Mapping complete!")
-    
-    # Display map
-    cyberpi.console.println("Room Map (0=free, 1=obstacle):")
-    for row in room_map:
-        cyberpi.console.println(" ".join(str(cell) for cell in row))
+def physical_module(speed=50):
+    global physical_mode, movement_speed, tracking_enabled, current_socket
 
-def physical_module(socket, speed=50):
-    global start_initialized
+    physical_mode = True
     cyberpi.console.println("Control Mode")
     
-    while True:
-        command, adr = socket.recvfrom(1024)
-        txt = str(command, "utf-8").strip()
-        
-        if txt == "exit":
-            cyberpi.mbot2.EM_stop("all")
-            start_initialized = False
-            cyberpi.console.println("Exiting Mode..")
-            break
-        elif txt == "start":
-            start_initialized = True
-            cyberpi.console.println("Tracking Enabled")
-            continue
-        elif txt == "stop":
-            cyberpi.mbot2.EM_stop("all")
-            continue
-        elif txt.startswith("color:"):
-            change_color(txt)
-        elif txt.startswith("speed:"):
-            new_speed = int(txt.split(":")[1])
-            if 0 <= new_speed <= 100:
-                speed = new_speed
-                cyberpi.console.println("Speed: " + str(new_speed) + "%")
-            else:
-                cyberpi.console.println("Invalid speed!")
-                continue
-        
-        if start_initialized and txt in ["forward", "backward", "left", "right"]:
-            if txt == "forward":
-                cyberpi.mbot2.forward(speed)
-            elif txt == "backward":
-                cyberpi.mbot2.backward(speed)
-            elif txt == "left":
-                cyberpi.mbot2.turn_left(speed)
-            elif txt == "right":
-                cyberpi.mbot2.turn_right(speed)
-        time.sleep(0.1)
+    # Create a new socket for this module
+    current_socket = create_socket()
+    current_socket.settimeout(0.1)  # Add timeout to prevent blocking
 
-def automatic_module(socket, speed=50):
-    global start_initialized
-    start_initialized = True
+    try:
+        while physical_mode:
+            try:
+                command, adr = current_socket.recvfrom(1024)
+                txt = str(command, "utf-8").strip()
+
+                if txt == "exit":
+                    cyberpi.mbot2.EM_stop("all")
+                    physical_mode = False
+                    tracking_enabled = False
+                    cyberpi.console.println("Exiting Control Mode..")
+                    break
+                elif txt == "start":
+                    tracking_enabled = True
+                    cyberpi.console.println("Tracking Enabled")
+                    continue
+                elif txt == "stop":
+                    cyberpi.mbot2.EM_stop("all")
+                    continue
+                elif txt.startswith("color:"):
+                    change_color(txt)
+                elif txt.startswith("speed:"):
+                    new_speed = int(txt.split(":")[1])
+                    if 0 <= new_speed <= 100:
+                        movement_speed = new_speed
+                        cyberpi.console.println("Speed: " + str(new_speed) + "%")
+                
+                if tracking_enabled and txt in ["forward", "backward", "left", "right"]:
+                    if txt == "forward":
+                        cyberpi.mbot2.forward(movement_speed)
+                    elif txt == "backward":
+                        cyberpi.mbot2.backward(movement_speed)
+                    elif txt == "left":
+                        cyberpi.mbot2.turn_left(movement_speed)
+                    elif txt == "right":
+                        cyberpi.mbot2.turn_right(movement_speed)
+            except usocket.timeout:
+                continue
+            time.sleep(0.1)
+    finally:
+        close_socket(current_socket)
+        current_socket = None
+
+def automatic_module(speed=50):
+    global automatic_mode, movement_speed, current_socket
+
+    automatic_mode = True
     cyberpi.console.println("Automatic Mode")
     
-    while True:
-        command, adr = socket.recvfrom(1024)
-        txt = str(command, "utf-8").strip()
-        
-        if txt == "exit":
-            cyberpi.mbot2.EM_stop("all")
-            start_initialized = False
-            cyberpi.console.println("Exiting Automatic Mode..")
-            break
-        elif txt == "stop":
-            cyberpi.mbot2.EM_stop("all")
-            continue
-        elif txt.startswith("color:"):
-            change_color(txt)
-        elif txt.startswith("speed:"):
-            new_speed = int(txt.split(":")[1])
-            if 0 <= new_speed <= 100:
-                speed = new_speed
-                cyberpi.console.println("Speed: " + str(new_speed) + "%")
-            else:
-                cyberpi.console.println("Invalid speed!")
+    current_socket = create_socket()
+    current_socket.settimeout(0.1)
+
+    try:
+        while automatic_mode:
+            try:
+                command, adr = current_socket.recvfrom(1024)
+                txt = str(command, "utf-8").strip()
+
+                if txt == "exit":
+                    cyberpi.mbot2.EM_stop("all")
+                    automatic_mode = False
+                    cyberpi.console.println("Exiting Automatic Mode..")
+                    break
+                elif txt == "end":
+                    cyberpi.console.println("Ended Current-Route")
+                    cyberpi.mbot2.EM_stop("all")
+                    continue
+                elif txt.startswith("color:"):
+                    change_color(txt)
+                elif txt.startswith("speed:"):
+                    new_speed = int(txt.split(":")[1])
+                    if 0 <= new_speed <= 100:
+                        movement_speed = new_speed
+                        cyberpi.console.println("Speed: " + str(new_speed) + "%")
+                
+                if txt in ["forward", "backward", "left", "right", "stop"]:
+                    if txt == "forward":
+                        cyberpi.mbot2.forward(movement_speed)
+                    elif txt == "backward":
+                        cyberpi.mbot2.backward(movement_speed)
+                    elif txt == "left":
+                        cyberpi.mbot2.turn_left(movement_speed)
+                    elif txt == "right":
+                        cyberpi.mbot2.turn_right(movement_speed)
+                    elif txt == "stop":
+                        cyberpi.mbot2.EM_stop("all")
+            except usocket.timeout:
                 continue
-        
-        if start_initialized and txt in ["forward", "backward", "left", "right"]:
-            if txt == "forward":
-                cyberpi.mbot2.forward(speed)
-                time.sleep(1)
-                cyberpi.mbot2.EM_stop("all")
-            elif txt == "backward":
-                cyberpi.mbot2.backward(speed)
-                time.sleep(1)
-                cyberpi.mbot2.EM_stop("all")
-            elif txt == "left":
-                cyberpi.mbot2.turn_left(speed)
-                time.sleep(0.5)  # Shorter time for turning
-                cyberpi.mbot2.EM_stop("all")
-            elif txt == "right":
-                cyberpi.mbot2.turn_right(speed)
-                time.sleep(0.5)
-                cyberpi.mbot2.EM_stop("all")
-        time.sleep(0.1)
+            time.sleep(0.1)
+    finally:
+        close_socket(current_socket)
+        current_socket = None
+
+def discover_module():
+    global discover_mode, current_socket
+
+    discover_mode = True
+    cyberpi.console.println("Discovery Mode")
+    
+    current_socket = create_socket()
+    current_socket.settimeout(0.1)
+
+    try:
+        while discover_mode:
+            try:
+                command, adr = current_socket.recvfrom(1024)
+                txt = str(command, "utf-8").strip()
+
+                if txt == "start":
+                    cyberpi.console.println("Discovery Mode started")
+                    
+                    speed = 20
+                    speed_factor = 0.29
+                    counter = 1
+                    discovery_socket = create_socket()  # Separate socket for sending data
+                    
+                    try:
+                        while discover_mode:
+                            start_time = time.time()
+                            cyberpi.mbot2.forward(speed)
+                        
+                            while cyberpi.ultrasonic2.get(1) > 10:
+                                if not discover_mode:
+                                    break
+                            
+                            cyberpi.mbot2.EM_stop("all")
+                        
+                            end_time = time.time()
+                            duration = end_time - start_time
+                            distance = round(duration * speed_factor * 100, 2)
+                        
+                            cyberpi.console.println("Wand erreicht!")
+                            cyberpi.console.println("Punkt " + str(counter) + ": " + str(distance) + "cm")
+                        
+                            angle = random.randint(0, 360)
+                            point = (counter, distance, angle)
+                            
+                            # Send using the separate socket
+                            try:
+                                discovery_socket.sendto(str(point).encode(), (backend_ip, 5555))
+                                cyberpi.console.println("Data sent to backend!")
+                            except Exception as e:
+                                cyberpi.console.println("Error sending data!")
+                            
+                            counter += 1
+                            cyberpi.mbot2.turn(angle)
+                            time.sleep(1)
+                    finally:
+                        close_socket(discovery_socket)
+
+                elif txt == "stop":
+                    cyberpi.mbot2.EM_stop("all")
+                    cyberpi.console.println("Discovery Mode stopped")
+
+                elif txt == "exit":
+                    discover_mode = False
+                    cyberpi.console.println("Exiting Discovery Mode..")
+                    break
+            except usocket.timeout:
+                continue
+    finally:
+        close_socket(current_socket)
+        current_socket = None
+
+def send_to_backend(sock, data):
+    try:
+        sock.sendto(data.encode(), (backend_ip, 5555))
+        cyberpi.console.println("Data sent to backend!")
+    except Exception as e:
+        cyberpi.console.println("Error sending data to backend!")
 
 def change_color(txt):
     color_data = txt.split(":")[1]
@@ -238,57 +250,44 @@ def change_color(txt):
     else:
         cyberpi.led.off()
 
-# Main program
+# Main initialization
 cyberpi.led.on(0, 0, 255)
-cyberpi.console.println("MBOT Grp. 1")
 time.sleep(2)
-
-socket = network_module()
-
-time.sleep(1)
 cyberpi.led.on(255, 255, 255)
 time.sleep(0.1)
 cyberpi.led.on(0, 0, 0)
 
-physical_mode = False
-discover_mode = False
-automatic_mode = False
 connection_count = 0
+main_socket = network_module()
 
-while True:
-    command, adr = socket.recvfrom(1024)
-    txt = str(command, "utf-8").strip()
-    
-    if txt.startswith("connect"):
-        if connection_count == 0:
-            cyberpi.console.clear()
-        connection_count += 1
-        host_ip = txt.split(":")[1]
-        cyberpi.console.println("Connection " + str(connection_count))
-        cyberpi.console.println(host_ip)
-    elif txt.startswith("color:"):
-        change_color(txt)
-    elif txt.startswith("speed:"):
-        new_speed = int(txt.split(":")[1])
-        if 0 <= new_speed <= 100:
-            movement_speed = new_speed
-            cyberpi.console.println("Speed: " + str(new_speed) + "%")
-        else:
-            cyberpi.console.println("Invalid speed!")
+try:
+    while True:
+        try:
+            command, adr = main_socket.recvfrom(1024)
+            txt = str(command, "utf-8").strip()
+            
+            if txt.startswith("connect"):
+                if connection_count == 0:
+                    cyberpi.console.clear()
+                connection_count += 1
+                host_ip = txt.split(":")[1]
+                cyberpi.console.println("Connection " + str(connection_count))
+                cyberpi.console.println(host_ip)
+            elif txt.startswith("color:"):
+                change_color(txt)
+            elif txt.startswith("speed:"):
+                new_speed = int(txt.split(":")[1])
+                if 0 <= new_speed <= 100:
+                    movement_speed = new_speed
+                    cyberpi.console.println("Speed: " + str(new_speed) + "%")
+            elif txt == "controller" and not physical_mode:
+                physical_module(movement_speed)
+            elif txt == "automatic" and not automatic_mode:
+                automatic_module(movement_speed)
+            elif txt == "discovery" and not discover_mode:
+                discover_module()
+        except usocket.timeout:
             continue
-    elif txt == "controller" and not physical_mode:
-        physical_mode = True
-        physical_module(socket, movement_speed)
-        physical_mode = False
-    elif txt == "automatic" and not automatic_mode:
-        automatic_mode = True
-        automatic_module(socket, movement_speed)
-        automatic_mode = False
-    elif txt == "discovery" and not discover_mode:
-        discover_mode = True
-        discover_module()
-        discover_mode = False
-    elif txt == "exit":
-        cyberpi.mbot2.EM_stop("all")
-        cyberpi.console.println("Exiting program...")
-        break
+        time.sleep(0.1)
+finally:
+    close_socket(main_socket)
