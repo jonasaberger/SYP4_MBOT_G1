@@ -13,6 +13,7 @@ class FrontendBridge:
         self.current_speed = 50  # Default speed
         self.current_color = "255,255,255"  # Default color
         self.current_mode = None
+        self.anti_hons = False
 
         self.stoproute = False
         self.discovery_points = []
@@ -42,7 +43,6 @@ class FrontendBridge:
 
         return jsonify({"status": "success", "message": f"Route '{route_name}' saved to database"})
 
-
     def end_route(self):
         self.stoproute = True
         self.mbot_bridge.send_message("stop")
@@ -59,6 +59,11 @@ class FrontendBridge:
         ip_source = request.remote_addr
         color = data.get("color")
         speed = data.get("speed")
+
+        # Block traffic from 10.10.0.174 if anti_hons is True
+        if self.anti_hons and ip_source == "10.10.0.174":
+            print(f"Traffic blocked from IP: {ip_source} due to anti_hons being enabled")
+            return jsonify({"status": "error", "message": "HONS HS"}), 403
 
         # Ensure the Logs directory exists
         logs_dir = 'Logs'

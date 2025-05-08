@@ -40,19 +40,28 @@ class MBotBridge:
             print(f"Listening on port: {UDP_PORT}")
 
             # Set timeout
-            sock.settimeout(5.0)  # 5 second timeout
+            sock.settimeout(2)  # 5 second timeout
 
-            data, addr = sock.recvfrom(BUFFER_SIZE)
-            print(f"Received message from {addr}: {data.decode()}")
-            return data.decode()
+            while True:
+                try:
+                    data, addr = sock.recvfrom(BUFFER_SIZE)
+                    message = data.decode().strip()
+                    print(f"Received message from {addr}: {message}")
 
-        except socket.timeout:
-            print("Timeout occurred, no data received")
-            return None
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            return None
+                    # Stop listening if "stop" command is received
+                    if message.lower() == "stop":
+                        print("Stop command received. Stopping message reception.")
+                        break
+
+                    return message  # Return the received message
+
+                except socket.timeout:
+                    print("Timeout occurred, no data received")
+                    continue
+                except Exception as e:
+                    print(f"An error occurred: {e}")
+                    break
+
         finally:
             sock.close()
-            # Small delay to ensure proper socket closure
-            time.sleep(0.1)
+            print("Socket closed.")

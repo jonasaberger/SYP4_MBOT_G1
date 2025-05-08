@@ -84,20 +84,30 @@ class DB_Bridge:
         except Exception as e:
             print(f"Route not found: {e}")
             return None
-
-
+        
+        
     def get_route_data(self):
-        data = request.json
-        collection_name = data.get("collection_name")
+        collection_name = request.args.get("collection_name")
         print(f"Retrieving route '{collection_name}'...")
 
-        route_data = self.db[collection_name].find()
-        if route_data:
+        if not collection_name:
+            print("No collection name provided")
+            return jsonify({"status": "error", "message": "Collection name is required"}), 400
+
+        try:
+            route_data = self.db[collection_name].find()
+            route_list = []
+            
+            # Convert each document to a JSON-serializable format
+            for document in route_data:
+                document["_id"] = str(document["_id"])  # Convert ObjectId to string
+                route_list.append(document)
+            
             print(f"Route '{collection_name}' retrieved successfully")
-            return jsonify(list(route_data))
-        else:
-            print(f"Route '{collection_name}' not found")
-            return jsonify({"status": "error", "message": f"Route '{collection_name}' not found"}), 404
+            return jsonify(route_list)
+        except Exception as e:
+            print(f"Error retrieving route '{collection_name}': {e}")
+            return jsonify({"status": "error", "message": f"Error retrieving route '{collection_name}': {str(e)}"}), 500
 
 
     def delete_route(self):
