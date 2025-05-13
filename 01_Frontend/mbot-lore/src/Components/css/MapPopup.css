@@ -1,104 +1,265 @@
-.popup-overlay {
+/* MapPopup.css */
+.map-popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.7); /* Einheitlicher Hintergrund */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+  backdrop-filter: blur(4px); /* Konsistenter Blur-Effekt */
 }
 
-.popup-content {
-  position: relative;
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 80%;
-  height: 80%;
+.map-popup-overlay.visible {
+  opacity: 1;
+}
+
+.map-popup-window {
+  width: 800px;
+  max-width: 90vw;
+  background: #292d32; /* Einheitlicher dunkler Hintergrund */
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  align-items: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transform: translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.popup-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
+.map-popup-overlay.visible .map-popup-window {
+  transform: translateY(0);
+}
+
+.map-popup-header {
+  background: linear-gradient(135deg, #434343 0%, #1a202c 100%);
+  color: white;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.map-popup-header h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.popup-close-btn {
   background: none;
   border: none;
-  font-size: 24px;
+  color: white;
+  font-size: 1.8rem;
   cursor: pointer;
-  color: #333;
+  padding: 0 12px;
+  transition: transform 0.2s, color 0.2s;
 }
 
-.map-container {
+.popup-close-btn:hover {
+  transform: scale(1.2);
+  color: #ff6b6b;
+}
+
+/* Statistik-Container */
+.map-stats-container {
+  display: flex;
+  justify-content: space-around;
+  padding: 20px;
+  background: #1a202c; /* Einheitlicher Hintergrund */
+  border-bottom: 1px solid #333;
+}
+
+.stat-item {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  background-color: #f0f0f0; /* Optional: Background color */
-  border: 2px solid #ccc; /* Optional: Border for visibility */
-  border-radius: 8px; /* Optional: Rounded corners */
-  padding: 10px; /* Optional: Padding around the grid */
-  width: fit-content; /* Adjust width to fit the grid */
-  height: fit-content; /* Adjust height to fit the grid */
-  margin: auto; /* Center the container */
+  align-items: center;
+  padding: 10px 15px;
+  background: #292d32;
+  border-radius: 8px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s;
 }
 
-.map-row {
-  display: flex;
-  gap: 5px;
+.stat-item:hover {
+  transform: translateY(-3px);
 }
 
-.map-cell {
-  width: 30px;
-  height: 30px;
-  border: 2px solid #ddd;
+.stat-label {
+  font-size: 0.9rem;
+  color: #ccc;
+  margin-bottom: 5px;
+  font-weight: 500;
 }
 
-.map-cell.empty {
-  background-color: #f0f0f0;
+.stat-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #37bc9b;
 }
 
-.map-cell.obstacle {
-  background-color: red;
+/* Canvas-Container */
+.map-canvas-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  background: #1a202c;
 }
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
+
+.map-canvas {
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  display: block;
+  background: #1a202c;
+}
+
+/* Legende */
+.map-legend {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
+  padding: 15px;
+  background: #292d32;
+  border-top: 1px solid #333;
+  gap: 15px;
+}
+
+.legend-item {
+  display: flex;
   align-items: center;
-  z-index: 1000;
+  padding: 5px 12px;
+  background: #1a202c;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  font-size: 0.9rem;
+  color: #ccc;
 }
 
-.popup-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
-  position: relative;
+.legend-color {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  margin-right: 8px;
 }
 
-.popup-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
+.legend-color.start-point {
+  background: #37bc9b;
+  box-shadow: 0 0 0 3px rgba(55, 188, 155, 0.3);
 }
 
-canvas {
-  display: block;
-  margin: 0 auto;
+.legend-color.end-point {
+  background: #da4453;
+  box-shadow: 0 0 0 3px rgba(218, 68, 83, 0.3);
+}
+
+.legend-color.path {
+  background: #5d9cec;
+  box-shadow: 0 0 0 3px rgba(93, 156, 236, 0.3);
+}
+
+.legend-color.area {
+  background: #e9573f;
+  box-shadow: 0 0 0 3px rgba(233, 87, 63, 0.3);
+}
+
+.legend-color.obstacle {
+  background: rgba(255, 165, 0, 0.8);
+  box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.3);
+}
+
+.stat-item {
+  min-width: 20%;
+}
+
+
+/* Animation für Statistiken */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stat-item {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+.stat-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.stat-item:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.stat-item:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* Responsive Anpassungen */
+@media (max-width: 768px) {
+  .map-popup-window {
+    width: 95vw;
+    max-height: 90vh;
+  }
+
+  .map-stats-container {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .stat-item {
+    width: calc(50% - 20px);
+    margin-bottom: 10px;
+  }
+
+  .map-canvas-container {
+    height: 300px;
+  }
+
+  .map-legend {
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .legend-item {
+    margin: 0;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-popup-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .stat-item {
+    width: 100%;
+  }
+
+  .map-legend {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    padding: 10px;
+  }
+
+  .legend-item {
+    width: calc(50% - 20px);
+    box-sizing: border-box;
+  }
 }

@@ -98,6 +98,18 @@ export const sendStopIfNoDrive = async () => {
   }
 };
 
+export const getDiscoveryPoints = async () => {
+  sendCommand("drive", "stop"); // Stoppe den Roboter nach dem Abrufen der Punkte
+  try {
+    const response = await axios.get(`${apiBaseURL}/get_discovery_points`);
+    console.log('Entdeckte Punkte:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Fehler beim Abrufen der Entdeckungspunkte:', error.response?.data || error.message);
+    throw new Error('Fehler beim Abrufen der Entdeckungspunkte');
+  }
+};
+
 export const fetchBattery = async () => {
   try {
     const response = await axios.get(`${apiBaseURL}/get_status`);

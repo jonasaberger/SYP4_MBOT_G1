@@ -31,8 +31,8 @@ app.post('/api/save-sessions', (req, res) => {
   console.log("POST /api/save-sessions aufgerufen");
 
   const { sessions } = req.body;
-  if (!sessions) {
-    return res.status(400).json({ message: "Keine Sessions-Daten erhalten" });
+  if (!sessions || !Array.isArray(sessions)) {
+    return res.status(400).json({ message: "Ungültige Sessions-Daten erhalten" });
   }
 
   fs.writeFile(sessionsFilePath, JSON.stringify(sessions, null, 2), 'utf8', (err) => {
@@ -45,5 +45,5 @@ app.post('/api/save-sessions', (req, res) => {
 });
 
 app.listen(3001, () => {
-  console.log('✅ Server läuft auf http://localhost:3001');
+  console.log('Server läuft auf http://localhost:3001');
 });
