@@ -1,4 +1,4 @@
-.body{
+.body {
   background-color: #005974;
 }
 
@@ -8,7 +8,7 @@
   align-items: center;
   background-color: #005974;
   padding: 20px;
-  box-sizing: border-box; 
+  box-sizing: border-box;
 }
 
 .title {
@@ -20,16 +20,13 @@
   padding-left: 35%;
   padding-right: 35%;
   font-weight: bold;
+  text-align: center;
 }
 
 .mode-buttons {
   display: flex;
   gap: 10px;
   margin: 20px 0;
-}
-
-.div .control-section {
-  background-color: #005974;
 }
 
 .mode-buttons button {
@@ -100,7 +97,6 @@ body {
 
 body, html {
   overflow: hidden;
-  
 }
 
 @media (max-width: 768px) {
@@ -108,29 +104,54 @@ body, html {
     height: 100%;
     margin: 0;
     padding: 0;
-    background-color: #005974; /* Passe die Hintergrundfarbe an */
+    background-color: #005974;
   }
-  
+
   .title {
-      font-size: 1.5rem;
-      padding: 10px;
-      padding-left: 20%;
-      padding-right: 20%;
+    font-size: 1.5rem;
+    padding: 10px;
+    padding-left: 20%;
+    padding-right: 20%;
   }
 
   .mode-buttons {
-      flex-direction: row;
-      gap: 5px;
+    flex-direction: row; /* Buttons nebeneinander anordnen */
+    gap: 5px;
   }
 
   .mode-buttons button {
-      width: 100%;
-      font-size: 0.9rem;
-      padding: 8px 15px;
+    width: 100%; /* Volle Breite */
+    font-size: 0.9rem;
+    padding: 8px 15px;
   }
 
   .control-section {
-      width: 100%;
-      padding: 10px;
+    width: 100%; /* Volle Breite */
+    padding: 10px;
+    flex-direction: column; /* Inhalte vertikal anordnen */
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.2rem;
+    padding-left: 10%;
+    padding-right: 10%;
+  }
+
+  .mode-buttons {
+    flex-direction: row; /* Buttons nebeneinander anordnen */
+    gap: 5px;
+  }
+
+  .mode-buttons button {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+  }
+
+  .control-section {
+    padding: 5px;
+    margin-right: 20px;
+    margin-left: 20px;
   }
 }
