@@ -260,6 +260,94 @@ swagger_config = {
                     }
                 }
             }
+        },
+        "/get_discovery_points": {
+            "get": {
+                "summary": "Get discovery points",
+                "description": "Retrieve all discovery points collected during discovery mode.",
+                "responses": {
+                    "200": {
+                        "description": "Discovery points retrieved successfully.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "x": {
+                                        "type": "number",
+                                        "example": 1.23,
+                                        "description": "X-coordinate of the discovery point."
+                                    },
+                                    "y": {
+                                        "type": "number",
+                                        "example": 4.56,
+                                        "description": "Y-coordinate of the discovery point."
+                                    },
+                                    "z": {
+                                        "type": "number",
+                                        "example": 7.89,
+                                        "description": "Z-coordinate of the discovery point."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/get_route_data": {
+            "get": {
+                "summary": "Get route data",
+                "description": "Retrieve data for a specific route from the database.",
+                "parameters": [
+                    {
+                        "name": "collection_name",
+                        "in": "query",
+                        "required": True,
+                        "type": "string",
+                        "description": "Name of the route collection to retrieve."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Route data retrieved successfully.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "direction": {
+                                        "type": "string",
+                                        "example": "forward",
+                                        "description": "Direction of movement."
+                                    },
+                                    "speed": {
+                                        "type": "integer",
+                                        "example": 50,
+                                        "description": "Speed of movement (1-100)."
+                                    },
+                                    "duration": {
+                                        "type": "number",
+                                        "example": 2.5,
+                                        "description": "Duration of movement in seconds."
+                                    },
+                                    "color": {
+                                        "type": "string",
+                                        "example": "255,255,255",
+                                        "description": "Color of the mBot during this step."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input or missing collection name."
+                    },
+                    "500": {
+                        "description": "Error retrieving route data."
+                    }
+                }
+            }
         }
     }
 }
