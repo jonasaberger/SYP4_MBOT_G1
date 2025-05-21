@@ -29,7 +29,7 @@ swagger_config = {
         "/receive_commands": {
             "post": {
                 "summary": "Receive commands",
-                "description": "Endpoint to send commands to the mBot. Commands must be sent sequentially. For example, set `mode` first, then `drive`, and so on.",
+                "description": "Endpoint to send commands to the mBot. Commands must be sent sequentially. For example, set `mode` first, then `drive`, and so on. Do not use `/end_route` unless the mBot is in automatic mode.",
                 "parameters": [
                     {
                         "name": "body",
@@ -85,10 +85,21 @@ swagger_config = {
                 }
             }
         },
+        "/logout": {
+            "post": {
+                "summary": "Logout and disconnect mBot",
+                "description": "Disconnects the mBot from the current session and resets its state to 'Connect To Host'.",
+                "responses": {
+                    "200": {
+                        "description": "mBot disconnected successfully."
+                    }
+                }
+            }
+        },
         "/end_route": {
             "post": {
                 "summary": "End route",
-                "description": "Endpoint to stop the current route in automatic mode.",
+                "description": "Endpoint to stop the current route in automatic mode. Only use this endpoint when the mBot is running in automatic mode. Using this in other modes may cause unexpected behavior.",
                 "responses": {
                     "200": {
                         "description": "Route stopped successfully."
