@@ -13,7 +13,7 @@ class FrontendBridge:
         self.current_speed = 50  # Default speed
         self.current_color = "255,255,255"  # Default color
         self.current_mode = None
-        self.anti_hons = False
+        self.anti_hons = True
 
         self.stoproute = False
         self.discovery_points = []
@@ -105,7 +105,7 @@ class FrontendBridge:
             self.current_mode = mode
             print(f"Mode sent to mBot: {mode}")
 
-        elif drive and self.current_mode == "controller":
+        if drive and self.current_mode == "controller":
             self.mbot_bridge.send_message(drive)
             print(f"Drive command sent to mBot: {drive}")
 
@@ -127,6 +127,10 @@ class FrontendBridge:
                 })
                 self.start_time = time.time()  # Reset start time for the next command
                 print(f"Command recorded: {self.command_log[-1]}")
+
+
+
+
 
         if self.current_mode == "automatic":
             if route:
@@ -157,6 +161,8 @@ class FrontendBridge:
                         self.mbot_bridge.send_message(direction)
 
                     time.sleep(duration)
+
+
         if self.current_mode == "discovery" and drive == "start":
             print("Discovery mode activated")
             self.mbot_bridge.send_message("start")
@@ -220,14 +226,6 @@ class FrontendBridge:
             self.mbot_bridge.send_message("exit")
         return jsonify({"status": "success", "message": "Command received"}) 
 
-
-    # TODO: Send the battery status once when connecting to the frontend
-    def get_status_route(self):
-        status = {
-            'battery': '80%',
-        }
-        return jsonify(status)
-    
 
     def get_discover_points(self):
         return jsonify(self.discovery_points)

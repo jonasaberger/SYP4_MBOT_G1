@@ -55,7 +55,7 @@ def physical_module(socket, speed=50):
     global physical_mode
     global movement_speed
     global tracking_enabled
-
+x
     physical_mode = True
     cyberpi.console.println("Control Mode")
 
