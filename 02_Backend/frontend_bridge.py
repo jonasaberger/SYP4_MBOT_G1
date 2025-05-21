@@ -129,11 +129,9 @@ class FrontendBridge:
                 print(f"Command recorded: {self.command_log[-1]}")
 
 
-
-
-
         if self.current_mode == "automatic":
             if route:
+                self.stoproute = False  # Reset stoproute at the start of automatic mode
                 # Get the specific route from the database
                 route_data = self.db_bridge.get_route(route)
                 print(f"Route data: {route_data}")
@@ -204,8 +202,8 @@ class FrontendBridge:
             self.mbot_bridge.send_message("speed:" + speed)
             print(f"Speed changed to: {speed}")
 
-        # Stop recording when the user enters the mode exit
-        if drive == "exit" and mode == "controller":
+        # Stop recording and save the route only if the current mode is controller and drive is exit
+        if drive == "exit" and self.current_mode == "controller":
             self.recording = False
 
             log_file_path = os.path.join('Logs', 'command_log.json')
@@ -217,15 +215,23 @@ class FrontendBridge:
             with open(log_file_path, "r") as f:
                 print(f.read())  # Print the command log to the console
 
-        if drive == "exit" and mode == "automatic":
+        if drive == "exit" and self.current_mode == "automatic":
             print("Exiting automatic mode")
             self.mbot_bridge.send_message("end")
         
-        if drive == "exit" and mode == "discovery":
+        if drive == "exit" and self.current_mode == "discovery":
             print("Exiting discovery mode")
             self.mbot_bridge.send_message("exit")
         return jsonify({"status": "success", "message": "Command received"}) 
 
+
+    def logout(self):
+        print("Logout request received")
+
+        # Disconnect the mBot
+        self.mbot_bridge.disconnect()
+        print("mBot disconnected")
+        return jsonify({"status": "success", "message": "mBot disconnected"})
 
     def get_discover_points(self):
         return jsonify(self.discovery_points)

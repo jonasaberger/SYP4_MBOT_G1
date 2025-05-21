@@ -46,6 +46,7 @@ class ServiceManager:
     def configure_routes(self):
         # Main endpoints
         self.app.add_url_rule('/receive_commands', 'receive_commands', self.frontend_bridge.receive_commands, methods=['POST'])
+        self.app.add_url_rule('/logout', 'logout', self.frontend_bridge.logout, methods=['POST'])
 
         # Route-related endpoints
         self.app.add_url_rule('/save_log', 'save_log', self.frontend_bridge.db_bridge.save_log, methods=['POST'])
