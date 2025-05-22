@@ -10,6 +10,21 @@ class MBotBridge:
         self.source_ip = None
         self.target_port = int(os.getenv('TARGET_PORT'))
 
+
+    def disconnect(self):
+        if self.target_ip is None:
+            print('Target IP is not configured.')
+            return
+
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            s.sendto('disconnect'.encode(), (self.target_ip, self.target_port))
+        finally:
+            s.close()
+            print("Disconnected from target IP: ", self.target_ip)
+            self.target_ip = None
+
+
     def send_message(self, message): 
         if self.target_ip is None:
             print('Target IP is not configured.')
