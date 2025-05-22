@@ -128,7 +128,6 @@ class FrontendBridge:
                 self.start_time = time.time()  # Reset start time for the next command
                 print(f"Command recorded: {self.command_log[-1]}")
 
-
         if self.current_mode == "automatic":
             if route:
                 self.stoproute = False  # Reset stoproute at the start of automatic mode
@@ -160,7 +159,6 @@ class FrontendBridge:
 
                     time.sleep(duration)
 
-
         if self.current_mode == "discovery" and drive == "start":
             print("Discovery mode activated")
             self.mbot_bridge.send_message("start")
@@ -190,7 +188,6 @@ class FrontendBridge:
                     self.mbot_bridge.send_message("stop")
                     print("Discovery mode stopped")
                     break
-
 
         # Change the color or speed of the mBot
         elif color:
