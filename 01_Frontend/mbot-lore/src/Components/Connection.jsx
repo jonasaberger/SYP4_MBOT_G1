@@ -101,12 +101,27 @@ const ConnectionComponent = () => {
   };
   
 
-
-  const handleRestoreSession = (session) => {
+  const handleRestoreSession = async (session) => {
     console.log("Ausgewählte Session:", session);
+
+    // Setze die IP und den Namen der Session
     setIp(session.ip);
     setName(session.name);
-    handleConnect();
+
+    // Validiere die IP-Adresse
+    if (!isValidIPv4(session.ip)) {
+      setIpError('Ungültige IP-Adresse in der Session!');
+      return;
+    }
+
+    // Versuche, die Verbindung herzustellen
+    try {
+      await handleConnect(); // Nutzt die bestehende handleConnect-Funktion
+      setShowDropdown(false); // Schließe das Dropdown nach erfolgreicher Verbindung
+    } catch (error) {
+      console.error('Fehler beim Wiederherstellen der Session:', error);
+      setError('Fehler beim Wiederherstellen der Session: ' + error.message);
+    }
   };
 
   return (

@@ -3,15 +3,19 @@ import json
 import mbot_bridge as mbb
 import frontend_bridge as feb
 import db_bridge as dbb
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, send_from_directory
 from flask_cors import CORS
 from swagger_config import swaggerui_blueprint, SWAGGER_URL, swagger_config
 
 class ServiceManager:
-    def __init__(self):
+    def __init__(self, server_port=8080, host_ip='0.0.0.0'):
+        self.server_port = server_port
+        self.host_ip = host_ip 
+
         self.app = Flask(__name__, static_folder='static')
         self.frontend_bridge = feb.FrontendBridge()
 
+        # Manual Route Configuration for the Swagger Icon
         @self.app.route('/favicon.ico')
         def favicon():
             return send_from_directory('static', 'favicon.ico')
@@ -37,15 +41,11 @@ class ServiceManager:
             json.dump(swagger_config, swagger_file, indent=4)
 
     def start_server(self):
-        self.app.run(host='0.0.0.0', port=8080)
-
-    
-
+        self.app.run(host=self.host_ip, port=self.server_port)
 
     def configure_routes(self):
         # Main endpoints
         self.app.add_url_rule('/receive_commands', 'receive_commands', self.frontend_bridge.receive_commands, methods=['POST'])
-        self.app.add_url_rule('/get_status', 'get_status', self.frontend_bridge.get_status_route, methods=['GET'])
 
         # Route-related endpoints
         self.app.add_url_rule('/save_log', 'save_log', self.frontend_bridge.db_bridge.save_log, methods=['POST'])
@@ -53,6 +53,8 @@ class ServiceManager:
         self.app.add_url_rule('/define_route', 'define_route', self.frontend_bridge.define_route, methods=['POST'])
         self.app.add_url_rule('/end_route', 'end_route', self.frontend_bridge.end_route, methods=['POST'])
         self.app.add_url_rule('/delete_route', 'delete_route', self.frontend_bridge.db_bridge.delete_route, methods=['POST'])
+        self.app.add_url_rule('/get_discovery_points', 'get_discover_points', self.frontend_bridge.get_discover_points, methods=['GET'])
+        self.app.add_url_rule('/get_route_data', 'get_route_data', self.frontend_bridge.db_bridge.get_route_data, methods=['GET'])
 
 
 if __name__ == "__main__":

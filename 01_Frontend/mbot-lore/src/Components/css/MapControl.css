@@ -27,7 +27,7 @@
   left: 10%;
 }
 
-.control-button.active {
+.direction-buttons-container.active {
   background-color: #016E8F;
 }
 
@@ -38,12 +38,13 @@
   font-weight: bold;
   border: none;
   border-radius: 8px;
+  margin-left: 3%;
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
+.direction-buttons-container.active {
 
-.control-button:hover {
   background-color: #005974;
 }
 
