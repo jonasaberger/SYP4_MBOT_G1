@@ -6,6 +6,7 @@ from unittest.mock import patch, MagicMock
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, PyMongoError
 
+
 # Mock die cyberpi-Bibliothek direkt beim Import
 sys.modules['cyberpi'] = MagicMock()
 sys.modules['usocket'] = MagicMock()
