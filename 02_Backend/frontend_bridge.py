@@ -138,7 +138,7 @@ class FrontendBridge:
                 for command in route_data:
                     if self.stoproute:
                         print("Automatic mode stopped its route")
-                        self.mbot_bridge.send_message("end")
+                        self.mbot_bridge.send_message("stop")
                         self.stoproute = False
                         break
 
@@ -158,6 +158,9 @@ class FrontendBridge:
                         self.mbot_bridge.send_message(direction)
 
                     time.sleep(duration)
+
+                # Call end_route when finished
+                self.end_route()
 
         if self.current_mode == "discovery" and drive == "start":
             print("Discovery mode activated")
