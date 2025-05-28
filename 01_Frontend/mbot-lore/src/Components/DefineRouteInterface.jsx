@@ -27,10 +27,6 @@ const DefineRouteInterface = ({ onClose }) => {
     }
   }, [checkpoints]);
  
-  useEffect(() => {
-    drawMap();
-  }, [checkpoints]);
- 
   const addCheckpoint = () => {
     if (duration !== "") {
       const newCheckpoint = {
@@ -97,68 +93,6 @@ const DefineRouteInterface = ({ onClose }) => {
     setDirection(e.target.value);
   };
  
-  const drawMap = () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    const width = canvas.width;
-    const height = canvas.height;
- 
-    // Clear the canvas
-    ctx.clearRect(0, 0, width, height);
- 
-    // Start at the center of the canvas
-    let x = width / 2;
-    let y = height / 2;
- 
-    // Draw each checkpoint
-    checkpoints.forEach((checkpoint) => {
-      const { duration, speed, direction, color } = checkpoint;
- 
-      // Calculate the line length based on duration and speed
-      const lineLength = duration * (speed / 100); // Normalize speed to a factor of 1
- 
-      // Determine the new position based on the direction and line length
-      let newX = x;
-      let newY = y;
-      switch (direction) {
-        case "forward":
-          newY -= lineLength;
-          break;
-        case "backward":
-          newY += lineLength;
-          break;
-        case "left":
-          newX -= lineLength;
-          break;
-        case "right":
-          newX += lineLength;
-          break;
-        default:
-          break;
-      }
- 
-      // Draw the black border (thin line)
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(newX, newY);
-      ctx.lineWidth = 3; // Slightly thicker for the border
-      ctx.strokeStyle = "black";
-      ctx.stroke();
- 
-      // Draw the colored line on top
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(newX, newY);
-      ctx.lineWidth = 2; // Slightly thinner for the main line
-      ctx.strokeStyle = color;
-      ctx.stroke();
- 
-      // Update the current position
-      x = newX;
-      y = newY;
-    });
-  };
- 
   return (
     <div className="modal-overlay">
       <div className="modal-content">
@@ -214,36 +148,33 @@ const DefineRouteInterface = ({ onClose }) => {
             </div>
             <button onClick={addCheckpoint} className="new-checkpoint-button">New Checkpoint</button>
           </div>
-          <div className="checkpoints-section">
-            {checkpoints.map((cp, index) => (
-              <div key={index} className="checkpoint" ref={index === checkpoints.length - 1 ? lastCheckpointRef : null}>
-                <span>Duration: {cp.duration}<br></br>Speed: {cp.speed}<br></br>Direction: {cp.direction}<br></br>Color: {cp.color}</span>
-                <button onClick={() => removeCheckpoint(index)}>🗑</button>
-              </div>
-            ))}
-          </div>
-          <div className="map-section-container">
-            <div className="map-section">
-              <canvas ref={canvasRef} width={400} height={400}></canvas>
+          <div className="checkpoints-and-save">
+            <div className="checkpoints-section">
+              {checkpoints.map((cp, index) => (
+                <div key={index} className="checkpoint" ref={index === checkpoints.length - 1 ? lastCheckpointRef : null}>
+                  <span>Duration: {cp.duration}<br></br>Speed: {cp.speed}<br></br>Direction: {cp.direction}<br></br>Color: {cp.color}</span>
+                  <button onClick={() => removeCheckpoint(index)}>🗑</button>
+                </div>
+              ))}
             </div>
             <div className="save-button-container">
-              <button className="save-button" onClick={handleSave}>Save</button>
+                <button className="save-button" onClick={handleSave}>Save</button>
             </div>
           </div>
         </div>
       </div>
       {showPopup && (
   <SaveDefinedRoutePopup
-    onClose={() => setShowPopup(false)} // Close the popup
+    onClose={() => setShowPopup(false)}
     onSave={(routeName) => {
-      sendData(routeName); // Call sendData with the route name
-      setShowPopup(false); // Close the popup
-      onClose(); // Close the DefineRouteInterface
+      sendData(routeName);
+      setShowPopup(false);
+      onClose();
     }}
   />
 )}
     </div>
   );
 };
- 
+
 export default DefineRouteInterface;

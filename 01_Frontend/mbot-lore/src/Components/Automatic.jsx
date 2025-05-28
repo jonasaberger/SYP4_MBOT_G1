@@ -4,7 +4,7 @@ import "./css/sharedStyles.css";
 import InfoPanel from "./InfoPanel";
 import DefineRouteInterface from "./DefineRouteInterface";
 import "./css/DefineRouteInterface.css";
-import { deleteRoute, getRoutes, sendCommand, sendEndRouteCommand, getCurrentRoute } from "../API_Service/service";
+import { deleteRoute, getRoutes, sendCommand, sendEndRouteCommand, getRoute } from "../API_Service/service";
 
 const ControlPanel = () => {
   const [direction, setDirection] = useState(null); // Visualisierte Richtung
@@ -14,6 +14,7 @@ const ControlPanel = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDriving, setIsDriving] = useState(false); // Zustand für Drive/Stop Button
   const [route, setRoute] = useState("");
+  const [routeDetails, setRouteDetails] = useState(null); // Details der Route
   const [showDefineRoute, setShowDefineRoute] = useState(false);
   const [routes, setRoutes] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false); // Zustand für benutzerdefiniertes Dropdown
@@ -35,11 +36,11 @@ const ControlPanel = () => {
   }, []);
 
   // Route vom Backend abrufen und Checkpoints setzen
-  const fetchRouteDetails = async () => {
+  const fetchRouteDetails = async (routeName) => {
     try {
-      //const routeDetails = await getCurrentRoute(); // Abrufen der Route vom Server
-      //setCheckpoints(routeDetails); // Setze die Checkpoints
-      //setCurrentCheckpointIndex(0); // Starte bei Checkpoint 0
+      const currentRouteDetails = await getRoute(routeName); // Abrufen der Route vom Server
+      setRouteDetails(currentRouteDetails); // Setze die Route im State
+      console.log("Aktuelle Route:", currentRouteDetails);
     } catch (error) {
       console.error("Fehler beim Abrufen der Route:", error);
     }
@@ -75,9 +76,35 @@ const ControlPanel = () => {
   }, []);
 
   const handleRouteChange = (routeName) => {
-    setRoute(routeName);
-    fetchRouteDetails(); // Lade die Details der ausgewählten Route
+    setRoute(routeName); // Setze die aktuelle Route
+    fetchRouteDetails(routeName);
   };
+
+  useEffect(() => {
+    let interval;
+    console.log("isDriving:" + isDriving + " routeDetails:" + routeDetails);
+    if (isDriving && routeDetails && routeDetails.length > 0) {
+      let i = 0;
+      let timeout = routeDetails[i].duration * 1000; // Dauer des ersten Checkpoints in Millisekunden
+
+      interval = setInterval(() => {
+        console.log("interval");
+        i++;
+        if (i >= routeDetails.length) {
+          clearInterval(interval); // Stop the interval when all checkpoints are processed
+          setIsDriving(false); // Stop driving
+        } else {
+          timeout = routeDetails[i].duration * 1000; // Update timeout for the next checkpoint
+          console.log("Timeout:", timeout);
+          setDirection(routeDetails[i].direction); // Set the direction for the next checkpoint
+        }
+      }, timeout);
+    }
+
+    return () => {
+      clearInterval(interval); // Clear the interval when `isDriving` becomes false or the component unmounts
+    };
+  }, [isDriving, routeDetails]);
 
   const handleDeleteRoute = async (routeName) => {
     try {
@@ -91,7 +118,9 @@ const ControlPanel = () => {
   };
 
   const handleDriveStop = async () => {
+    console.log("isDriving before toggle:", isDriving);
     setIsDriving((prev) => !prev); // Toggle zwischen Drive und Stop
+    console.log("isDriving after toggle:", isDriving);
     if (!isDriving && route) {
       try {
         await sendCommand("route", route);
@@ -101,7 +130,6 @@ const ControlPanel = () => {
       }
     } else if (isDriving) {
       try {
-        console.log("Drive stoppen");
         await sendEndRouteCommand();
         console.log("Drive gestoppt");
       } catch (error) {
@@ -160,6 +188,7 @@ const ControlPanel = () => {
           <button
             className={`start-stop-button up ${direction === "forward" ? "active" : ""}`}
             onClick={() => setDirection("forward")}
+            disabled={true}
           >
             ↑
           </button>
@@ -168,18 +197,21 @@ const ControlPanel = () => {
           <button
             className={`start-stop-button left ${direction === "left" ? "active" : ""}`}
             onClick={() => setDirection("left")}
+            disabled={true}
           >
             ←
           </button>
           <button
             className={`start-stop-button down ${direction === "backward" ? "active" : ""}`}
             onClick={() => setDirection("backward")}
+            disabled={true}
           >
             ↓
           </button>
           <button
             className={`start-stop-button right ${direction === "right" ? "active" : ""}`}
             onClick={() => setDirection("right")}
+            disabled={true}
           >
             →
           </button>
@@ -187,7 +219,7 @@ const ControlPanel = () => {
       </div>
 
       <div className="robot-placeholder">
-        {direction ? (
+        {direction && direction !== 'stop' ?(
           <img src={require(`../Images/${direction}.png`)} alt={`Robot facing ${direction}`} />
         ) : (
           <img src={require(`../Images/forward.png`)} alt="Robot" />
