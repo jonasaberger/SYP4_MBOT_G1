@@ -1,4 +1,4 @@
-.body{
+.body {
   background-color: #005974;
 }
 
@@ -8,49 +8,67 @@
   align-items: center;
   background-color: #005974;
   padding: 20px;
-  box-sizing: border-box; 
+  box-sizing: border-box;
 }
 
 .title {
   font-size: 2rem;
   color: rgb(255, 255, 255);
-  background-color: #292D32;
+  background-color: #292d32;
   padding: 10px 20px;
   border-radius: 5px;
-  padding-left: 35%;
-  padding-right: 35%;
   font-weight: bold;
+  text-align: center;
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 20px;
 }
 
 .mode-buttons {
   display: flex;
-  gap: 10px;
+  flex-direction: row; /* Standard: horizontal */
+  gap: 15px;
+  width: 100%;
+  max-width: 600px;
   margin: 20px 0;
 }
 
-.div .control-section {
-  background-color: #005974;
-}
-
 .mode-buttons button {
-  padding: 10px 20px;
+  padding: 12px 20px;
   font-size: 1rem;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.3s, transform 0.2s;
   background-color: gray;
   color: black;
   font-weight: bold;
-  width: 10em;
+  flex: 1;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mode-buttons button .icon {
+  font-size: 1.5rem;
+  display: inline-block;
+}
+
+.mode-buttons button:hover {
+  background-color: #e0e0e0;
+  transform: scale(1.05);
 }
 
 .mode-buttons button.active {
   background-color: white;
+  color: black;
+  box-shadow: 0 0 10px white;
 }
 
 .mode-buttons button.inactive {
   background-color: gray;
+  color: black;
 }
 
 .manual {
@@ -98,39 +116,63 @@ body {
   background-color: #005974;
 }
 
-body, html {
+body,
+html {
   overflow: hidden;
-  
 }
 
+/* Mobile-Optimierung */
 @media (max-width: 768px) {
-  html, body {
+  html,
+  body {
     height: 100%;
     margin: 0;
     padding: 0;
     background-color: #005974; /* Passe die Hintergrundfarbe an */
   }
-  
+
   .title {
-      font-size: 1.5rem;
-      padding: 10px;
-      padding-left: 20%;
-      padding-right: 20%;
+    font-size: 1.5rem;
+    padding: 10px;
+    text-align: center;
   }
 
   .mode-buttons {
-      flex-direction: row;
-      gap: 5px;
+    flex-direction: row; /* Im Mobile auch horizontal */
+    gap: 8px;
+    max-width: 100%;
+    justify-content: center;
   }
 
   .mode-buttons button {
-      width: 100%;
-      font-size: 0.9rem;
-      padding: 8px 15px;
+    min-width: 40px;
+    max-width: 60px;
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+
+  .mode-buttons button .icon {
+    font-size: 1.2rem;
   }
 
   .control-section {
-      width: 100%;
-      padding: 10px;
+    width: 100%;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.2rem;
+    padding: 8px;
+  }
+
+  .mode-buttons {
+    gap: 8px; /* Noch weniger Abstand zwischen den Buttons */
+  }
+
+  .mode-buttons button {
+    font-size: 0.8rem;
+    padding: 8px 10px;
   }
 }

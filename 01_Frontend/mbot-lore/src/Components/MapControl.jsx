@@ -3,11 +3,11 @@ import "./css/MapControl.css";
 import "./css/sharedStyles.css";
 import InfoPanel from "./InfoPanel";
 import { SketchPicker } from "react-color";
-import { getDiscoveryPoints, sendCommand } from "../API_Service/service";
+import { getDiscoveryPoints, sendCommand, sendEndRouteCommand } from "../API_Service/service";
 import MapPopup from "./MapPopup";
 
 const ControlPanel = () => {
-  // State variables
+
   const [distance, setDistance] = useState(0);
   const [runtime, setRuntime] = useState(0);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -25,7 +25,6 @@ const ControlPanel = () => {
   const [notification, setNotification] = useState(null);
   const commandCount = useRef(0);
 
-  // Handle window resize
   useEffect(() => {
     const handleResize = () => {
       setMapSize({
@@ -41,7 +40,7 @@ const ControlPanel = () => {
   const toggleCollapse = () => setIsCollapsed((prev) => !prev);
   const closeNotification = () => setNotification(null);
 
-  // Handle start/stop command
+  
   const handleStartStop = async () => {
     try {
       const command = commandCount.current % 2 === 0 ? "start" : "stop";
@@ -54,13 +53,12 @@ const ControlPanel = () => {
           const points = await getDiscoveryPoints();
           console.log("Received points data:", points);
 
-          // Convert points to proper format
           const formattedPoints = convertPointsData(points);
+          sendEndRouteCommand();
           
           if (formattedPoints.length > 0) {
             setMapPoints(formattedPoints);
           } else {
-            // No valid points received - will use test data in MapPopup
             setMapPoints([]);
             setNotification({
               type: "warning",
@@ -68,6 +66,7 @@ const ControlPanel = () => {
             });
           }
           setShowPopup(true);
+          sendEndRouteCommand();
         } catch (error) {
           console.error("Error loading points:", error);
           // On error - will use test data in MapPopup

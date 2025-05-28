@@ -31,17 +31,17 @@ const ConnectionComponent = () => {
   useEffect(() => {
     const loadSessions = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/sessions'); // Port 3001
-  
-        if (!response.ok) throw new Error("Fehler beim Laden der Sessions");
-  
+        const response = await fetch('http://localhost:3001/api/sessions'); // Port 3001
+
+        if (!response.ok) {
+          throw new Error(`Fehler beim Laden der Sessions: ${response.statusText}`);
+        }
+
         const result = await response.json();
         console.log('Geladene Sessions:', result.sessions);
-  
+
         if (Array.isArray(result.sessions)) {
           setSessions(result.sessions);
-        } else if (result.sessions && Array.isArray(result.sessions.sessions)) {
-          setSessions(result.sessions.sessions);
         } else {
           console.error('Fehler: Unerwartetes JSON-Format', result);
           setSessions([]);
@@ -51,6 +51,7 @@ const ConnectionComponent = () => {
         setSessions([]);
       }
     };
+
     loadSessions();
   }, []);
 
