@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import AutomaticControl from "./Automatic";
 import ManualControl from "./Manual";
@@ -9,12 +8,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { logout } from "../API_Service/service";
 import { useNavigate } from "react-router-dom";
+import { FaMap, FaCar, FaRobot } from "react-icons/fa";
 
 const MainControl = () => {
-  const [mode, setMode] = useState("map"); // Standardmodus ist "manual"
+  const [mode, setMode] = useState("map");
   const isChangingMode = useRef(false);
   const hasInitialized = useRef(false);
   const navigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
     if (!hasInitialized.current) {
@@ -23,6 +24,10 @@ const MainControl = () => {
         .catch((error) => console.error("Fehler beim Setzen des Modus:", error));
       hasInitialized.current = true;
     }
+    // Responsive check
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const handleModeChange = async (newMode, event) => {
@@ -31,12 +36,10 @@ const MainControl = () => {
       console.log("Moduswechsel blockiert oder Modus bereits aktiv.");
       return;
     }
-
     isChangingMode.current = true;
-
     try {
       console.log(`Wechsle Modus zu: ${newMode}`);
-      await sendCommand("mode", "exit"); // Beende den aktuellen Modus
+      await sendCommand("mode", "exit");
       if (newMode === "manual") {
         await sendCommand("mode", "controller");
       } else if (newMode === "map") {
@@ -84,20 +87,23 @@ const MainControl = () => {
         <button
           className={`manual ${mode === "manual" ? "active" : ""}`}
           onClick={(event) => handleModeChange("manual", event)}
+          title="Manual"
         >
-          Manual
+          {isMobile ? <span className="icon"><FaCar /></span> : "Manual"}
         </button>
         <button
           className={`automatic ${mode === "automatic" ? "active" : ""}`}
           onClick={(event) => handleModeChange("automatic", event)}
+          title="Automatic"
         >
-          Automatic
+          {isMobile ? <span className="icon"><FaRobot /></span> : "Automatic"}
         </button>
         <button
           className={`map ${mode === "map" ? "active" : ""}`}
           onClick={(event) => handleModeChange("map", event)}
+          title="Map"
         >
-          Map
+          {isMobile ? <span className="icon"><FaMap /></span> : "Map"}
         </button>
       </div>
       <div className="control-section">{renderComponent()}</div>

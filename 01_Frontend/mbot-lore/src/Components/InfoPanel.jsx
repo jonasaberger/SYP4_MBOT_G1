@@ -3,7 +3,7 @@ import React from "react";
 const InfoPanel = ({ distance, runtime, speed, onToggleCollapse, isCollapsed }) => {
   const formatDetails = () => {
     if (typeof distance === "number" && typeof runtime === "number") {
-      return `Distance: ${distance.toFixed(2)} m, Runtime: ${runtime} s`;
+      return `Distance: ${distance.toFixed(2)} cm, Runtime: ${runtime} s`;
     }
     return "Details not available";
   };
@@ -15,7 +15,7 @@ const InfoPanel = ({ distance, runtime, speed, onToggleCollapse, isCollapsed }) 
       </button>
       {!isCollapsed && (
         <>
-          <p><strong>Speed:</strong> {speed} m/min</p>
+          <p><strong>Speed:</strong> {speed} cm/min</p>
           <p><strong>{formatDetails()}</strong></p>
         </>
       )}

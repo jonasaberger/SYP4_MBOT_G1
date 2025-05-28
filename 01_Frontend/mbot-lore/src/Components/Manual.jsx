@@ -6,26 +6,33 @@ import InfoPanel from "./InfoPanel";
 import { sendCommand, startDriveSequence } from "../API_Service/service";
 import SaveRoutePopup from "./SaveRoutePopup";
 import { fetchBattery } from "../API_Service/service";
+// Joystick importieren (z.B. react-joystick-component)
+import { Joystick } from "react-joystick-component";
 
 const ControlPanel = ({ isConnected }) => {
   const [direction, setDirection] = useState(null);
   const [distance, setDistance] = useState(0);
   const [runtime, setRuntime] = useState(0);
   const [battery, setBattery] = useState(0);
-  const [speed, setSpeed] = useState(0); // Geschwindigkeit
+  const [speed, setSpeed] = useState(0);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDriving, setIsDriving] = useState(false);
-  const [value, setValue] = useState(50); // Speed value
-  const [isOn, setIsOn] = useState(false); // LED toggle
+  const [value, setValue] = useState(50);
+  const [isOn, setIsOn] = useState(false);
   const [ledColor, setLedColor] = useState("#ffffff");
   const [ledColorString, setLedColorString] = useState("255,255,255");
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [pressedKeys, setPressedKeys] = useState(new Set());
   const [sentDirection, setSentDirection] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   let sendStop = true;
 
-  const [startTime, setStartTime] = useState(null);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (isConnected) {
@@ -33,23 +40,31 @@ const ControlPanel = ({ isConnected }) => {
     }
   }, [isConnected]);
 
-// Aktualisiere die Laufzeit und Distanz in einem Intervall
-useEffect(() => {
-  let interval;
-  const calculatedSpeed = value * 0.174; // Geschwindigkeit in m/min
-  setSpeed(calculatedSpeed.toFixed(2)); // Geschwindigkeit im State speichern
+  // setStartTime Methode zum Setzen des Startzeitpunkts für die Laufzeitberechnung
+  const setStartTime = (timestamp) => {
+    setRuntime(0); // Laufzeit zurücksetzen
+    setDistance(0); // Distanz zurücksetzen (optional, falls gewünscht)
+    // Falls du den Startzeitpunkt speichern möchtest, kannst du einen weiteren State verwenden:
+    // setStartTimestamp(timestamp);
+  };
 
-  if (isDriving) {
-    interval = setInterval(() => {
-      setRuntime((prevRuntime) => prevRuntime + 1); // Erhöhe die Laufzeit um 1 Sekunde
-      setDistance((prevDistance) => prevDistance + (calculatedSpeed / 60)); // Erhöhe die Distanz
-    }, 1000);
-  } else {
-    clearInterval(interval); // Stoppe das Intervall, wenn der Roboter nicht fährt
-  }
+  // Aktualisiere die Laufzeit und Distanz in einem Intervall
+  useEffect(() => {
+    let interval;
+    const calculatedSpeed = value * 0.174; // Geschwindigkeit in m/min
+    setSpeed(calculatedSpeed.toFixed(2)); // Geschwindigkeit im State speichern
 
-  return () => clearInterval(interval); // Bereinige das Intervall
-}, [isDriving, value]);
+    if (isDriving) {
+      interval = setInterval(() => {
+        setRuntime((prevRuntime) => prevRuntime + 1); // Erhöhe die Laufzeit um 1 Sekunde
+        setDistance((prevDistance) => prevDistance + (calculatedSpeed / 60)); // Erhöhe die Distanz
+      }, 1000);
+    } else {
+      clearInterval(interval); // Stoppe das Intervall, wenn der Roboter nicht fährt
+    }
+
+    return () => clearInterval(interval); // Bereinige das Intervall
+  }, [isDriving, value]);
 
   // Funktion zum Bewegen des Roboters in eine bestimmte Richtung
   const handleMove = async (dir) => {
@@ -227,14 +242,46 @@ const toggleSwitch = async () => {
     }, 10000);
     return () => clearInterval(interval);
   }, []);*/
-// Funktion zum Anzeigen von Details
 
+  // Funktion zum Anzeigen von Details
   const showDetails = () => {
-  if (distance && runtime) {
-    return `Distance: ${distance.toFixed(2)} m, Runtime: ${runtime} s`;
-  }
-  return "Details not available";
-};
+    if (distance && runtime) {
+      return `Distance: ${distance.toFixed(2)} m, Runtime: ${runtime} s`;
+    }
+    return "Details not available";
+  };
+
+  // Joystick-Handler für mobile Ansicht
+  const handleJoystickMove = (event) => {
+    // event.direction: "FORWARD", "BACKWARD", "LEFT", "RIGHT"
+    let dir = null;
+    switch (event.direction) {
+      case "FORWARD":
+        dir = "forward";
+        break;
+      case "BACKWARD":
+        dir = "backward";
+        break;
+      case "LEFT":
+        dir = "left";
+        break;
+      case "RIGHT":
+        dir = "right";
+        break;
+      default:
+        dir = null;
+    }
+    if (dir) {
+      setDirection(dir);
+      handleMove(dir);
+    }
+  };
+
+  const handleJoystickStop = () => {
+    setDirection(null);
+    handleMoveStop();
+  };
+
   return (
     <div className="control-panel">
       <div className="left-container">
@@ -271,40 +318,89 @@ const toggleSwitch = async () => {
             )}
           </div>
         </div>
-        <div className="direction-button-up">
-          <button
-            className={`start-stop-button up ${direction === "forward" ? "active" : ""}`}
-            onClick={() => handleMove("forward")}
-            disabled={true}
-          >
-            ↑
-          </button>
-        </div>
-        <div className="direction-buttons">
-          <button
-            className={`start-stop-button left ${direction === "left" ? "active" : ""}`}
-            onClick={() => handleMove("left")}
-            disabled={true}
-          >
-            ←
-          </button>
-          <button
-            className={`start-stop-button down ${direction === "backward" ? "active" : ""}`}
-            onClick={() => handleMove("backward")}
-            disabled={true}
-          >
-            ↓
-          </button>
-          <button
-            className={`start-stop-button right ${direction === "right" ? "active" : ""}`}
-            onClick={() => handleMove("right")}
-            disabled={true}
-          >
-            →
-          </button>
-        </div>
-      </div>
+        {/* Joystick für mobile Ansicht, Buttons für Desktop */}
 
+        {isMobile ? (
+          <div
+            className="joystick-container"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "50%",
+              margin: "18px 40% 12px 25%",
+              borderRadius: "7%",
+            }}
+          >
+            <Joystick
+              size={80}
+              baseColor="#23242a"
+              stickColor="#00000"
+              throttle={100}
+              move={handleJoystickMove}
+              stop={handleJoystickStop}
+              stickShape="circle"
+              baseShape="circle"
+              style={{
+                boxShadow: "0 4px 16px rgba(55,188,155,0.10)",
+                border: "2.5px solid #888",
+                borderRadius: "50%",
+                background: "#23242a",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              stickStyle={{
+                background: "#37bc9b",
+                border: "2.5px solidrgb(8, 8, 8)",
+                borderRadius: "50%",
+                width: "38px",
+                height: "38px",
+                margin: "auto",
+                boxShadow: "0 2px 8px rgba(93,156,236,0.15)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            />
+          </div>
+        ) : (
+          <>
+            <div className="direction-button-up">
+              <button
+                className={`start-stop-button up ${direction === "forward" ? "active" : ""}`}
+                onClick={() => handleMove("forward")}
+                disabled={true}
+          >
+                ↑
+              </button>
+            </div>
+            <div className="direction-buttons">
+              <button
+                className={`start-stop-button left ${direction === "left" ? "active" : ""}`}
+                onClick={() => handleMove("left")}
+                disabled={true}
+          >
+                ←
+              </button>
+              <button
+                className={`start-stop-button down ${direction === "backward" ? "active" : ""}`}
+                onClick={() => handleMove("backward")}
+                disabled={true}
+          >
+                ↓
+              </button>
+              <button
+                className={`start-stop-button right ${direction === "right" ? "active" : ""}`}
+                onClick={() => handleMove("right")}
+                disabled={true}
+          >
+                →
+              </button>
+            </div>
+          </>
+        )}
+      </div>
       <div className="mbot-image-container">
         {direction ? (
           <img src={require(`../Images/${direction}.png`)} alt={`Robot facing ${direction}`} />

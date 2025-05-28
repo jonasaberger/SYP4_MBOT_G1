@@ -9,12 +9,12 @@
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  background: #292D32;
-  padding: 40px;
+  background-color: #292d32;
+  color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  padding: 20px;
   width: 80%;
-  border-radius: 15px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-  position: relative;
   height: 50vh;
 }
 
@@ -27,25 +27,29 @@
   left: 10%;
 }
 
+.direction-buttons-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 .direction-buttons-container.active {
-  background-color: #016E8F;
+  background-color: #016e8f;
 }
 
 .control-button {
-  padding: 10px 20px;
-  background-color: white;
-  color: black;
-  font-weight: bold;
   border: none;
+  margin: 5px;
   border-radius: 8px;
-  margin-left: 3%;
-  font-size: 16px;
+  padding: 10px 20px;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.2s ease-in-out;
 }
-.direction-buttons-container.active {
 
-  background-color: #005974;
+.control-button:hover {
+  transform: scale(1.05);
 }
 
 .route-select {
@@ -59,7 +63,8 @@
 .direction-buttons {
   display: flex;
   justify-content: center;
-  bottom: 10px;
+  align-items: center;
+  margin: 10px;
 }
 
 .control-button,
@@ -82,7 +87,6 @@
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Einklappbare Infobox auf der rechten Seite */
 .info-panel {
   position: absolute;
   right: 10px;
@@ -98,13 +102,11 @@
   z-index: 10;
 }
 
-/* Style, wenn die Infobox eingeklappt ist */
 .info-panel.collapsed {
   transform: translateX(100%);
   opacity: 0;
 }
 
-/* Button zum Einklappen */
 .toggle-button {
   padding: 5px;
   background-color: #d9534f;
@@ -124,7 +126,6 @@
   margin: 5px 0;
 }
 
-/* Button zum Einblenden der Infobox */
 .reveal-info-button {
   padding: 10px 20px;
   background-color: #d9534f;
@@ -150,7 +151,7 @@
   height: 8px;
   border-radius: 5px;
   outline: none;
-  background: linear-gradient(to right, #016E8F 50%, #ddd 50%);
+  background: linear-gradient(to right, #016e8f 50%, #ddd 50%);
   transition: background 0.1s;
 }
 
@@ -158,7 +159,7 @@
   appearance: none;
   width: 15px;
   height: 15px;
-  background: #016E8F;
+  background: #016e8f;
   border-radius: 50%;
   cursor: pointer;
   transition: background 0.3s;
@@ -197,37 +198,55 @@
 
 @media (max-width: 768px) {
   .control-section {
-      height: auto;
+    height: auto;
   }
 
   .control-panel {
-      width: 100%;
-      padding: 20px;
+    width: 100%;
+    padding: 20px;
+    height: auto;
   }
 
   .left-container {
-      position: static;
-      width: 100%;
-      gap: 10px;
+    position: static;
+    width: 100%;
+    gap: 10px;
+    align-items: center;
   }
 
-  .control-button, .route-select {
-      font-size: 14px;
-      padding: 8px 15px;
+  .direction-buttons-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .direction-button-up,
+  .direction-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+
+  .control-button,
+  .route-select {
+    font-size: 14px;
+    padding: 8px 15px;
   }
 
   .robot-placeholder {
-      width: 100%;
-      height: 200px;
+    width: 100%;
+    height: 200px;
   }
 
   .info-panel {
-      width: 150px;
-      padding: 10px;
+    width: 150px;
+    padding: 10px;
   }
 
   .reveal-info-button {
-      padding: 8px 16px;
-      font-size: 14px;
+    padding: 8px 16px;
+    font-size: 14px;
   }
 }

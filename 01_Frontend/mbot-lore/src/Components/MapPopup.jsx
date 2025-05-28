@@ -49,7 +49,7 @@ const MapPopup = ({ onClose, points = [], mapWidth = 800, mapHeight = 500 }) => 
       const rad = (point.angle * Math.PI) / 180;
       x += point.distance * Math.cos(rad);
       y += point.distance * Math.sin(rad);
-      totalDistance += point.distance;
+      totalDistance += point.distance; // Distanz bleibt in cm
       return { ...point, x, y };
     });
     return { points: cartesianPoints, totalDistance };
@@ -118,30 +118,28 @@ const MapPopup = ({ onClose, points = [], mapWidth = 800, mapHeight = 500 }) => 
       return sum + (p.x * next.y - p.y * next.x);
     }, 0)) / 2;
 
-    return { offsetX, offsetY, scale, area, hull };
+    return { offsetX, offsetY, scale, area }; // Fläche bleibt in cm²
   }, [calculateConvexHull]);
 
   // Enhanced obstacle detection algorithm
   const detectObstacles = useCallback((points) => {
     if (points.length < 3) return points;
 
-    // Parameters for obstacle detection
-    const MIN_OBSTACLE_POINTS = 3; // Minimum points to form an obstacle
-    const OBSTACLE_RADIUS = 0.3; // Max distance between points to be considered part of same obstacle
-    const ANGLE_CHANGE_THRESHOLD = 45; // Degrees to consider sharp turn
+   
+    const MIN_OBSTACLE_POINTS = 3; 
+    const OBSTACLE_RADIUS = 0.3; 
+    const ANGLE_CHANGE_THRESHOLD = 45; 
 
-    // Step 1: Identify potential obstacle points based on sharp turns
+    
     const pointsWithAngles = points.map((point, i) => {
       if (i === 0 || i === points.length - 1) return { ...point, angleChange: 0 };
       
       const prev = points[i-1];
       const next = points[i+1];
       
-      // Calculate vectors
       const v1 = { x: point.x - prev.x, y: point.y - prev.y };
       const v2 = { x: next.x - point.x, y: next.y - point.y };
       
-      // Calculate angle between vectors
       const dot = v1.x * v2.x + v1.y * v2.y;
       const det = v1.x * v2.y - v1.y * v2.x;
       const angle = Math.abs(Math.atan2(det, dot) * 180 / Math.PI);
@@ -149,14 +147,13 @@ const MapPopup = ({ onClose, points = [], mapWidth = 800, mapHeight = 500 }) => 
       return { ...point, angleChange: angle };
     });
 
-    // Step 2: Cluster points that are close together and have sharp turns
+    
     const obstacleClusters = [];
     let currentCluster = [];
     
     for (let i = 0; i < pointsWithAngles.length; i++) {
       const point = pointsWithAngles[i];
       
-      // Check if point has sharp turn or is close to previous point in cluster
       if (point.angleChange > ANGLE_CHANGE_THRESHOLD || 
           (currentCluster.length > 0 && 
            Math.hypot(point.x - currentCluster[currentCluster.length-1].x, 
@@ -175,7 +172,7 @@ const MapPopup = ({ onClose, points = [], mapWidth = 800, mapHeight = 500 }) => 
       obstacleClusters.push([...currentCluster]);
     }
 
-    // Step 3: Mark all points in clusters as obstacles
+    //Mark all points in clusters as obstacles
     const obstaclePoints = new Set();
     obstacleClusters.forEach(cluster => {
       cluster.forEach(point => obstaclePoints.add(point.id));
@@ -391,11 +388,11 @@ const MapPopup = ({ onClose, points = [], mapWidth = 800, mapHeight = 500 }) => 
           </div>
           <div className="stat-item">
             <span className="stat-label">Distanz</span>
-            <span className="stat-value">{stats.totalDistance.toFixed(2)} m</span>
+            <span className="stat-value">{(stats.totalDistance.toFixed(2)/100)} m</span> {/* Anzeige in cm */}
           </div>
           <div className="stat-item">
             <span className="stat-label">Fläche</span>
-            <span className="stat-value">{stats.areaCovered.toFixed(2)} m²</span>
+            <span className="stat-value">{(stats.areaCovered.toFixed(2)/10000)}m²</span> {/* Anzeige in cm² */}
           </div>
           <div className="stat-item">
             <span className="stat-label">Hindernisse</span>

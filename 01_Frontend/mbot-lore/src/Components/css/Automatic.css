@@ -27,6 +27,16 @@
     margin: 3px 0;
 }
 
+.control-buttons button{
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.control-buttons{
+  margin-bottom: 2rem;
+}
+
 .define-route-button:hover {
     background-color: #005974;
 }
@@ -126,4 +136,57 @@
   
   .delete-route-button:hover {
     color: darkred;
+  }
+
+  .left-container {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    height: 80%;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .robot-placeholder {
+    background-color: rgba(255, 255, 255, 0.1);
+    width: 220px;
+    height: 220px;
+    margin-top: 6rem; /* zentriert auf allen Geräten */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    color: white;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .robot-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+  }
+  
+  /* Responsive Anpassung für Handy */
+  @media (max-width: 768px) {
+    .robot-placeholder {
+      width: 120px;
+      height: 120px;
+      margin: 20px auto 0 auto;
+      border-radius: 10px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .robot-placeholder {
+      width: 80px;
+      height: 80px;
+      margin: 12px auto 0 auto;
+      border-radius: 8px;
+    }
   }
