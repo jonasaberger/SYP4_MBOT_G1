@@ -137,9 +137,6 @@ export const getCurrentRoute = async () => {
   }
 };
 
-
-
-
 export const sendSaveRoute = async (routeName) => {
   const key = "collection_name";
   try{
@@ -148,9 +145,7 @@ export const sendSaveRoute = async (routeName) => {
     console.error('Fehler beim Speichern der Route:', error);
     throw new Error('Fehler beim Speichern der Route');
   }
-}
-
-
+};
 
 export const getRoutes = async () => {
   try{
@@ -178,6 +173,7 @@ export const sendDefinedRoute = async (name, route) => {
     throw new Error('Fehler beim Speichern der Route');
   }
 }
+
 export const deleteRoute = async (routeName) => {
   try {
     const response = await axios.post(`${apiBaseURL}/delete_route`, { collection_name: routeName });
@@ -188,3 +184,31 @@ export const deleteRoute = async (routeName) => {
     throw new Error(`Fehler beim Löschen der Route ${routeName}`);
   }
 };
+
+export const getRoute = async (routeName) => {
+  try {
+    console.log("RouteName:", routeName);
+    const response = await axios.get(`${apiBaseURL}/get_route_data`, {
+      params: { collection_name: routeName }, // Pass routeName as a query parameter
+      headers: {
+        "Content-Type": "application/json", // Ensure the correct Content-Type
+      },
+    });
+    console.log(`Route ${routeName} erfolgreich abgerufen:`, response.data);
+    return response.data;
+  } catch (error) {
+    console.error(`Fehler beim Abrufen der Route ${routeName}:`, error);
+    throw new Error(`Fehler beim Abrufen der Route ${routeName}`);
+  }
+}
+
+export const logout = async () => {
+  try {
+    const response = await axios.post(`${apiBaseURL}/logout`);
+    console.log('Logout erfolgreich:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Fehler beim Logout:', error);
+    throw new Error('Fehler beim Logout');
+  }
+}

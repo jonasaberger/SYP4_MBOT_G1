@@ -151,10 +151,12 @@
   padding: 20px;
   border-radius: 8px;
   width: 100%;
-  max-width: 110vh;
+  max-width: 75vh;
   max-height: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
  
 .modal-header {
@@ -175,7 +177,7 @@
   font-size: 24px;
   cursor: pointer;
 }
- 
+
 .modal-body {
   display: flex;
   flex-direction: row;
@@ -188,6 +190,7 @@
 .input-section {
   flex: 1;
   padding-right: 16px;
+  max-width: 30vh;
 }
  
 .checkpoints-section {
@@ -370,8 +373,12 @@
  
 .save-button-container {
   display: flex;
-  justify-content: flex-end; /* Align the button to the right */
-  margin-top: 16px; /* Add some space above the button */
+  justify-content: flex-end;
+  margin-top: 16px;
+  margin-bottom: 0;
+  margin-left: 0;
+  margin-right: 0;
+  /* This pushes the container to the bottom of the modal */
 }
  
 .save-button {
@@ -386,6 +393,7 @@
   font-weight: bold;
   margin: 10px 0;
   width: 100%;
+  align-self: flex-end;
 }
  
 .save-button:hover {
@@ -402,11 +410,15 @@
   cursor: pointer;
   transition: background-color 0.3s ease;
   font-weight: bold;
-  margin: 10px 0;
   width: 100%;
 }
  
 .new-checkpoint-button:hover {
   background-color: #016E8F;
 }
- 
+
+.checkpoints-and-save{
+  display:flex;
+  flex-direction: column;
+  flex: 1;
+}

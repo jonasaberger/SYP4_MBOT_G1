@@ -83,6 +83,7 @@ useEffect(() => {
     await startDriveSequence(isDriving ? "exit" : "start");
     await sendCommand("speed", value.toString());
     if(commandString == `control_Stop_${value}`) {
+      await sendCommand("drive", "exit");
       setShowPopup(true); // Show the popup when stopping
     }
   };
@@ -227,6 +228,7 @@ const toggleSwitch = async () => {
     return () => clearInterval(interval);
   }, []);*/
 // Funktion zum Anzeigen von Details
+
   const showDetails = () => {
   if (distance && runtime) {
     return `Distance: ${distance.toFixed(2)} m, Runtime: ${runtime} s`;
@@ -273,6 +275,7 @@ const toggleSwitch = async () => {
           <button
             className={`start-stop-button up ${direction === "forward" ? "active" : ""}`}
             onClick={() => handleMove("forward")}
+            disabled={true}
           >
             ↑
           </button>
@@ -281,18 +284,21 @@ const toggleSwitch = async () => {
           <button
             className={`start-stop-button left ${direction === "left" ? "active" : ""}`}
             onClick={() => handleMove("left")}
+            disabled={true}
           >
             ←
           </button>
           <button
             className={`start-stop-button down ${direction === "backward" ? "active" : ""}`}
             onClick={() => handleMove("backward")}
+            disabled={true}
           >
             ↓
           </button>
           <button
             className={`start-stop-button right ${direction === "right" ? "active" : ""}`}
             onClick={() => handleMove("right")}
+            disabled={true}
           >
             →
           </button>
