@@ -1,11 +1,21 @@
-import os
-import json
-import mbot_bridge as mbb
 import frontend_bridge as feb
 import db_bridge as dbb
-from flask import Flask, send_from_directory
+from flask import Flask
 from flask_cors import CORS
-from swagger_config import swaggerui_blueprint, SWAGGER_URL, swagger_config
+from flask_swagger_ui import get_swaggerui_blueprint 
+
+SWAGGER_URL = '/swagger'
+API_URL = '/static/swagger.json'
+
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "SYP4_MBOT_G1",
+        'favicon32': '/static/favicon-32x32.png',
+        'favicon16': '/static/favicon-16x16.png'
+    }
+)
 
 class ServiceManager:
     def __init__(self, server_port=8080, host_ip='0.0.0.0'):
@@ -15,30 +25,13 @@ class ServiceManager:
         self.app = Flask(__name__, static_folder='static')
         self.frontend_bridge = feb.FrontendBridge()
 
-        # Manual Route Configuration for the Swagger Icon
-        @self.app.route('/favicon.ico')
-        def favicon():
-            return send_from_directory('static', 'favicon.ico')
-
         # Allow all traffic
         CORS(self.app, resources={r"/*": {"origins": "*"}})
-
-        # Generate swagger.json dynamically
-        self.generate_swagger_json()
 
         # Register Swagger UI blueprint
         self.app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
-        # Serve the swagger.json file
         self.configure_routes()
-
-    def generate_swagger_json(self):
-        # Generate swagger.json dynamically
-        static_dir = os.path.join(os.path.dirname(__file__), 'static')
-        os.makedirs(static_dir, exist_ok=True)  # Create the static directory if it doesn't exist
-        swagger_file_path = os.path.join(static_dir, 'swagger.json')
-        with open(swagger_file_path, 'w') as swagger_file:
-            json.dump(swagger_config, swagger_file, indent=4)
 
     def start_server(self):
         self.app.run(host=self.host_ip, port=self.server_port)
@@ -46,6 +39,7 @@ class ServiceManager:
     def configure_routes(self):
         # Main endpoints
         self.app.add_url_rule('/receive_commands', 'receive_commands', self.frontend_bridge.receive_commands, methods=['POST'])
+        self.app.add_url_rule('/logout', 'logout', self.frontend_bridge.logout, methods=['POST'])
 
         # Route-related endpoints
         self.app.add_url_rule('/save_log', 'save_log', self.frontend_bridge.db_bridge.save_log, methods=['POST'])
@@ -60,4 +54,3 @@ class ServiceManager:
 if __name__ == "__main__":
     service_manager = ServiceManager()
     service_manager.start_server()
-

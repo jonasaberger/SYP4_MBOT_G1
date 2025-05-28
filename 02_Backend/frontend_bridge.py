@@ -13,7 +13,7 @@ class FrontendBridge:
         self.current_speed = 50  # Default speed
         self.current_color = "255,255,255"  # Default color
         self.current_mode = None
-        self.anti_hons = False
+        self.anti_hons = True
 
         self.stoproute = False
         self.discovery_points = []
@@ -105,7 +105,7 @@ class FrontendBridge:
             self.current_mode = mode
             print(f"Mode sent to mBot: {mode}")
 
-        elif drive and self.current_mode == "controller":
+        if drive and self.current_mode == "controller":
             self.mbot_bridge.send_message(drive)
             print(f"Drive command sent to mBot: {drive}")
 
@@ -130,6 +130,7 @@ class FrontendBridge:
 
         if self.current_mode == "automatic":
             if route:
+                self.stoproute = False  # Reset stoproute at the start of automatic mode
                 # Get the specific route from the database
                 route_data = self.db_bridge.get_route(route)
                 print(f"Route data: {route_data}")
@@ -157,6 +158,7 @@ class FrontendBridge:
                         self.mbot_bridge.send_message(direction)
 
                     time.sleep(duration)
+
         if self.current_mode == "discovery" and drive == "start":
             print("Discovery mode activated")
             self.mbot_bridge.send_message("start")
@@ -187,7 +189,6 @@ class FrontendBridge:
                     print("Discovery mode stopped")
                     break
 
-
         # Change the color or speed of the mBot
         elif color:
             self.current_color = color
@@ -198,8 +199,8 @@ class FrontendBridge:
             self.mbot_bridge.send_message("speed:" + speed)
             print(f"Speed changed to: {speed}")
 
-        # Stop recording when the user enters the mode exit
-        if drive == "exit" and mode == "controller":
+        # Stop recording and save the route only if the current mode is controller and drive is exit
+        if drive == "exit" and self.current_mode == "controller":
             self.recording = False
 
             log_file_path = os.path.join('Logs', 'command_log.json')
@@ -211,23 +212,23 @@ class FrontendBridge:
             with open(log_file_path, "r") as f:
                 print(f.read())  # Print the command log to the console
 
-        if drive == "exit" and mode == "automatic":
+        if drive == "exit" and self.current_mode == "automatic":
             print("Exiting automatic mode")
             self.mbot_bridge.send_message("end")
         
-        if drive == "exit" and mode == "discovery":
+        if drive == "exit" and self.current_mode == "discovery":
             print("Exiting discovery mode")
             self.mbot_bridge.send_message("exit")
         return jsonify({"status": "success", "message": "Command received"}) 
 
 
-    # TODO: Send the battery status once when connecting to the frontend
-    def get_status_route(self):
-        status = {
-            'battery': '80%',
-        }
-        return jsonify(status)
-    
+    def logout(self):
+        print("Logout request received")
+
+        # Disconnect the mBot
+        self.mbot_bridge.disconnect()
+        print("mBot disconnected")
+        return jsonify({"status": "success", "message": "mBot disconnected"})
 
     def get_discover_points(self):
         return jsonify(self.discovery_points)
