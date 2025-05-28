@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { FaMap, FaCar, FaRobot } from "react-icons/fa";
 
 const MainControl = () => {
-  const [mode, setMode] = useState("map");
+  const [mode, setMode] = useState("manual");
   const isChangingMode = useRef(false);
   const hasInitialized = useRef(false);
   const navigate = useNavigate();

@@ -112,6 +112,7 @@
   
   .dropdown-item {
     display: flex;
+    background-color: #272626;
     justify-content: space-between;
     align-items: center;
     padding: 10px;
@@ -119,7 +120,7 @@
   }
   
   .dropdown-item:hover {
-    background-color: #f1f1f1;
+    background-color: #545252;
   }
   
   .route-name {
