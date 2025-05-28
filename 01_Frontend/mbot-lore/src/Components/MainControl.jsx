@@ -5,11 +5,16 @@ import ManualControl from "./Manual";
 import MapControl from "./MapControl";
 import { sendCommand } from "../API_Service/service";
 import "./css/MainControl.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { logout } from "../API_Service/service";
+import { useNavigate } from "react-router-dom";
 
 const MainControl = () => {
   const [mode, setMode] = useState("map"); // Standardmodus ist "manual"
   const isChangingMode = useRef(false);
   const hasInitialized = useRef(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!hasInitialized.current) {
@@ -60,10 +65,21 @@ const MainControl = () => {
     }
   };
 
+  const handleSignOut = async () => {
+    await logout();
+    navigate("/", { replace: true });
+    console.log("Benutzer abgemeldet");
+  }
+
   return (
     <div className="main-control">
-      <h1 className="title">Control
-      </h1>
+      <div className="title-container">
+        <h1 className="title">Control</h1>
+        <button className="signout-button" onClick={handleSignOut} style={{ fontSize: '34px' }}>
+          <FontAwesomeIcon icon={faSignOutAlt} />
+        </button>
+      </div>
+      
       <div className="mode-buttons">
         <button
           className={`manual ${mode === "manual" ? "active" : ""}`}
