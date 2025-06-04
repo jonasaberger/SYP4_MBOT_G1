@@ -114,9 +114,10 @@ const toggleSwitch = async () => {
   try {
     const newStatus = !isOn;
     setIsOn(newStatus); // LED-Status umschalten
-    const command = newStatus ? "on" : "off";
-    await sendCommand("led", command); // LED-Befehl senden
-    console.log(`LED toggled: ${command}`);
+    const rgb = newStatus ? color.rgb : '0,0,0'; // Wenn an, verwende die aktuelle Farbe, sonst schalte auf aus (0,0,0)
+    await sendCommand("color", rgb);
+    setLedColorString(`${rgb.r},${rgb.g},${rgb.b}`);
+    console.log(`LED toggled: ${rgb}`);
   } catch (error) {
     console.error("Fehler beim Umschalten der LED:", error);
   }
@@ -130,10 +131,10 @@ const toggleSwitch = async () => {
   };
 
   // Setzen der LED-Farbe
-  const handleColorSubmit = () => {
+  const handleColorSubmit = async () => {
     console.log("LED Color:", ledColorString);
     setShowColorPicker(false);
-    sendCommand("color", ledColorString); // LED-Farbe setzen
+    await sendCommand("color", ledColorString); // LED-Farbe setzen
   };
 
   // Umschalten des Color Pickers

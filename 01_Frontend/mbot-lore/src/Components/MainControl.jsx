@@ -11,7 +11,7 @@ import { logout } from "../API_Service/service";
 import { useNavigate } from "react-router-dom";
 
 const MainControl = () => {
-  const [mode, setMode] = useState("automatic");
+  const [mode, setMode] = useState("manual");
   const isChangingMode = useRef(false);
   const hasInitialized = useRef(false);
   const navigate = useNavigate();
