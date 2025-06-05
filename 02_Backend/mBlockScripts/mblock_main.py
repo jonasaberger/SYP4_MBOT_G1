@@ -11,6 +11,7 @@ tracking_enabled = False
 physical_mode = False
 discover_mode = False
 automatic_mode = False
+backend_ip = "10.10.0.103"
 
 def reset_variables():
     global physical_mode, discover_mode, automatic_mode, tracking_enabled, movement_speed
@@ -45,14 +46,15 @@ def network_module():
             cyberpi.console.clear()
             cyberpi.led.on(0, 255, 0)
             cyberpi.console.println("Network Configured")
-            cyberpi.console.println("--------------")
             cyberpi.console.println("")
             break
 
     sockaddr = cyberpi.network.get_ip()
-    cyberpi.console.println("My IP Address: " + sockaddr)
     cyberpi.console.println("--------------")
-    cyberpi.console.println("Waiting for Host")
+    cyberpi.console.println("My IP Address")
+    cyberpi.console.println(sockaddr)
+    cyberpi.console.println("--------------")
+    cyberpi.console.println("Waiting for Host...")
 
     socket = usocket.socket(usocket.AF_INET, usocket.SOCK_DGRAM)
     socket.setsockopt(usocket.SOL_SOCKET, usocket.SO_REUSEADDR, 1)
@@ -73,7 +75,6 @@ def physical_module(socket, speed=50):
             cyberpi.mbot2.EM_stop("all")
             physical_mode = False
             tracking_enabled = False
-            cyberpi.console.println("Exiting Control Mode..")
             if txt == "disconnect":
                 reset_variables()
                 return "disconnect"
@@ -91,7 +92,6 @@ def physical_module(socket, speed=50):
             new_speed = int(txt.split(":")[1])
             if 0 <= new_speed <= 100:
                 movement_speed = new_speed
-                cyberpi.console.println("Speed: " + str(new_speed) + "%")
             else:
                 cyberpi.console.println("Invalid speed!")
                 continue
@@ -119,7 +119,6 @@ def automatic_module(socket, speed=50):
         if txt in ["exit", "disconnect"]:
             cyberpi.mbot2.EM_stop("all")
             automatic_mode = False
-            cyberpi.console.println("Exiting Automatic Mode..")
             if txt == "disconnect":
                 reset_variables()
                 return "disconnect"
@@ -134,7 +133,6 @@ def automatic_module(socket, speed=50):
             new_speed = int(txt.split(":")[1])
             if 0 <= new_speed <= 100:
                 movement_speed = new_speed
-                cyberpi.console.println("Speed: " + str(new_speed) + "%")
             else:
                 cyberpi.console.println("Invalid speed!")
                 continue
@@ -153,7 +151,7 @@ def automatic_module(socket, speed=50):
         time.sleep(0.1)
 
 def discover_module(socket):
-    global discover_mode
+    global backend_ip, discover_mode
     discover_mode = True
     cyberpi.console.println("Discovery Mode")
 
@@ -176,6 +174,8 @@ def discover_module(socket):
                         discover_mode = False
                         cyberpi.console.println("Discovery Mode stopped")
                         socket.settimeout(None)
+                        # Send "stop" to backend before returning
+                        send_to_backend(socket, backend_ip, "stop")
                         if stop_txt == "disconnect":
                             reset_variables()
                             return "disconnect"
@@ -194,6 +194,8 @@ def discover_module(socket):
                             discover_mode = False
                             cyberpi.console.println("Discovery Mode stopped")
                             socket.settimeout(None)
+                            # Send "stop" to backend before returning
+                            send_to_backend(socket, backend_ip, "stop")
                             if stop_txt == "disconnect":
                                 reset_variables()
                                 return "disconnect"
@@ -204,29 +206,34 @@ def discover_module(socket):
                 cyberpi.mbot2.EM_stop("all")
                 end_time = time.time()
                 distance = round((end_time - start_time) * speed_factor * 100, 2)
-                cyberpi.console.println("Wand erreicht!")
                 cyberpi.console.println("Punkt " + str(counter) + ": " + str(distance) + "cm")
                 angle = random.randint(0, 360)
                 point = (counter, distance, angle)
-                backend_ip = "10.10.0.103"
                 send_to_backend(socket, backend_ip, point)
                 counter += 1
                 cyberpi.mbot2.turn(angle)
                 time.sleep(1)
 
+            # After the while True loop, send "stop" to backend (if not already sent)
+            send_to_backend(socket, backend_ip, "stop")
+
         elif txt == "stop":
             cyberpi.mbot2.EM_stop("all")
             discover_mode = False
-            cyberpi.console.println("Discovery Mode stopped")
+            # Send "stop" to backend
+            send_to_backend(socket, backend_ip, "stop")
             break
 
         elif txt == "disconnect":
+            # Send "stop" to backend
+            send_to_backend(socket, backend_ip, "stop")
             reset_variables()
             return "disconnect"
 
         elif txt == "exit":
             discover_mode = False
-            cyberpi.console.println("Exiting Discovery Mode..")
+            # Send "stop" to backend
+            send_to_backend(socket, backend_ip, "stop")
             break
 
     socket.settimeout(None)
@@ -238,7 +245,7 @@ def send_to_backend(socket, backend_ip, data):
         socket.sendto(data.encode(), (backend_ip, 5555))
         cyberpi.console.println("Data sent to backend!")
     except Exception as e:
-        cyberpi.console.println(f"Error sending data to backend: {e}")
+        cyberpi.console.println("Error sending data to backend " + e)
 
 def change_color(txt):
     color_data = txt.split(":")[1]
@@ -283,7 +290,6 @@ while True:
             new_speed = int(txt.split(":")[1])
             if 0 <= new_speed <= 100:
                 movement_speed = new_speed
-                cyberpi.console.println("Speed: " + str(new_speed) + "%")
             else:
                 cyberpi.console.println("Invalid speed!")
                 continue

@@ -10,6 +10,12 @@ class MBotBridge:
         self.source_ip = None
         self.target_port = int(os.getenv('TARGET_PORT'))
 
+    
+    # Configure the connection to the mBot with the target IP and source IP
+    def configure_connection(self, target_ip, source_ip):
+        print('Configuring connection with target IP: ', target_ip)
+        self.target_ip = target_ip
+        self.send_message('connect:'+source_ip)
 
     def disconnect(self):
         if self.target_ip is None:
@@ -24,23 +30,19 @@ class MBotBridge:
             print("Disconnected from target IP: ", self.target_ip)
             self.target_ip = None
 
-
+    # Main method to send data / messages to the mBot
     def send_message(self, message): 
         if self.target_ip is None:
             print('Target IP is not configured.')
             return
-
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
             s.sendto(message.encode(), (self.target_ip, self.target_port))
         finally:
             s.close()
 
-    def configure_connection(self, target_ip, source_ip):
-        print('Configuring connection with target IP: ', target_ip)
-        self.target_ip = target_ip
-        self.send_message('connect:'+source_ip)
 
+    # Method to receive messages from the mBot - mainly sent discovery-points
     def receive_message(self):
         UDP_IP = "0.0.0.0"
         UDP_PORT = int(os.getenv('SOURCE_PORT'))
@@ -70,9 +72,6 @@ class MBotBridge:
 
                     return message  # Return the received message
 
-                except socket.timeout:
-                    print("Timeout occurred, no data received")
-                    continue
                 except Exception as e:
                     print(f"An error occurred: {e}")
                     break

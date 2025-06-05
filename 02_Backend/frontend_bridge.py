@@ -8,14 +8,16 @@ import os
 
 class FrontendBridge:
     def __init__(self):
-        self.recording = False
-        self.command_log = []
         self.current_speed = 50  # Default speed
         self.current_color = "255,255,255"  # Default color
         self.current_mode = None
-        self.anti_hons = True
 
+        # Option to block traffic from 'Hons' Laptop
+        self.anti_hons = False
+
+        self.recording = False
         self.stoproute = False
+        self.command_log = []
         self.discovery_points = []
 
         self.mbot_bridge = mbb.MBotBridge()
@@ -43,6 +45,7 @@ class FrontendBridge:
 
         return jsonify({"status": "success", "message": f"Route '{route_name}' saved to database"})
 
+    # End the current route and stop the mBot
     def end_route(self):
         self.stoproute = True
         self.mbot_bridge.send_message("stop")
@@ -52,6 +55,8 @@ class FrontendBridge:
     # Main receive method for commands from the frontend
     def receive_commands(self):
         data = request.json
+
+        # Parameters which can be sent from the frontend 
         ip_target = data.get("ip-target")
         mode = data.get("mode")
         drive = data.get("drive")
@@ -86,25 +91,23 @@ class FrontendBridge:
             print(f"Configured connection with target IP: {ip_target} and source IP: {ip_source}")
             return jsonify({"status": "success", "message": "Connection configured"})
 
-        # Check if the user's IP is authorized to access any mBot
+        # Authorization - Check if the source IP is authorized to control the mBot
         authorized_ip_target = None
         for target, source in self.connected_users.items():
             if source == ip_source:
                 authorized_ip_target = target
                 break
-
         if not authorized_ip_target:
             return jsonify({"status": "error", "message": "Unauthorized access or no configured mBot"}), 403
 
-        # Log the authorized target for debugging
-        print(f"User {ip_source} is authorized to send commands to mBot with IP {authorized_ip_target}")
 
-        # Send the mode to the mBot
+        # MODE - Selection
         if mode:
             self.mbot_bridge.send_message(mode)
             self.current_mode = mode
             print(f"Mode sent to mBot: {mode}")
 
+        # MANUAL CONTROL - Drive Commands
         if drive and self.current_mode == "controller":
             self.mbot_bridge.send_message(drive)
             print(f"Drive command sent to mBot: {drive}")
@@ -128,6 +131,7 @@ class FrontendBridge:
                 self.start_time = time.time()  # Reset start time for the next command
                 print(f"Command recorded: {self.command_log[-1]}")
 
+        # AUTOMATIC MODE - Route Execution
         if self.current_mode == "automatic":
             if route:
                 self.stoproute = False  # Reset stoproute at the start of automatic mode
@@ -162,6 +166,7 @@ class FrontendBridge:
                 # Call end_route when finished
                 self.end_route()
 
+        # DISCOVERY MODE - Discovering Points in the Environment
         if self.current_mode == "discovery" and drive == "start":
             print("Discovery mode activated")
             self.mbot_bridge.send_message("start")
@@ -192,7 +197,7 @@ class FrontendBridge:
                     print("Discovery mode stopped")
                     break
 
-        # Change the color or speed of the mBot
+        # COLOR and SPEED Settings - Change the color or speed of the mBot
         elif color:
             self.current_color = color
             self.mbot_bridge.send_message("color:" + color)
@@ -202,7 +207,7 @@ class FrontendBridge:
             self.mbot_bridge.send_message("speed:" + speed)
             print(f"Speed changed to: {speed}")
 
-        # Stop recording and save the route only if the current mode is controller and drive is exit
+        # SAVE/EXIT MANUAL COMMANDS - Save the command log to a file when exiting manual mode
         if drive == "exit" and self.current_mode == "controller":
             self.recording = False
 
@@ -215,23 +220,26 @@ class FrontendBridge:
             with open(log_file_path, "r") as f:
                 print(f.read())  # Print the command log to the console
 
+        # EXIT AUTOMATIC
         if drive == "exit" and self.current_mode == "automatic":
             print("Exiting automatic mode")
             self.mbot_bridge.send_message("end")
         
+        # EXIT DISCOVERY
         if drive == "exit" and self.current_mode == "discovery":
             print("Exiting discovery mode")
             self.mbot_bridge.send_message("exit")
         return jsonify({"status": "success", "message": "Command received"}) 
 
 
+    # LOGOUT - Disconnect the mBot
     def logout(self):
         print("Logout request received")
-
         # Disconnect the mBot
         self.mbot_bridge.disconnect()
         print("mBot disconnected")
         return jsonify({"status": "success", "message": "mBot disconnected"})
 
+    # Supply the discovery points to the frontend
     def get_discover_points(self):
         return jsonify(self.discovery_points)
