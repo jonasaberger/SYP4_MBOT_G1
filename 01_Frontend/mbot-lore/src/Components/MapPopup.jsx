@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import './css/MapPopup.css';
 
 const MapPopup = ({ onClose, points = [], mapWidth = 800, mapHeight = 500 }) => {
-  const testData = useMemo(() => [
+  const testData = useMemo(() => [//Testdaten falls das backend keine Daten liefert
   { id: 0, distance: 0.5, angle: 0 },
   { id: 1, distance: 1.0, angle: 20 },
   { id: 2, distance: 1.5, angle: 40 },
@@ -130,7 +130,7 @@ const MapPopup = ({ onClose, points = [], mapWidth = 800, mapHeight = 500 }) => 
     const OBSTACLE_RADIUS = 0.3; // Max distance between points to be considered part of same obstacle
     const ANGLE_CHANGE_THRESHOLD = 45; // Degrees to consider sharp turn
 
-    // Step 1: Identify potential obstacle points based on sharp turns
+    //Identify potential obstacle points based on sharp turns
     const pointsWithAngles = points.map((point, i) => {
       if (i === 0 || i === points.length - 1) return { ...point, angleChange: 0 };
       
@@ -149,7 +149,7 @@ const MapPopup = ({ onClose, points = [], mapWidth = 800, mapHeight = 500 }) => 
       return { ...point, angleChange: angle };
     });
 
-    // Step 2: Cluster points that are close together and have sharp turns
+    //Cluster points that are close together and have sharp turns
     const obstacleClusters = [];
     let currentCluster = [];
     
@@ -175,7 +175,7 @@ const MapPopup = ({ onClose, points = [], mapWidth = 800, mapHeight = 500 }) => 
       obstacleClusters.push([...currentCluster]);
     }
 
-    // Step 3: Mark all points in clusters as obstacles
+    //Mark all points in clusters as obstacles
     const obstaclePoints = new Set();
     obstacleClusters.forEach(cluster => {
       cluster.forEach(point => obstaclePoints.add(point.id));
@@ -391,11 +391,11 @@ const MapPopup = ({ onClose, points = [], mapWidth = 800, mapHeight = 500 }) => 
           </div>
           <div className="stat-item">
             <span className="stat-label">Distanz</span>
-            <span className="stat-value">{stats.totalDistance.toFixed(2)} m</span>
+            <span className="stat-value">{(stats.totalDistance / 10).toFixed(2)} cm</span>
           </div>
           <div className="stat-item">
             <span className="stat-label">Fläche</span>
-            <span className="stat-value">{stats.areaCovered.toFixed(2)} m²</span>
+            <span className="stat-value">{(stats.areaCovered / 100).toFixed(2)} cm²</span>
           </div>
           <div className="stat-item">
             <span className="stat-label">Hindernisse</span>

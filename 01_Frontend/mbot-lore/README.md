@@ -71,5 +71,4 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 ### Before you can start:
 npm install
-npm install react-color
 npm run start
