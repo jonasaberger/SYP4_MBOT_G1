@@ -4,14 +4,14 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(255, 255, 255, 0.3);
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .popup-content {
-  background: white; 
+  background: rgb(0, 0, 0); 
   padding: 20px;
   border-radius: 8px;
   text-align: center;
@@ -19,7 +19,7 @@
 
 .popup-content button {
   padding: 10px 20px;
-  background-color: white;
+  background-color: rgb(145, 143, 143);
   color: black;
   border: none;
   border-radius: 8px;
@@ -34,7 +34,7 @@
 
 .new-checkpoint-button{
   padding: 10px 20px;
-  background-color: white;
+  background-color: rgb(66, 63, 63);
   color: black;
   border: none;
   border-radius: 8px;

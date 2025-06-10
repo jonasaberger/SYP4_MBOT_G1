@@ -24,6 +24,8 @@ const ControlPanel = () => {
   });
   const [notification, setNotification] = useState(null);
   const commandCount = useRef(0);
+  const [isDriving, setIsDriving] = useState(false);
+  const intervalRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -41,6 +43,7 @@ const ControlPanel = () => {
   const closeNotification = () => setNotification(null);
 
   
+  // Starte/Stoppe das Kartografieren
   const handleStartStop = async () => {
     try {
       const command = commandCount.current % 2 === 0 ? "start" : "stop";
@@ -48,7 +51,17 @@ const ControlPanel = () => {
 
       await sendCommand("drive", command);
 
-      if (command === "stop") {
+      if (command === "start") {
+        setIsDriving(true);
+        setRuntime(0);
+        setDistance(0);
+        intervalRef.current = setInterval(() => {
+          setRuntime(prev => prev + 1);
+          setDistance(prev => prev + 0.05); // Beispiel: 0.05m pro Sekunde
+        }, 1000);
+      } else {
+        setIsDriving(false);
+        clearInterval(intervalRef.current);
         try {
           const points = await getDiscoveryPoints();
           console.log("Received points data:", points);
@@ -180,6 +193,11 @@ const ControlPanel = () => {
       });
     }
   };
+
+  // Stoppe den Timer beim Unmount
+  useEffect(() => {
+    return () => clearInterval(intervalRef.current);
+  }, []);
 
   return (
     <div className="control-panel">
