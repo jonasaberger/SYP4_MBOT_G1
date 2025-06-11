@@ -7,21 +7,12 @@ from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, PyMongoError
 
 
-# Mock die cyberpi-Bibliothek direkt beim Import
-sys.modules['cyberpi'] = MagicMock()
-sys.modules['usocket'] = MagicMock()
-
 # Verzeichnis 02_Backend zum Python-Pfad hinzufügen
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-# Verzeichnis mblockScripts zum Python-Pfad hinzufügen
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'mBlockScripts')))
 
 from frontend_bridge import FrontendBridge
 from service_manager import ServiceManager
 from db_bridge import DB_Bridge
-from mBlockScripts.mblock_main import discover_module
-
 
 class Testing(unittest.TestCase):
     def setUp(self):
@@ -51,14 +42,14 @@ class Testing(unittest.TestCase):
         print()
 
     def test_receive_commands_color(self):
-        response = self.client.post('/receive_commands', json={"color": "red"})
+        response = self.client.post('/receive_commands', json={"color": "255,255,255"})
         data = json.loads(response.data)
         self.assertEqual(data['status'], 'success')
         self.assertEqual(data['message'], 'Command received')
         print()
 
     def test_receive_commands_speed(self):
-        response = self.client.post('/receive_commands', json={"speed": "fast"})
+        response = self.client.post('/receive_commands', json={"speed": "50"})
         data = json.loads(response.data)
         self.assertEqual(data['status'], 'success')
         self.assertEqual(data['message'], 'Command received')
@@ -91,8 +82,7 @@ class Testing(unittest.TestCase):
         with patch('builtins.print') as mock_print:
             self.db_bridge.check_connection()
             mock_print.assert_called_with("Verbindung erfolgreich!")
-    
-    # Hilfe von KI
+        
     """
     @patch('pymongo.MongoClient')
     def test_check_connection_failure(self, mock_mongo_client):
@@ -135,46 +125,6 @@ class Testing(unittest.TestCase):
         # Verify that the collection was created and data was inserted
         mock_db.drop_collection.assert_not_called()  # Collection did not exist, so drop should not be called
         mock_collection.insert_many.assert_called_with([{"command": "test"}])
-    """
-
-    # Versuch Discover-Module zu testen -> geht nicht wegen Mocking der cyberpi-Bibliothek, ... etc
-    """
-    # Discover-Module Tests
-    @patch('mblock_main.cyberpi')
-    @patch('mblock_main.socket')
-    def test_discover_module(self, mock_socket, mock_cyberpi):
-        # Mock globale Variablen
-        global height, width, room_map, visited
-        height = 5
-        width = 5
-        room_map = [[0 for _ in range(width)] for _ in range(height)]
-        visited = [[False for _ in range(width)] for _ in range(height)]
-
-        # Mock cyberpi Methoden
-        mock_cyberpi.console.println = MagicMock()
-        mock_cyberpi.ultrasonic2.get.return_value = 20  # Simuliere keine Hindernisse
-        mock_cyberpi.mbot2.forward = MagicMock()
-        mock_cyberpi.mbot2.EM_stop = MagicMock()
-        mock_cyberpi.mbot2.turn_right = MagicMock()
-
-         # Mock socket.recvfrom
-        mock_socket_instance = MagicMock()
-        mock_socket_instance.recvfrom.side_effect = [
-             (b"forward", ("127.0.0.1", 12345)),  # Simuliere einen "forward"-Befehl
-             (b"exit", ("127.0.0.1", 12345))      # Simuliere einen "exit"-Befehl
-         ]
-        mock_socket.return_value = mock_socket_instance
-
-        # Rufe die Funktion auf
-        discover_module(mock_socket_instance)
-
-
-        # Tests
-        mock_cyberpi.console.println.assert_any_call("Präzises Raum-Mapping gestartet")
-        mock_cyberpi.console.println.assert_any_call("Messung der Raumdimensionen...")
-        mock_cyberpi.mbot2.forward.assert_called()  # Stelle sicher, dass der Roboter sich bewegt
-        mock_cyberpi.mbot2.EM_stop.assert_called()  # Stelle sicher, dass der Roboter stoppt
-        self.assertTrue(any(any(row) for row in visited))  # Stelle sicher, dass einige Zellen besucht wurden
     """
 
 if __name__ == '__main__':
