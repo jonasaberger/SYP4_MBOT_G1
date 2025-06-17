@@ -1,7 +1,6 @@
 import mbot_bridge as mbb
 import db_bridge as dbb
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask import request, jsonify
 import time
 import json
 import os

@@ -1,10 +1,9 @@
 import unittest
-import json
 import sys
 import os
 from unittest.mock import patch, MagicMock
 from pymongo import MongoClient
-from pymongo.errors import ConnectionFailure, PyMongoError
+from pymongo.errors import ConnectionFailure
 
 # Verzeichnis 02_Backend zum Python-Pfad hinzufügen
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
