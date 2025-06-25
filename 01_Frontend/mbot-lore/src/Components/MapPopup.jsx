@@ -55,7 +55,7 @@ const MapPopup = ({ onClose, points = [], mapWidth = 800, mapHeight = 500 }) => 
     return { points: cartesianPoints, totalDistance };
   }, []);
 
-  // Enhanced convex hull calculation with obstacle consideration
+  // Enhanced convex hull calculation with obstacle consideration  --> Ermittlung der äußeren Hülle mit Erkennung von Hindernissen.
   const calculateConvexHull = useCallback((points) => {
     if (points.length < 3) return points;
 
@@ -124,7 +124,7 @@ const MapPopup = ({ onClose, points = [], mapWidth = 800, mapHeight = 500 }) => 
   // Enhanced obstacle detection algorithm
   const detectObstacles = useCallback((points) => {
     if (points.length < 3) return points;
-
+//DEFINE OBSTACLE
     // Parameters for obstacle detection
     const MIN_OBSTACLE_POINTS = 3; // Minimum points to form an obstacle
     const OBSTACLE_RADIUS = 0.3; // Max distance between points to be considered part of same obstacle

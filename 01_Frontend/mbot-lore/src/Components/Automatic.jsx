@@ -80,31 +80,7 @@ const ControlPanel = () => {
     fetchRouteDetails(routeName);
   };
 
-  useEffect(() => {
-    let interval;
-    console.log("isDriving:" + isDriving + " routeDetails:" + routeDetails);
-    if (isDriving && routeDetails && routeDetails.length > 0) {
-      let i = 0;
-      let timeout = routeDetails[i].duration * 1000; // Dauer des ersten Checkpoints in Millisekunden
 
-      interval = setInterval(() => {
-        console.log("interval");
-        i++;
-        if (i >= routeDetails.length) {
-          clearInterval(interval); // Stop the interval when all checkpoints are processed
-          setIsDriving(false); // Stop driving
-        } else {
-          timeout = routeDetails[i].duration * 1000; // Update timeout for the next checkpoint
-          console.log("Timeout:", timeout);
-          setDirection(routeDetails[i].direction); // Set the direction for the next checkpoint
-        }
-      }, timeout);
-    }
-
-    return () => {
-      clearInterval(interval); // Clear the interval when `isDriving` becomes false or the component unmounts
-    };
-  }, [isDriving, routeDetails]);
 
   const handleDeleteRoute = async (routeName) => {
     try {
